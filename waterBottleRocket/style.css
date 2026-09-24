@@ -1,0 +1,1039 @@
+/* ==========================================================
+   1. DESIGN TOKENS (light default, dark override via body.dark)
+   ========================================================== */
+:root {
+  /* ---- ธีมสีเดียวกับ parachute (burgundy/gold) — ยืนยันแล้วกับผู้ใช้ ---- */
+  --bg: #f7f3f4;
+  --panel: #ffffff;
+  --ink: #2d171c;
+  --muted: #79656a;
+  --line: #e7dadd;
+
+  --burgundy: #7a0019;
+  --burgundy-light: #a61936;
+  --burgundy-dark: #590013;
+  --gold: #d5a62e;
+
+  --accent: var(--burgundy-light);
+  --accent-light: var(--burgundy-light);
+  --accent-dark: var(--burgundy-dark);
+  --flame: var(--burgundy);
+  --flame-dark: var(--burgundy-dark);
+
+  /* สีเปลวไฟจรวด แยกจาก --flame (ตอนนี้ --flame คือสีปุ่ม/accent ของเว็บ) เพราะไฟต้องเป็นสีส้ม/แดงเสมอไม่ว่าธีมเว็บจะเป็นสีอะไร */
+  --exhaust: #f97316;
+  --exhaust-dark: #ea580c;
+
+  --danger: #dc2626;
+  --danger-bg: rgba(220, 38, 38, 0.1);
+  --success: #16a34a;
+
+  /* สี scene (ท้องฟ้า/พื้น) คงไว้ตามธรรมชาติ ไม่ผูกกับธีมเว็บ — parachute เองก็ทำแบบนี้ (.sky ของเขาก็ไม่ใช่สีเบอร์กันดี) */
+  --sky-top: #bfe3fb;
+  --sky-bottom: #eaf6ee;
+  --ground: #6fae63;
+  --ground-dark: #588f4d;
+  --trail: #d5a62e;
+
+  --shadow: 0 16px 50px rgba(87, 0, 22, 0.1);
+  --radius: 16px;
+}
+
+body.dark {
+  --bg: #1c0d11;
+  --panel: #2b141a;
+  --ink: #f8edef;
+  --muted: #c7aeb4;
+  --line: #59303a;
+
+  --danger-bg: rgba(248, 113, 113, 0.15);
+
+  --sky-top: #0b1e3d;
+  --sky-bottom: #1c3a63;
+  --ground: #2f6b3a;
+  --ground-dark: #24552d;
+  --trail: #e8c158;
+
+  --shadow: 0 16px 50px rgba(0, 0, 0, 0.35);
+}
+
+/* targeted dark-mode overrides for things that don't cleanly derive from tokens alone */
+body.dark .icon-button,
+body.dark select,
+body.dark input[type='number'] {
+  background: var(--panel);
+}
+body.dark .segmented label span {
+  color: var(--muted);
+}
+body.dark tbody tr:hover td {
+  background: rgba(166, 25, 54, 0.14);
+}
+body.dark .topbar {
+  background: rgba(28, 13, 17, 0.75);
+}
+
+/* ==========================================================
+   2. RESET / BASE
+   ========================================================== */
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: 'Inter', 'Sarabun', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+h1,
+h2,
+h3 {
+  margin: 0;
+}
+
+button {
+  font-family: inherit;
+}
+
+:focus-visible {
+  outline: 3px solid var(--gold);
+  outline-offset: 2px;
+}
+
+/* ==========================================================
+   3. TOPBAR
+   ========================================================== */
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 24px;
+
+  background: rgba(247, 243, 244, 0.75);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--line);
+
+  transition: transform 0.25s ease;
+}
+
+/* มือถือ: ซ่อน header ตอนเลื่อนลง คืนพื้นที่แนวตั้งให้ sim/factors แล้วโผล่กลับทันทีตอนเลื่อนขึ้น (ควบคุมด้วย app.js) */
+@media (max-width: 600px) {
+  .topbar.topbar-hidden {
+    transform: translateY(-100%);
+  }
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.brand-mark {
+  font-size: 1.4rem;
+  line-height: 1;
+}
+
+.brand strong {
+  display: block;
+  font-size: 0.95rem;
+}
+
+.brand small {
+  display: block;
+  color: var(--muted);
+  font-size: 0.72rem;
+}
+
+.header-actions {
+  display: flex;
+  gap: 8px;
+}
+
+/* ==========================================================
+   4. SHARED COMPONENTS (panel / buttons / focus)
+   ========================================================== */
+.panel {
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--panel);
+  box-shadow: var(--shadow);
+}
+
+.icon-button,
+.text-button,
+.secondary-button {
+  padding: 9px 12px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--panel);
+  color: var(--ink);
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+
+.icon-button {
+  width: 42px;
+  height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.icon-button:hover,
+.text-button:hover,
+.secondary-button:hover {
+  border-color: var(--accent);
+}
+
+.primary-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 14px;
+  border: none;
+  border-radius: 12px;
+  background: linear-gradient(180deg, var(--flame), var(--flame-dark));
+  color: #fff;
+  font-size: 1.05rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.08s ease, opacity 0.2s ease;
+}
+
+.primary-button:hover:not(:disabled) {
+  transform: translateY(-1px);
+}
+
+.primary-button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+/* ==========================================================
+   5. INTRO
+   ========================================================== */
+main {
+  padding: 20px 24px 40px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.intro {
+  text-align: center;
+  margin-bottom: 18px;
+}
+
+.eyebrow {
+  margin: 0 0 4px;
+  color: var(--accent-dark);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.intro h1 {
+  font-size: 1.55rem;
+  margin-bottom: 4px;
+}
+
+.intro .subtitle {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+/* ==========================================================
+   6. WORKSPACE — 3 column grid: controls | scene | table sidebar
+   ========================================================== */
+.workspace {
+  display: grid;
+  grid-template-columns: 340px 1fr 320px;
+  gap: 18px;
+  align-items: start;
+}
+
+@media (max-width: 900px) {
+  .workspace {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ---------------- controls panel ---------------- */
+.controls-panel {
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+
+  position: static; /* mobile-safe default — bug fix: sticky must never apply below 901px */
+}
+
+@media (min-width: 901px) {
+  .controls-panel {
+    position: sticky;
+    top: 88px; /* topbar height (~76px) + breathing room */
+  }
+}
+
+.panel-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.panel-heading h2 {
+  font-size: 1rem;
+}
+
+.step {
+  display: inline-block;
+  margin-right: 6px;
+  color: var(--accent);
+  font-weight: 700;
+  font-size: 0.8rem;
+}
+
+.param-group label {
+  display: block;
+  font-size: 0.88rem;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.range-hint {
+  font-weight: 400;
+  color: var(--muted);
+  font-size: 0.76rem;
+  margin-left: 4px;
+}
+
+.param-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.param-row input[type='range'] {
+  flex: 1;
+  accent-color: var(--accent);
+}
+
+.param-row input[type='number'] {
+  width: 68px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  color: var(--ink);
+  border-radius: 6px;
+  padding: 4px 6px;
+  font-size: 0.9rem;
+}
+
+/* Experiment mode segmented control */
+fieldset {
+  border: none;
+  margin: 0;
+  padding: 0;
+}
+
+fieldset legend {
+  font-size: 0.88rem;
+  font-weight: 600;
+  margin-bottom: 8px;
+  padding: 0;
+}
+
+.segmented {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px;
+  padding: 4px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--bg);
+}
+
+.segmented label {
+  position: relative;
+  display: block;
+}
+
+.segmented input {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  margin: 0;
+  cursor: pointer;
+}
+
+.segmented label span {
+  display: block;
+  text-align: center;
+  padding: 8px 6px;
+  border-radius: 9px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--muted);
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.segmented input:checked + span {
+  background: var(--panel);
+  color: var(--accent-dark);
+  box-shadow: var(--shadow);
+}
+
+.segmented input:focus-visible + span {
+  outline: 3px solid var(--gold);
+  outline-offset: 2px;
+}
+
+.hint {
+  margin: 8px 0 0;
+  color: var(--muted);
+  font-size: 0.78rem;
+}
+
+.warning-box {
+  background: var(--danger-bg);
+  border: 1px solid var(--danger);
+  color: var(--danger);
+  border-radius: 8px;
+  padding: 8px 10px;
+  font-size: 0.82rem;
+}
+
+.constants-note {
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.constants-note summary {
+  cursor: pointer;
+  margin-bottom: 6px;
+}
+
+.constants-note ul {
+  margin: 0;
+  padding-left: 18px;
+  line-height: 1.5;
+}
+
+/* ---------------- simulation panel / scene ---------------- */
+.simulation-panel {
+  padding: 18px;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.scene {
+  position: relative;
+  overflow: hidden;
+  flex: 1; /* desktop: ยืดเต็มพื้นที่ที่เหลือในกล่องที่ syncPanelHeights() กำหนดความสูงมาให้ */
+  min-height: 300px;
+
+  border: 1px solid var(--line);
+  border-radius: 15px;
+  margin-top: 12px;
+
+  background: linear-gradient(var(--sky-top) 0%, var(--sky-bottom) 78%, var(--ground) 78%);
+}
+
+@media (max-width: 900px) {
+  .scene {
+    flex: none;
+    height: 360px;
+  }
+  .simulation-panel {
+    order: -1; /* มือถือ/tablet: ให้ Sim ขึ้นก่อน Set factors ตามสเก็ตช์ */
+  }
+}
+
+@media (max-width: 600px) {
+  .scene {
+    height: 300px;
+  }
+}
+
+/* ---------------- ฉากหลัง: พระอาทิตย์ + เมฆ (ตกแต่ง, ไม่ขยับ) ---------------- */
+.scene-sun {
+  position: absolute;
+  top: 60px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 55px;
+  height: 55px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #fff6d8, #ffd166 60%, #ffb703 100%);
+  box-shadow: 0 0 24px 6px rgba(255, 183, 3, 0.35);
+}
+
+.scene-cloud {
+  position: absolute;
+  width: 58px;
+  height: 16px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.85);
+}
+
+.scene-cloud::before,
+.scene-cloud::after {
+  content: '';
+  position: absolute;
+  border-radius: 50%;
+  background: inherit;
+}
+
+.scene-cloud::before {
+  bottom: 0;
+  left: 10px;
+  width: 24px;
+  height: 24px;
+}
+
+.scene-cloud::after {
+  right: 8px;
+  bottom: 0;
+  width: 32px;
+  height: 32px;
+}
+
+.scene-cloud-a {
+  top: 50px;
+  left: 8%;
+  opacity: 0.9;
+  transform: scale(1.275); /* 150% ของขนาดเดิม (0.85 * 1.5) — ลดจาก 300% ลงครึ่งหนึ่ง */
+}
+
+.scene-cloud-b {
+  top: 75px;
+  right: 14%;
+  opacity: 0.75;
+  transform: scale(1.575); /* 150% ของขนาดเดิม (1.05 * 1.5) */
+}
+
+#trailCanvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* ---------------- ทุ่งหญ้าที่พื้น (พื้นหน้า, ทับเส้นพื้นที่วาดบน canvas) ---------------- */
+.scene-ground {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 14px;
+
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-around;
+  padding: 0 4px;
+
+  background: var(--ground-dark);
+}
+
+.scene-ground span {
+  width: 3px;
+  height: 9px;
+  border-radius: 3px 3px 0 0;
+  background: var(--ground);
+}
+
+/* axis tick strips — real DOM text, not canvas fillText, for crispness + i18n */
+.axis-y {
+  position: absolute;
+  top: 14px;
+  bottom: 44px;
+  left: 10px;
+
+  display: flex;
+  flex-direction: column-reverse;
+  justify-content: space-between;
+
+  padding-left: 6px;
+  border-left: 1px dashed rgba(20, 32, 51, 0.35);
+  color: var(--ink);
+  font-size: 0.66rem;
+  pointer-events: none;
+}
+
+body.dark .axis-y {
+  border-left-color: rgba(231, 238, 252, 0.35);
+}
+
+.axis-x {
+  position: absolute;
+  left: 10px;
+  right: 10px;
+  bottom: 8px;
+
+  display: flex;
+  justify-content: space-between;
+
+  color: var(--ink);
+  font-size: 0.66rem;
+  pointer-events: none;
+}
+
+.axis-label {
+  position: absolute;
+  font-size: 0.66rem;
+  font-weight: 700;
+  color: var(--ink);
+  background: rgba(255, 255, 255, 0.55);
+  padding: 1px 5px;
+  border-radius: 4px;
+  pointer-events: none;
+}
+
+body.dark .axis-label {
+  background: rgba(11, 22, 38, 0.55);
+}
+
+.axis-label.y-label {
+  top: 10px;
+  left: 10px;
+}
+
+.axis-label.x-label {
+  right: 10px;
+  bottom: 26px;
+}
+
+/* ---------------- cartoon rocket actor (SVG art) ---------------- */
+.rocket {
+  --rocket-w: 32px;
+  --rocket-h: 53px;
+
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: var(--rocket-w);
+  height: var(--rocket-h);
+  transform-origin: 50% 50%;
+  will-change: transform;
+
+  filter: drop-shadow(0 6px 6px rgba(20, 32, 51, 0.25));
+}
+
+.rocket-svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.rocket-flame {
+  position: absolute;
+  left: 50%;
+  bottom: -18%;
+  width: 30%;
+  height: 26%;
+  transform: translateX(-50%);
+  border-radius: 0 0 50% 50%;
+  /* สีเปลวไฟใช้ --exhaust เสมอ (ส้ม) แยกจาก --flame ที่ตอนนี้คือสี accent/ปุ่มของเว็บ (เบอร์กันดี) */
+  background: linear-gradient(180deg, var(--exhaust), var(--exhaust-dark));
+  visibility: hidden;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .rocket-flame[data-active='true'] {
+    animation: flame-flicker 0.12s infinite alternate;
+  }
+}
+
+@keyframes flame-flicker {
+  from {
+    transform: translateX(-50%) scaleY(1);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(-50%) scaleY(0.82);
+    opacity: 0.85;
+  }
+}
+
+/* แถบสรุปผลเรียลไทม์ใต้ฉากยิง (ย้ายออกมาจากการลอยทับบน .scene เดิม) */
+.live-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 18px;
+  margin-top: 10px;
+  padding: 10px 14px;
+
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--bg);
+}
+
+.live-stats:empty {
+  display: none;
+}
+
+.live-stat {
+  display: flex;
+  align-items: baseline;
+  gap: 5px;
+  font-size: 0.82rem;
+}
+
+.live-stat .live-stat-label {
+  color: var(--muted);
+}
+
+.live-stat .live-stat-value {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+/* ==========================================================
+   7. RESULTS SIDEBAR + EXPAND MODAL
+   ========================================================== */
+.results-sidebar {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+}
+
+.table-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.table-toolbar h2 {
+  font-size: 0.98rem;
+}
+
+.table-buttons {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.table-scroll {
+  flex: 1;
+  min-height: 0;
+  overflow-x: auto;
+  overflow-y: auto; /* ผลเกินพื้นที่ที่ sync ความสูงมา ให้ scroll ข้างในแทนดันกล่องให้สูงขึ้น */
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.82rem;
+}
+
+thead th {
+  text-align: left;
+  padding: 7px 8px;
+  border-bottom: 2px solid var(--line);
+  color: var(--accent-dark);
+  white-space: nowrap;
+}
+
+tbody td {
+  padding: 6px 8px;
+  border-bottom: 1px solid var(--line);
+  white-space: nowrap;
+}
+
+tbody tr:hover td {
+  background: rgba(122, 0, 25, 0.05);
+}
+
+.empty-row td {
+  color: var(--muted);
+  font-style: italic;
+  text-align: center;
+  white-space: normal;
+}
+
+/* compact (default) view hides the 3 extra columns; expand modal reveals them */
+.col-extra {
+  display: none;
+}
+
+.results-sidebar.expanded .col-extra {
+  display: table-cell;
+}
+
+.note {
+  margin: 2px 2px 0;
+  font-size: 0.74rem;
+  color: var(--muted);
+}
+
+/* ---- expand-to-modal behaviour (all breakpoints, per confirmed decision) ---- */
+#tableBackdrop {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  background: rgba(20, 32, 51, 0.45);
+  backdrop-filter: blur(6px);
+}
+
+#tableBackdrop.visible {
+  display: block;
+}
+
+.results-sidebar.expanded {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 31;
+
+  width: min(92vw, 780px);
+  max-height: 85vh;
+  overflow: auto;
+}
+
+@media (max-width: 600px) {
+  .results-sidebar.expanded {
+    width: 96vw;
+    max-height: 92vh;
+  }
+}
+
+body.table-modal-open {
+  overflow: hidden;
+}
+
+/* ==========================================================
+   8. RESPONSIVE — controls-panel field grid on tablet/mobile
+   ========================================================== */
+@media (max-width: 900px) {
+  .controls-panel {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0 16px;
+  }
+  .controls-panel .panel-heading,
+  .controls-panel fieldset,
+  .controls-panel .primary-button,
+  .controls-panel .warning-box,
+  .controls-panel .constants-note {
+    grid-column: 1 / -1;
+  }
+
+  /* mobile/tablet: ตารางผลไม่โตตามเนื้อหาไม่จำกัดอีกต่อไป — เกิน ~10 แถวให้ scroll ข้างในแทน
+     (ไม่ใช้ตอน .expanded เพราะตอนนั้นเป็น modal ที่มี max-height ของตัวเองอยู่แล้ว ไม่อยากไปจำกัดซ้ำ) */
+  .results-sidebar:not(.expanded) .table-scroll {
+    max-height: 360px;
+  }
+}
+
+@media (max-width: 600px) {
+  .controls-panel {
+    display: block;
+  }
+  .table-scroll {
+    overflow-x: auto;
+  }
+  table {
+    min-width: 560px;
+  }
+
+  /* บีบกล่อง sim ให้เตี้ยลงมาก + แนวนอนมากขึ้น เพื่อให้เห็น sim กับ set factors พร้อมกันในจอเดียวได้จริง */
+  .simulation-panel {
+    padding: 12px;
+  }
+  .simulation-panel .panel-heading {
+    margin-bottom: 0;
+  }
+  .simulation-panel .panel-heading h2 {
+    font-size: 0.9rem;
+  }
+  .scene {
+    height: 160px;
+    margin-top: 8px;
+    min-height: 0;
+  }
+  .axis-label,
+  .axis-y,
+  .axis-x {
+    font-size: 0.6rem;
+  }
+
+  /* แถบ live-stats บีบให้กระชับขึ้นด้วยเหตุผลเดียวกัน */
+  .live-stats {
+    gap: 2px 12px;
+    margin-top: 6px;
+    padding: 6px 10px;
+  }
+  .live-stat {
+    font-size: 0.72rem;
+  }
+
+  /* สัดส่วนคอมโพเนนต์ในฉากยังใหญ่ไปเทียบกับกล่องที่เตี้ยลงมาก — ย่อทั้งจรวด/พระอาทิตย์/เมฆ */
+  .rocket {
+    --rocket-w: 22px; /* ลดจากค่า desktop 32px ลง ~30% */
+    --rocket-h: 37px; /* ลดจากค่า desktop 53px ลง ~30% */
+  }
+
+  .scene-sun {
+    top: 10px;
+    width: 28px;
+    height: 28px;
+    box-shadow: 0 0 12px 3px rgba(255, 183, 3, 0.35);
+  }
+
+  .scene-cloud-a {
+    top: 8px;
+    transform: scale(0.55);
+  }
+
+  .scene-cloud-b {
+    top: 24px;
+    transform: scale(0.7);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+    animation: none !important;
+  }
+}
+
+/* ==========================================================
+   9. MAIN EFFECTS / INTERACTION PLOT SECTION
+   ========================================================== */
+.effects-section {
+  margin-top: 18px;
+}
+
+.effects-grid {
+  display: grid;
+  grid-template-columns: 340px 1fr;
+  gap: 18px;
+  align-items: start;
+  margin-top: 12px;
+}
+
+@media (max-width: 900px) {
+  .effects-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.effects-controls {
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* base <select> styling — first <select> elements in this app */
+select {
+  font: inherit;
+  cursor: pointer;
+}
+
+.effects-controls select {
+  width: 100%;
+  height: 42px;
+  padding: 0 10px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--panel);
+  color: var(--ink);
+  font-size: 0.88rem;
+}
+
+select:focus-visible {
+  outline: 3px solid var(--gold);
+  outline-offset: 2px;
+}
+
+/* chart card — พอร์ตแนวคิดจาก parachutestyle.css .chart-card/.chart-title/.chart-empty */
+.chart-card {
+  position: relative;
+  padding: 18px;
+  min-width: 0;
+}
+
+.chart-title {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 4px 10px;
+}
+
+.chart-title h3 {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.chart-title span {
+  color: var(--muted);
+  font-size: 0.76rem;
+}
+
+.effects-chart-card canvas {
+  width: 100%;
+  height: 260px;
+  display: block;
+  margin-top: 12px;
+}
+
+.chart-empty {
+  position: absolute;
+  inset: 130px 20px auto;
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.82rem;
+  text-align: center;
+}
+
+.effects-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  margin-top: 10px;
+  font-size: 0.78rem;
+  color: var(--muted);
+}
+
+.effects-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.effects-legend-swatch {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex: none;
+}
