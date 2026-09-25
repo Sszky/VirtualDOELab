@@ -1,25 +1,15 @@
-/* ==========================================================
-   1. THEME VARIABLES
-   ========================================================== */
-
 :root {
   --bg: #f7f3f4;
   --panel: #ffffff;
   --ink: #2d171c;
   --muted: #79656a;
   --line: #e7dadd;
-
   --burgundy: #7a0019;
   --burgundy-light: #a61936;
   --burgundy-dark: #590013;
   --gold: #d5a62e;
-
   --shadow: 0 16px 50px rgba(87, 0, 22, 0.1);
 }
-
-/* ==========================================================
-   2. BASE STYLES
-   ========================================================== */
 
 * {
   box-sizing: border-box;
@@ -29,16 +19,8 @@ body {
   margin: 0;
   background: var(--bg);
   color: var(--ink);
-
-  font-family:
-    Inter,
-    ui-sans-serif,
-    system-ui,
-    -apple-system,
-    BlinkMacSystemFont,
-    "Segoe UI",
-    sans-serif;
-
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system,
+    BlinkMacSystemFont, "Segoe UI", sans-serif;
   font-size: 16px;
   line-height: 1.5;
 }
@@ -54,24 +36,18 @@ select {
   cursor: pointer;
 }
 
-/* ==========================================================
-   3. TOP NAVIGATION
-   ========================================================== */
-
 .topbar {
   position: sticky;
   top: 0;
   z-index: 20;
-
   height: 76px;
   padding: 0 max(24px, calc((100vw - 1320px) / 2));
-
   display: flex;
   align-items: center;
   justify-content: space-between;
-
   border-bottom: 1px solid var(--line);
   background: rgba(247, 243, 244, 0.9);
+  -webkit-backdrop-filter: blur(16px);
   backdrop-filter: blur(16px);
 }
 
@@ -84,10 +60,8 @@ select {
 .brand-mark {
   width: 38px;
   height: 38px;
-
   display: grid;
   place-items: center;
-
   border-radius: 11px;
   background: var(--burgundy);
   color: white;
@@ -115,10 +89,8 @@ select {
 .text-button,
 .secondary-button {
   padding: 9px 12px;
-
   border: 1px solid var(--line);
   border-radius: 10px;
-
   background: var(--panel);
   color: var(--ink);
 }
@@ -144,19 +116,14 @@ select {
   border-color: var(--burgundy);
 }
 
-/* ==========================================================
-   4. PAGE INTRODUCTION
-   ========================================================== */
-
 main {
-  max-width: 1320px;
+  max-width: 1600px;
   margin: auto;
   padding: 42px 24px 72px;
 }
 
 .intro {
   margin-bottom: 25px;
-
   display: flex;
   align-items: end;
   justify-content: space-between;
@@ -165,7 +132,6 @@ main {
 
 .eyebrow {
   margin: 0 0 7px;
-
   color: var(--burgundy);
   font-size: 0.75rem;
   font-weight: 800;
@@ -174,7 +140,6 @@ main {
 
 .intro h1 {
   margin: 0;
-
   font-size: clamp(2rem, 4vw, 3.7rem);
   line-height: 1;
   letter-spacing: -0.055em;
@@ -188,10 +153,8 @@ main {
 .formula {
   min-width: 230px;
   padding: 15px 20px;
-
   display: flex;
   flex-direction: column;
-
   border-radius: 16px;
   background: var(--burgundy-dark);
   color: white;
@@ -210,20 +173,20 @@ main {
   font-size: 1.25rem;
 }
 
-/* ==========================================================
-   5. EXPERIMENT WORKSPACE
-   ========================================================== */
-
+/* Controls | Simulation | Results */
 .workspace {
   display: grid;
-  grid-template-columns: 370px 1fr;
+  grid-template-columns:
+    minmax(230px, 260px)
+    minmax(0, 1fr)
+    minmax(230px, 280px);
+  align-items: stretch;
   gap: 18px;
 }
 
 .panel {
   border: 1px solid var(--line);
   border-radius: 20px;
-
   background: var(--panel);
   box-shadow: var(--shadow);
 }
@@ -234,7 +197,6 @@ main {
 
 .panel-heading {
   margin-bottom: 22px;
-
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -249,15 +211,12 @@ main {
 .step {
   width: 29px;
   height: 29px;
-
   display: grid;
   place-items: center;
   flex: none;
-
   border-radius: 50%;
   background: #f4dfe4;
   color: var(--burgundy);
-
   font-size: 0.7rem;
   font-weight: 800;
 }
@@ -269,11 +228,9 @@ main {
 
 .controls-panel > label {
   margin-bottom: 16px;
-
   display: flex;
   flex-direction: column;
   gap: 7px;
-
   font-size: 0.88rem;
   font-weight: 650;
 }
@@ -282,10 +239,8 @@ main {
   width: 100%;
   height: 44px;
   padding: 0 12px;
-
   border: 1px solid var(--line);
   border-radius: 10px;
-
   background: white;
   color: var(--ink);
 }
@@ -319,10 +274,8 @@ legend {
 
 .segmented {
   padding: 4px;
-
   display: grid;
   grid-template-columns: 1fr 1fr;
-
   border-radius: 11px;
   background: #f1e8ea;
 }
@@ -339,9 +292,7 @@ legend {
 
 .segmented span {
   padding: 8px;
-
   display: block;
-
   border-radius: 8px;
   font-size: 0.82rem;
   cursor: pointer;
@@ -360,27 +311,17 @@ legend {
   font-size: 0.76rem !important;
 }
 
-/* ==========================================================
-   6. BUTTONS AND STATUS
-   ========================================================== */
-
 .primary-button {
   width: 100%;
   padding: 13px 16px;
-
   display: flex;
   justify-content: space-between;
-
   border: 0;
   border-radius: 12px;
-
   background: var(--burgundy);
   color: white;
   font-weight: 750;
-
-  transition:
-    background 0.2s,
-    transform 0.2s;
+  transition: background 0.2s, transform 0.2s;
 }
 
 .primary-button:hover {
@@ -396,9 +337,7 @@ legend {
 
 .status {
   padding: 6px 10px;
-
   border-radius: 999px;
-
   font-size: 0.72rem;
   font-weight: 800;
   text-transform: uppercase;
@@ -420,10 +359,6 @@ legend {
   color: var(--burgundy);
 }
 
-/* ==========================================================
-   7. PARACHUTE SIMULATION AREA
-   ========================================================== */
-
 .simulation-panel {
   min-width: 0;
   padding: 24px;
@@ -433,10 +368,8 @@ legend {
   position: relative;
   height: 430px;
   overflow: hidden;
-
   border: 1px solid #d7dfe3;
   border-radius: 15px;
-
   background: linear-gradient(
     #d9edf3 0%,
     #eef5f5 78%,
@@ -449,26 +382,19 @@ legend {
   top: 15px;
   bottom: 70px;
   left: 14px;
-
   padding-left: 8px;
-
   display: flex;
   flex-direction: column-reverse;
   justify-content: space-between;
-
   border-left: 1px dashed rgba(75, 68, 70, 0.35);
   color: #61565a;
   font-size: 0.67rem;
 }
 
-/* Clouds */
-
 .cloud {
   position: absolute;
-
   width: 80px;
   height: 18px;
-
   border-radius: 20px;
   background: rgba(255, 255, 255, 0.7);
 }
@@ -477,7 +403,6 @@ legend {
 .cloud::after {
   content: "";
   position: absolute;
-
   border-radius: 50%;
   background: inherit;
 }
@@ -485,7 +410,6 @@ legend {
 .cloud::before {
   bottom: 0;
   left: 14px;
-
   width: 30px;
   height: 30px;
 }
@@ -493,7 +417,6 @@ legend {
 .cloud::after {
   right: 12px;
   bottom: 0;
-
   width: 42px;
   height: 42px;
 }
@@ -507,40 +430,30 @@ legend {
 .cloud-b {
   top: 155px;
   right: 9%;
-
   opacity: 0.65;
   transform: scale(1.1);
 }
 
-/* Parachute */
-
 .parachute {
   --cord: 40px;
   --canopy: 120px;
-
   position: absolute;
   top: 18px;
   left: 50%;
   z-index: 5;
-
   width: var(--canopy);
   height: calc(var(--cord) + 80px);
-
   transform: translateX(-50%);
-  filter: drop-shadow(
-    0 10px 9px rgba(45, 23, 28, 0.16)
-  );
+  filter: drop-shadow(0 10px 9px rgba(45, 23, 28, 0.16));
 }
 
 .canopy {
   position: absolute;
   top: 0;
   left: 0;
-
   width: var(--canopy);
   height: 58px;
   overflow: hidden;
-
   background: var(--burgundy-light);
 }
 
@@ -550,16 +463,19 @@ legend {
 
 .canopy.square {
   border-radius: 9px 9px 4px 4px;
-
-  clip-path: polygon(
-    7% 0,
-    93% 0,
-    100% 100%,
-    0 100%
-  );
+  -webkit-clip-path: polygon(7% 0, 93% 0, 100% 100%, 0 100%);
+  clip-path: polygon(7% 0, 93% 0, 100% 100%, 0 100%);
 }
 
 .canopy.hexagon {
+  -webkit-clip-path: polygon(
+    20% 0,
+    80% 0,
+    100% 55%,
+    86% 100%,
+    14% 100%,
+    0 55%
+  );
   clip-path: polygon(
     20% 0,
     80% 0,
@@ -573,10 +489,8 @@ legend {
 .canopy i {
   position: absolute;
   left: 33%;
-
   width: 1px;
   height: 100%;
-
   background: rgba(255, 255, 255, 0.45);
   transform: skewX(-9deg);
 }
@@ -591,70 +505,49 @@ legend {
   top: 55px;
   right: 14%;
   left: 14%;
-
   height: var(--cord);
-
   border-right: 1.5px solid #655357;
   border-left: 1.5px solid #655357;
-
-  clip-path: polygon(
-    0 0,
-    100% 0,
-    58% 100%,
-    42% 100%
-  );
+  -webkit-clip-path: polygon(0 0, 100% 0, 58% 100%, 42% 100%);
+  clip-path: polygon(0 0, 100% 0, 58% 100%, 42% 100%);
 }
 
 .payload {
   position: absolute;
   top: calc(55px + var(--cord));
   left: calc(50% - 12px);
-
   width: 24px;
   height: 27px;
-
   border: 2px solid #8e6c1f;
   border-radius: 4px 4px 7px 7px;
-
   background: var(--gold);
 }
 
 .ground {
   position: absolute;
   bottom: 0;
-
   width: 100%;
   height: 70px;
-
   display: flex;
   align-items: end;
   justify-content: space-around;
-
   background: #879d78;
 }
 
 .ground span {
   width: 4px;
   height: 18px;
-
   display: block;
-
   border-radius: 4px 4px 0 0;
   background: #5f7655;
 }
 
-/* ==========================================================
-   8. RESULT METRICS
-   ========================================================== */
-
 .metrics {
   margin-top: 14px;
-
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 1px;
   overflow: hidden;
-
   border-radius: 13px;
   background: var(--line);
 }
@@ -672,7 +565,6 @@ legend {
 
 .metrics strong {
   margin-right: 4px;
-
   font-size: 1.45rem;
   font-variant-numeric: tabular-nums;
 }
@@ -681,17 +573,18 @@ legend {
   color: var(--muted);
 }
 
-/* ==========================================================
-   9. RESULTS TABLE AND CHART
-   ========================================================== */
-
-.results-section {
-  margin-top: 54px;
+/* Table at the right of the simulation */
+.results-panel {
+  min-width: 0;
+  padding: 20px 16px;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  background: var(--panel);
+  box-shadow: var(--shadow);
 }
 
 .section-heading {
   margin-bottom: 17px;
-
   display: flex;
   align-items: end;
   justify-content: space-between;
@@ -702,10 +595,20 @@ legend {
   font-size: 1.8rem;
 }
 
-.data-grid {
-  display: grid;
-  grid-template-columns: 1.25fr 0.75fr;
-  gap: 18px;
+.results-panel .section-heading {
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.result-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.result-actions .secondary-button {
+  margin-left: 0;
 }
 
 .table-wrap {
@@ -713,31 +616,36 @@ legend {
   box-shadow: none;
 }
 
+.results-panel .table-wrap {
+  max-height: 490px;
+}
+
 table {
   width: 100%;
-  min-width: 700px;
-
   border-collapse: collapse;
 }
 
 th,
 td {
-  padding: 14px 16px;
-
+  padding: 12px 8px;
   border-bottom: 1px solid var(--line);
-
   font-size: 0.8rem;
   text-align: left;
-  white-space: nowrap;
+  vertical-align: top;
 }
 
 th {
   background: #fbf8f9;
   color: var(--muted);
-
   font-size: 0.7rem;
   text-transform: uppercase;
   letter-spacing: 0.05em;
+}
+
+.results-panel th:last-child,
+.results-panel td:last-child {
+  text-align: right;
+  white-space: nowrap;
 }
 
 tbody tr:last-child td {
@@ -748,17 +656,29 @@ tbody tr:hover {
   background: #fcf5f7;
 }
 
-.empty-row td {
-  padding: 50px;
+.record-details {
+  display: block;
+  max-width: 145px;
+  margin-top: 5px;
   color: var(--muted);
-  text-align: center;
+  font-size: 0.7rem;
+  line-height: 1.4;
+  white-space: normal;
 }
 
-/* Chart */
+.empty-row td {
+  padding: 50px 12px;
+  color: var(--muted);
+  text-align: center !important;
+  white-space: normal;
+}
+
+.results-section {
+  margin-top: 24px;
+}
 
 .chart-card {
   position: relative;
-
   padding: 20px;
   box-shadow: none;
 }
@@ -782,23 +702,41 @@ canvas {
 .chart-empty {
   position: absolute;
   inset: 90px 20px auto;
-
   color: var(--muted);
   font-size: 0.78rem;
   text-align: center;
 }
 
-/* ==========================================================
-   10. MODEL INFORMATION
-   ========================================================== */
+.chart-empty[hidden] {
+  display: none;
+}
+
+.chart-title {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.chart-title select {
+  max-width: 155px;
+  padding: 7px 9px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel);
+  color: var(--ink);
+  font-size: 0.75rem;
+}
+
+body.dark .chart-title select {
+  background: #3b1c24;
+}
 
 .method {
   margin-top: 18px;
   padding: 24px;
-
   display: flex;
   gap: 15px;
-
   box-shadow: none;
 }
 
@@ -810,32 +748,20 @@ canvas {
 .method p {
   max-width: 900px;
   margin: 0;
-
   color: var(--muted);
   font-size: 0.85rem;
 }
-
-/* ==========================================================
-   11. FOOTER
-   ========================================================== */
 
 footer {
   max-width: 1320px;
   margin: auto;
   padding: 25px 24px;
-
   display: flex;
   justify-content: space-between;
-
   border-top: 1px solid var(--line);
-
   color: var(--muted);
   font-size: 0.75rem;
 }
-
-/* ==========================================================
-   12. DARK THEME
-   ========================================================== */
 
 body.dark {
   --bg: #1c0d11;
@@ -889,10 +815,6 @@ body.dark .status.done {
   color: #f4bcc9;
 }
 
-/* ==========================================================
-   13. KEYBOARD FOCUS
-   ========================================================== */
-
 .primary-button:focus-visible,
 button:focus-visible,
 select:focus-visible,
@@ -901,13 +823,8 @@ input:focus-visible {
   outline-offset: 2px;
 }
 
-/* ==========================================================
-   14. TABLET RESPONSIVE DESIGN
-   ========================================================== */
-
-@media (max-width: 900px) {
-  .workspace,
-  .data-grid {
+@media (max-width: 1100px) {
+  .workspace {
     grid-template-columns: 1fr;
   }
 
@@ -926,26 +843,9 @@ input:focus-visible {
   .sky {
     height: 390px;
   }
-
-  .chart-card {
-    min-height: 300px;
-  }
 }
 
-/* ==========================================================
-   15. MOBILE RESPONSIVE DESIGN
-   ========================================================== */
-
 @media (max-width: 600px) {
-  .topbar {
-    height: 66px;
-    padding: 0 16px;
-  }
-
-  .brand small {
-    display: none;
-  }
-
   main {
     padding: 26px 14px 50px;
   }
@@ -986,39 +886,16 @@ input:focus-visible {
     gap: 14px;
   }
 
-  .section-heading > div:last-child {
-    width: 100%;
-    display: flex;
-  }
-
-  .section-heading .secondary-button {
-    flex: 1;
-    margin: 0 8px 0 0;
-  }
-
-  .section-heading .secondary-button:last-child {
-    margin: 0;
-  }
-
-  .results-section {
-    margin-top: 40px;
-  }
-
   .method {
     align-items: flex-start;
   }
 
   footer {
     padding: 20px 16px;
-
     flex-direction: column;
     gap: 6px;
   }
 }
-
-/* ==========================================================
-   16. REDUCED MOTION
-   ========================================================== */
 
 @media (prefers-reduced-motion: reduce) {
   * {

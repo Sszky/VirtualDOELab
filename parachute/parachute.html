@@ -3,73 +3,340 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Interactive parachute simulator for Design of Experiments">
+  <meta
+    name="description"
+    content="Interactive parachute simulator for Design of Experiments"
+  >
+
   <title>Parachute DOE Lab</title>
   <link rel="stylesheet" href="parachutestyle.css">
-  <script src="https://accounts.google.com/gsi/client" async defer></script>
+
+  <script
+    src="https://accounts.google.com/gsi/client"
+    async
+    defer
+  ></script>
+  <script src="parachute.js" defer></script>
 </head>
+
 <body>
   <header class="topbar">
-    <div class="brand"><span class="brand-mark">P</span><div><strong>Parachute Lab</strong><small>Design of Experiments</small></div></div>
+    <div class="brand">
+      <span class="brand-mark">P</span>
+      <div>
+        <strong>Parachute Lab</strong>
+        <small>Design of Experiments</small>
+      </div>
+    </div>
+
     <div class="header-actions">
-      <button id="languageButton" class="icon-button" type="button" aria-label="Switch language">TH</button>
-      <button id="themeButton" class="icon-button" type="button" aria-label="Switch color theme">☾</button>
+      <button
+        id="languageButton"
+        class="icon-button"
+        type="button"
+        aria-label="Switch language"
+      >TH</button>
+
+      <button
+        id="themeButton"
+        class="icon-button"
+        type="button"
+        aria-label="Switch color theme"
+      >☾</button>
     </div>
   </header>
 
   <main>
     <section class="intro">
-      <div><p class="eyebrow" data-i18n="eyebrow">VIRTUAL DOE LAB · MODULE 01</p><h1 data-i18n="title">Parachute experiment</h1><p data-i18n="subtitle">Change four factors, run the drop, and compare the response.</p></div>
-      <div class="formula"><span>Drag model</span><strong>F<sub>d</sub> = ½ρC<sub>d</sub>Av²</strong></div>
+      <div>
+        <p class="eyebrow" data-i18n="eyebrow">
+          VIRTUAL DOE LAB · MODULE 01
+        </p>
+        <h1 data-i18n="title">Parachute experiment</h1>
+        <p data-i18n="subtitle">
+          Change four factors, run the drop, and compare the response.
+        </p>
+      </div>
+
+      <div class="formula">
+        <span>Drag model</span>
+        <strong>F<sub>d</sub> = ½ρC<sub>d</sub>Av²</strong>
+      </div>
     </section>
 
     <section class="workspace">
+      <!-- LEFT: FACTORS -->
       <aside class="panel controls-panel">
-        <div class="panel-heading"><div><span class="step">01</span><h2 data-i18n="factors">Set factors</h2></div><button id="resetButton" class="text-button" type="button" data-i18n="reset">Reset</button></div>
+        <div class="panel-heading">
+          <div>
+            <span class="step">01</span>
+            <h2 data-i18n="factors">Set factors</h2>
+          </div>
+          <button
+            id="resetButton"
+            class="text-button"
+            type="button"
+            data-i18n="reset"
+          >Reset</button>
+        </div>
 
-        <label><span data-i18n="shape">Canopy shape</span><select id="shape"><option value="round" data-i18n="round">Round</option><option value="square" data-i18n="square">Square</option><option value="hexagon" data-i18n="hexagon">Hexagon</option></select></label>
-        <label><span data-i18n="material">Material</span><select id="material"><option value="plastic" data-i18n="plastic">Plastic</option><option value="nylon" data-i18n="nylon">Nylon</option><option value="paper" data-i18n="paper">Paper</option></select></label>
+        <label>
+          <span data-i18n="shape">Canopy shape</span>
+          <select id="shape">
+            <option value="round" data-i18n="round">Round</option>
+            <option value="square" data-i18n="square">Square</option>
+            <option value="hexagon" data-i18n="hexagon">Hexagon</option>
+          </select>
+        </label>
 
-        <label class="range-label"><span><span data-i18n="size">Canopy diameter</span><output id="sizeOutput">50 cm</output></span><input id="size" type="range" min="30" max="90" step="5" value="50"></label>
-        <label class="range-label"><span><span data-i18n="string">String length</span><output id="stringOutput">40 cm</output></span><input id="stringLength" type="range" min="20" max="80" step="5" value="40"></label>
-        <label class="range-label"><span><span data-i18n="height">Drop height</span><output id="heightOutput">20 m</output></span><input id="height" type="range" min="10" max="50" step="5" value="20"></label>
+        <label>
+          <span data-i18n="material">Material</span>
+          <select id="material">
+            <option value="plastic" data-i18n="plastic">Plastic</option>
+            <option value="nylon" data-i18n="nylon">Nylon</option>
+            <option value="paper" data-i18n="paper">Paper</option>
+          </select>
+        </label>
 
-        <fieldset><legend data-i18n="mode">Experiment mode</legend><div class="segmented"><label><input type="radio" name="mode" value="deterministic" checked><span data-i18n="deterministic">Deterministic</span></label><label><input type="radio" name="mode" value="stochastic"><span data-i18n="stochastic">Stochastic</span></label></div><p class="hint" id="modeHint" data-i18n="detHint">Same factors always produce the same result.</p></fieldset>
+        <label class="range-label">
+          <span>
+            <span data-i18n="size">Canopy diameter</span>
+            <output id="sizeOutput">50 cm</output>
+          </span>
+          <input
+            id="size"
+            type="range"
+            min="30"
+            max="90"
+            step="5"
+            value="50"
+          >
+        </label>
 
-        <button id="runButton" class="primary-button" type="button"><span data-i18n="run">Run experiment</span><span aria-hidden="true">→</span></button>
+        <label class="range-label">
+          <span>
+            <span data-i18n="string">String length</span>
+            <output id="stringOutput">40 cm</output>
+          </span>
+          <input
+            id="stringLength"
+            type="range"
+            min="20"
+            max="80"
+            step="5"
+            value="40"
+          >
+        </label>
+
+        <label class="range-label">
+          <span>
+            <span data-i18n="height">Drop height</span>
+            <output id="heightOutput">20 m</output>
+          </span>
+          <input
+            id="height"
+            type="range"
+            min="10"
+            max="50"
+            step="5"
+            value="20"
+          >
+        </label>
+
+        <fieldset>
+          <legend data-i18n="mode">Experiment mode</legend>
+
+          <div class="segmented">
+            <label>
+              <input
+                type="radio"
+                name="mode"
+                value="deterministic"
+                checked
+              >
+              <span data-i18n="deterministic">Deterministic</span>
+            </label>
+
+            <label>
+              <input
+                type="radio"
+                name="mode"
+                value="stochastic"
+              >
+              <span data-i18n="stochastic">Stochastic</span>
+            </label>
+          </div>
+
+          <p id="modeHint" class="hint">
+            Same factors always produce the same result.
+          </p>
+        </fieldset>
+
+        <button id="runButton" class="primary-button" type="button">
+          <span data-i18n="run">Run experiment</span>
+          <span aria-hidden="true">→</span>
+        </button>
       </aside>
 
+      <!-- CENTER: SIMULATION -->
       <section class="panel simulation-panel">
-        <div class="panel-heading"><div><span class="step">02</span><h2 data-i18n="simulate">Simulate</h2></div><span id="status" class="status ready" data-i18n="ready">Ready</span></div>
-        <div class="sky" id="sky">
-          <div class="scale"><span>0 m</span><span id="midHeight">10 m</span><span id="maxHeight">20 m</span></div>
-          <div class="cloud cloud-a"></div><div class="cloud cloud-b"></div>
-          <div class="parachute" id="parachute">
-            <div class="canopy round" id="canopy"><i></i><i></i></div>
-            <div class="cords" id="cords"><i></i><i></i></div><div class="payload"></div>
+        <div class="panel-heading">
+          <div>
+            <span class="step">02</span>
+            <h2 data-i18n="simulate">Simulate</h2>
           </div>
-          <div class="ground"><span></span><span></span><span></span><span></span></div>
+
+          <span id="status" class="status ready">Ready</span>
         </div>
+
+        <div class="sky" id="sky">
+          <div class="scale">
+            <span>0 m</span>
+            <span id="midHeight">10 m</span>
+            <span id="maxHeight">20 m</span>
+          </div>
+
+          <div class="cloud cloud-a"></div>
+          <div class="cloud cloud-b"></div>
+
+          <div class="parachute" id="parachute">
+            <div class="canopy round" id="canopy">
+              <i></i>
+              <i></i>
+            </div>
+            <div class="cords"><i></i><i></i></div>
+            <div class="payload"></div>
+          </div>
+
+          <div class="ground">
+            <span></span><span></span><span></span><span></span>
+          </div>
+        </div>
+
         <div class="metrics">
-          <div><span data-i18n="fallTime">Fall time</span><strong id="timeValue">—</strong><small>s</small></div>
-          <div><span data-i18n="velocity">Impact speed</span><strong id="velocityValue">—</strong><small>m/s</small></div>
-          <div><span data-i18n="drag">Drag coefficient</span><strong id="dragValue">—</strong><small>C<sub>d</sub></small></div>
+          <div>
+            <span data-i18n="fallTime">Fall time</span>
+            <strong id="timeValue">—</strong>
+            <small>s</small>
+          </div>
+
+          <div>
+            <span data-i18n="velocity">Impact speed</span>
+            <strong id="velocityValue">—</strong>
+            <small>m/s</small>
+          </div>
+
+          <div>
+            <span data-i18n="drag">Drag coefficient</span>
+            <strong id="dragValue">—</strong>
+            <small>C<sub>d</sub></small>
+          </div>
+        </div>
+      </section>
+
+      <!-- RIGHT: RUN HISTORY -->
+      <section class="results-panel" aria-label="Experiment results">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow" data-i18n="resultsLabel">
+              EXPERIMENT DATA
+            </p>
+            <h2 data-i18n="results">Run history</h2>
+          </div>
+
+          <div class="result-actions">
+            <button
+              id="clearButton"
+              class="secondary-button"
+              type="button"
+              data-i18n="clear"
+            >Clear</button>
+
+            <button
+              id="exportButton"
+              class="secondary-button"
+              type="button"
+              data-i18n="export"
+            >Export CSV</button>
+
+            <button
+              id="driveButton"
+              class="secondary-button"
+              type="button"
+              data-i18n="drive"
+            >Save to Drive</button>
+          </div>
+        </div>
+
+        <div class="panel table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Run</th>
+                <th data-i18n="fallTime">Fall time</th>
+              </tr>
+            </thead>
+            <tbody id="historyBody">
+              <tr class="empty-row">
+                <td colspan="2">
+                  Run your first experiment to collect data.
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </section>
     </section>
 
     <section class="results-section">
-      <div class="section-heading"><div><p class="eyebrow" data-i18n="resultsLabel">EXPERIMENT DATA</p><h2 data-i18n="results">Run history</h2></div><div><button id="clearButton" class="secondary-button" type="button" data-i18n="clear">Clear</button><button id="exportButton" class="secondary-button" type="button" data-i18n="export">Export CSV</button>
-    </div></div>
-      <div class="data-grid">
-        <div class="panel table-wrap"><table><thead><tr><th>Run</th><th data-i18n="shape">Shape</th><th data-i18n="material">Material</th><th data-i18n="sizeShort">Size</th><th data-i18n="stringShort">String</th><th data-i18n="mode">Mode</th><th data-i18n="fallTime">Fall time</th></tr></thead><tbody id="historyBody"><tr class="empty-row"><td colspan="7" data-i18n="empty">Run your first experiment to collect data.</td></tr></tbody></table></div>
-        <div class="panel chart-card"><div class="chart-title"><h3 data-i18n="chart">Main effects preview</h3><span data-i18n="chartHint">Mean fall time by canopy size</span></div><canvas id="chart" width="560" height="250" aria-label="Main effects plot"></canvas><p id="chartEmpty" class="chart-empty" data-i18n="chartEmpty">Complete at least two runs to compare results.</p></div>
+      <div class="panel chart-card">
+        <div class="chart-title">
+          <div>
+            <h3 data-i18n="chart">Main effects preview</h3>
+            <span id="chartHint">Fall time by experiment run</span>
+          </div>
+
+          <select id="chartView" aria-label="Chart view">
+          <option value="run">By run</option>
+          <option value="size">By canopy size</option>
+          <option value="material">By material</option>
+          <option value="string">By string length</option>  
+          </select>
+        </div>
+
+        <canvas
+          id="chart"
+          width="560"
+          height="250"
+          aria-label="Main effects plot"
+        ></canvas>
+
+        <p id="chartEmpty" class="chart-empty" data-i18n="chartEmpty">
+          Complete at least two runs to compare results.
+        </p>
       </div>
     </section>
 
-    <section class="method panel"><span class="step">03</span><div><h2 data-i18n="modelTitle">How the model works</h2><p data-i18n="modelText">The simulator integrates gravity and quadratic air resistance in small time steps. Shape and material affect the drag coefficient; canopy size controls projected area; string length applies a small stability adjustment. Stochastic mode adds normally distributed experimental noise.</p></div></section>
+    <section class="method panel">
+      <span class="step">03</span>
+      <div>
+        <h2 data-i18n="modelTitle">How the model works</h2>
+        <p data-i18n="modelText">
+          The simulator integrates gravity and quadratic air resistance
+          in small time steps. Shape and material affect the drag
+          coefficient; canopy size controls projected area; string
+          length applies a small stability adjustment. Stochastic
+          mode adds normally distributed experimental noise.
+        </p>
+      </div>
+    </section>
   </main>
-  <footer><span>Virtual DOE Lab · Parachute Module</span><span data-i18n="educational">Educational simulation — results are model estimates.</span></footer>
-  <script src="parachute.js"></script>
+
+  <footer>
+    <span>Virtual DOE Lab · Parachute Module</span>
+    <span data-i18n="educational">
+      Educational simulation — results are model estimates.
+    </span>
+  </footer>
 </body>
 </html>
