@@ -84,9 +84,7 @@ button {
   background: var(--top-stripe);
 }
 
-/* ============================================================
-   NAVBAR
-   ============================================================ */
+/* ==================== NAVBAR ==================== */
 
 .main-navbar {
   min-height: 58px;
@@ -243,8 +241,7 @@ button {
   position: fixed;
   inset: 0;
   z-index: 40;
-  /* Transparent click-catcher only: the simulator behind stays sharp */
-  background: transparent;
+  background: transparent;  /* Transparent click-catcher only: the simulator behind stays sharp */
 }
 
 .menu-overlay.show {
@@ -305,9 +302,7 @@ button {
   white-space: nowrap;
 }
 
-/* ============================================================
-   TAB BAR
-   ============================================================ */
+/* ==================== TAB BAR ==================== */
 
 .experiment-tabbar {
   min-height: 42px;
@@ -355,9 +350,7 @@ button {
   background: rgba(110, 120, 130, 0.1);
 }
 
-/* ============================================================
-   MAIN WORKSPACE
-   ============================================================ */
+/* ==================== MAIN WORKSPACE ==================== */
 
 .main-workspace {
   display: grid;
@@ -552,9 +545,7 @@ button {
   color: #aa6800;
 }
 
-/* ============================================================
-   SIMULATOR
-   ============================================================ */
+/* ==================== SIMULATOR ==================== */
 
 .simulator-panel {
   min-width: 0;
@@ -746,31 +737,23 @@ button {
 .simulator-canvas-area {
   min-height: 0;
   overflow: hidden;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 18px;
+  position: relative;
   background-color: var(--canvas-bg);
-  background-image:
-    radial-gradient(circle, var(--canvas-dot) 1.25px, transparent 1.25px);
+  background-image: radial-gradient(circle, var(--canvas-dot) 1.25px, transparent 1.25px);
   background-size: 22px 22px;
 }
 
 .simulator-stage-frame {
-  flex: 0 0 760px;
-  width: 760px;
-  max-width: 100%;
+  width: 100%;
+  height: 100%;
 }
 
 .simulator-stage {
   position: relative;
   width: 100%;
-  height: 360px;
+  height: 100%;
   overflow: hidden;
-  border-radius: 14px;
-  border: 1px solid var(--stage-border);
-  background: var(--stage-bg);
-  box-shadow: 0 2px 10px var(--shadow);
+  background-size: 18px 18px;
 }
 
 .simulator-canvas-area.grid-off {
@@ -880,9 +863,7 @@ button {
   color: #d68a00;
 }
 
-/* ============================================================
-   RIGHT PROPERTIES PANEL
-   ============================================================ */
+/* ==================== RIGHT PROPERTIES PANEL ==================== */
 
 .section-label {
   margin-bottom: 8px;
@@ -1039,6 +1020,11 @@ button {
   background: var(--green-dark);
 }
 
+.action-button:disabled, .toolbar-button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
 .action-outline {
   border: 1px solid var(--accent);
   background: transparent;
@@ -1059,9 +1045,7 @@ button {
   background: var(--red-dark);
 }
 
-/* ============================================================
-   RESULTS
-   ============================================================ */
+/* ==================== RESULTS ==================== */
 
 .results-section {
   padding: 18px;
@@ -1163,9 +1147,7 @@ button {
   background: #f5a524;
 }
 
-/* ============================================================
-   THEME MODAL
-   ============================================================ */
+/* ==================== THEME MODAL ==================== */
 
 .theme-modal-overlay {
   display: none;
@@ -1337,9 +1319,7 @@ button {
   color: #fff;
 }
 
-/* ============================================================
-   TUTORIAL GUIDE
-   ============================================================ */
+/* ==================== TUTORIAL GUIDE ==================== */
 
 .tutorial-layer {
   display: none;
@@ -1451,9 +1431,7 @@ button {
   outline-offset: 2px;
 }
 
-/* ============================================================
-   TOAST
-   ============================================================ */
+/* ==================== TOAST ==================== */
 
 .toast {
   position: fixed;
@@ -1490,9 +1468,7 @@ button {
   }
 }
 
-/* ============================================================
-   RESPONSIVE
-   ============================================================ */
+/* ==================== RESPONSIVE ==================== */
 
 @media (max-width: 1180px) {
   .main-workspace {

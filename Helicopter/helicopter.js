@@ -1,4 +1,4 @@
-/* ==================== I18N (Lang TH/EN) ==================== */
+/* ==================== I18N is --> Lang TH/EN ==================== */
 
 const I18N = {
   menu_project: { th: 'โปรเจค', en: 'Project' },
@@ -44,7 +44,6 @@ const I18N = {
   tt_export: { th: 'ส่งออก CSV', en: 'Export CSV' },
   tt_clear: { th: 'ล้างข้อมูล', en: 'Clear data' },
   tt_overview: { th: 'ภาพรวม', en: 'Overview' },
-  tt_fit: { th: 'พอดีหน้าจอ', en: 'Fit' },
   tt_undo: { th: 'ย้อนกลับ', en: 'Undo' },
   tt_run: { th: 'เริ่มทดลอง', en: 'Run experiment' },
 
@@ -205,9 +204,7 @@ function setLanguage(language) {
 document.getElementById('btnTh').onclick = () => setLanguage('th');
 document.getElementById('btnEn').onclick = () => setLanguage('en');
 
-/* ============================================================
-   2) FACTORS
-   ============================================================ */
+/* ==================== FACTORS ==================== */
  
 const FACTORS = [
   { key: 'WL', i18nKey: 'factorA', unit: 'cm', low: 8, high: 12 },
@@ -311,9 +308,7 @@ function updateSliderReadout(key) {
  
 FACTORS.forEach(factor => updateSliderReadout(factor.key));
  
-/* ============================================================
-   3) FACTOR SEARCH
-   ============================================================ */
+/* ==================== FACTOR SEARCH ==================== */
  
 document.getElementById('factorSearch').addEventListener('input', event => {
   const query = event.target.value.trim().toLowerCase();
@@ -330,9 +325,7 @@ document.getElementById('factorSearch').addEventListener('input', event => {
   });
 });
  
-/* ============================================================
-   4) HELICOPTER PREVIEW
-   ============================================================ */
+/* ==================== HELICOPTER PREVIEW ==================== */
  
 function updateHelicopterPreview() {
   const helicopter = document.getElementById('heliWrap');
@@ -350,18 +343,14 @@ function updateHelicopterPreview() {
  
 updateHelicopterPreview();
  
-/* ============================================================
-   5) PROJECT TITLE
-   ============================================================ */
+/* ==================== PROJECT TITLE ==================== */
  
 document.getElementById('projNameInput').addEventListener('input', event => {
   document.getElementById('projectTitle').textContent =
     event.target.value.trim() || 'Untitled';
 });
  
-/* ============================================================
-   6) DROP HEIGHT
-   ============================================================ */
+/* ==================== DROP HEIGHT ==================== */
  
 function refreshHeightDisplay() {
   document.getElementById('heightInput').value = DROP_HEIGHT_CM;
@@ -395,7 +384,10 @@ function isGridEnabled() {
  
 function updateGridDisplay() {
   const stage = document.getElementById('stage');
-  stage.classList.toggle('grid-off', !isGridEnabled());
+  const canvasArea = document.getElementById('simulatorCanvasArea');
+  const off = !isGridEnabled();
+  stage.classList.toggle('grid-off', off);
+  canvasArea.classList.toggle('grid-off', off);
   updateGridStatus();
 }
  
@@ -496,41 +488,53 @@ function animateDrop(time, callback) {
   helicopter.style.transition = 'none';
   helicopter.style.top = '8px';
   helicopter.style.transform = 'translate(-50%, 0) rotate(0deg)';
- 
-  requestAnimationFrame(() => {
-    helicopter.style.transition =
-      `top ${time}s linear, transform ${time}s linear`;
- 
-    helicopter.style.top = `${maxY}px`;
-    helicopter.style.transform =
-      'translate(-50%, 0) rotate(2520deg)';
-  });
+
+  void helicopter.offsetHeight;   // รี animation ทุกครั้งที่มีการกดเริ่มการทดลอง
+
+  helicopter.style.transition = `top ${time}s linear, transform ${time}s linear`;
+  helicopter.style.top = `${maxY}px`;
+  helicopter.style.transform = 'translate(-50%, 0) rotate(2520deg)';
  
   setTimeout(callback, time * 1000);
 }
  
+let isRunning = false;
+
+function setRunningState(running) {
+  isRunning = running;
+  document.getElementById('runBtn').disabled = running;
+  document.getElementById('tbRun').disabled = running;
+}
+
 function runOne() {
+  if (isRunning) {
+    return;
+  }
+
+  setRunningState(true);
+
   const a = coded('WL');
   const b = coded('WW');
   const c = coded('BL');
   const d = coded('BW');
- 
+
   const mode = currentMode();
   const flightT = flightTime(a, b, c, d, mode);
   const heightM = (DROP_HEIGHT_CM / 100).toFixed(2);
- 
+
   document.getElementById('result').textContent =
     `${t('msg_simulating')} ${heightM} m`;
- 
+
   document.getElementById('timeVal').textContent = '…';
- 
+
   animateDrop(Math.min(flightT, 4), () => {
     document.getElementById('timeVal').textContent = flightT.toFixed(2);
- 
+
     document.getElementById('result').innerHTML =
       `${t('msg_flighttime')} <b>${flightT.toFixed(2)} s</b>`;
- 
+
     addRun(VAL.WL, VAL.WW, VAL.BL, VAL.BW, flightT);
+    setRunningState(false);
   });
 }
  
@@ -638,10 +642,6 @@ document.getElementById('tbClear').onclick = clearLog;
 document.getElementById('tbUndo').onclick = removeLastRun;
  
 document.getElementById('tbReset').onclick = () => {
-  resetHelicopterPosition();
-};
- 
-document.getElementById('tbFit').onclick = () => {
   resetHelicopterPosition();
 };
  
