@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>เครื่องจำลองการยิงจรวดขวดน้ำ 2D</title>
+<link rel="stylesheet" href="style.css?v=18" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-mark">🚀</span>
+      <div>
+        <strong data-i18n="brandName">Water Rocket Lab</strong>
+        <small data-i18n="brandTagline">Design of Experiments</small>
+      </div>
+    </div>
+    <div class="header-actions">
+      <a class="icon-button home-button" href="../index.html" aria-label="Home" title="หน้าแรก · Home"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M3 11.5 12 4l9 7.5M5.5 9.5V20h5v-6h3v6h5V9.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+      <button id="languageButton" class="icon-button" type="button" aria-label="Switch language">EN</button>
+      <button id="themeButton" class="icon-button" type="button" aria-label="Switch color theme">☾</button>
+    </div>
+  </header>
+
+  <main>
+    <section class="intro">
+      <p class="eyebrow" data-i18n="eyebrow">VIRTUAL DOE LAB · WATER BOTTLE ROCKET MODULE</p>
+      <h1 data-i18n="title">Water Bottle Rocket Experiment</h1>
+      <p class="subtitle" data-i18n="subtitle">Adjust the parameters and press Launch to see the flight path and record results.</p>
+    </section>
+
+    <section class="workspace" id="workspace">
+      <!-- ===================== แผงควบคุม ===================== -->
+      <aside class="panel controls-panel" aria-label="แผงควบคุมพารามิเตอร์">
+        <div class="panel-heading">
+          <div><h2 data-i18n="factorsHeading">Set factors</h2></div>
+        </div>
+
+        <div class="param-group">
+          <label for="angleNumber"><span data-i18n="angleLabel">A: Launch Angle (°)</span> <span class="range-hint" data-i18n="angleHint">Table range 45–60°</span></label>
+          <div class="param-row">
+            <input type="range" id="angleRange" min="1" max="89" step="1" value="50" />
+            <input type="number" id="angleNumber" min="1" max="89" step="1" value="50" />
+          </div>
+        </div>
+
+        <div class="param-group">
+          <label for="finsNumber"><span data-i18n="finsLabel">B: Number of Fins</span> <span class="range-hint" data-i18n="finsHint">Table range 3–4</span></label>
+          <div class="param-row">
+            <input type="range" id="finsRange" min="2" max="8" step="1" value="4" />
+            <input type="number" id="finsNumber" min="2" max="8" step="1" value="4" />
+          </div>
+        </div>
+
+        <div class="param-group">
+          <label for="waterNumber"><span data-i18n="waterLabel">C: Water Volume (mL)</span> <span class="range-hint" data-i18n="waterHint">Table range 300–500 mL</span></label>
+          <div class="param-row">
+            <input type="range" id="waterRange" min="50" max="1000" step="10" value="400" />
+            <input type="number" id="waterNumber" min="50" max="1000" step="10" value="400" />
+          </div>
+        </div>
+
+        <div class="param-group">
+          <label for="pressureNumber"><span data-i18n="pressureLabel">D: Chamber Pressure (PSI)</span> <span class="range-hint" data-i18n="pressureHint">Table range 30–40 psi</span></label>
+          <div class="param-row">
+            <input type="range" id="pressureRange" min="10" max="100" step="1" value="35" />
+            <input type="number" id="pressureNumber" min="10" max="100" step="1" value="35" />
+          </div>
+        </div>
+
+        <fieldset>
+          <legend data-i18n="mode">Experiment mode</legend>
+          <div class="segmented">
+            <label><input type="radio" name="mode" value="deterministic" checked /><span data-i18n="deterministic">Deterministic</span></label>
+            <label><input type="radio" name="mode" value="stochastic" /><span data-i18n="stochastic">Stochastic</span></label>
+          </div>
+          <p class="hint" id="modeHint" data-i18n="detHint">Same factors always produce the same result.</p>
+        </fieldset>
+
+        <button id="launchBtn" class="primary-button" type="button" data-i18n="launch">🔥 Launch</button>
+        <div id="warningBox" class="warning-box" hidden></div>
+
+        <details class="constants-note">
+          <summary data-i18n="constantsSummary">Fixed constants used in the model</summary>
+          <ul>
+            <li data-i18n="constantsBottle">Bottle volume 1.5 L, nozzle diameter 22 mm.</li>
+            <li data-i18n="constantsMass">Dry rocket mass 0.15 kg + 0.01 kg per fin.</li>
+            <li data-i18n="constantsDrag">Base drag coefficient 0.4 + 0.02 per fin.</li>
+            <li data-i18n="constantsMethod">Thrust derived from Bernoulli + adiabatic expansion, integrated with RK4.</li>
+          </ul>
+        </details>
+      </aside>
+
+      <!-- ===================== แอนิเมชัน ===================== -->
+      <section class="panel simulation-panel" aria-label="ผลการจำลอง">
+        <div class="panel-heading">
+          <div><h2 data-i18n="simulateHeading">Simulate</h2></div>
+        </div>
+
+        <div class="scene" id="scene">
+          <div class="scene-sun"></div>
+          <div class="scene-cloud scene-cloud-a"></div>
+          <div class="scene-cloud scene-cloud-b"></div>
+          <canvas id="trailCanvas"></canvas>
+          <div class="scene-ground">
+            <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+          </div>
+          <div class="axis-y" id="axisY"></div>
+          <div class="axis-x" id="axisX"></div>
+          <span class="axis-label y-label" data-i18n="axisAltitude">Altitude (m)</span>
+          <span class="axis-label x-label" data-i18n="axisDistance">Distance (m)</span>
+
+          <div class="rocket" id="rocket">
+            <svg class="rocket-svg" viewBox="0 0 60 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <defs>
+                <linearGradient id="rocketBodyGrad" x1="0" y1="0" x2="1" y2="0">
+                  <stop offset="0%" stop-color="#eaf4fb" />
+                  <stop offset="45%" stop-color="#ffffff" />
+                  <stop offset="100%" stop-color="#cfe3f2" />
+                </linearGradient>
+              </defs>
+              <!-- ครีบ 4 อัน (วาดก่อน อยู่หลังลำตัว) -->
+              <path d="M28,78 L4,94 L14,99 L28,86 Z" fill="#1b3a6b" />
+              <path d="M32,78 L56,94 L46,99 L32,86 Z" fill="#1b3a6b" />
+              <path d="M6,90 L4,94 L12,97 Z" fill="#7fb2e0" />
+              <path d="M54,90 L56,94 L48,97 Z" fill="#7fb2e0" />
+              <!-- ฝาท้าย -->
+              <ellipse cx="30" cy="90" rx="8" ry="7" fill="#f5f9fc" stroke="#b9cee2" stroke-width="1.2" />
+              <!-- ลำตัว -->
+              <rect x="16" y="24" width="28" height="60" rx="14" fill="url(#rocketBodyGrad)" stroke="#b7c9db" stroke-width="1" />
+              <ellipse cx="30" cy="42" rx="10" ry="7" fill="#cfe3f2" opacity="0.85" />
+              <rect x="16" y="64" width="28" height="7" fill="#1b3a6b" />
+              <rect x="17" y="20" width="26" height="7" rx="3" fill="#1b3a6b" />
+              <!-- หัวจรวด -->
+              <path d="M30,1 C23,10 17,17 16,24 L44,24 C43,17 37,10 30,1 Z" fill="#f7941d" stroke="#dd7d00" stroke-width="0.8" />
+            </svg>
+            <div class="rocket-flame" id="rocketFlame"></div>
+          </div>
+        </div>
+
+        <div id="liveStats" class="live-stats"></div>
+      </section>
+
+      <!-- ===================== ตารางผล ===================== -->
+      <aside class="panel results-sidebar" id="resultsSidebar" aria-label="ตารางผลการทดลอง">
+        <div class="table-toolbar">
+          <h2 data-i18n="resultsHeading">Run history</h2>
+          <button id="expandTableBtn" class="icon-button" type="button" data-i18n="expandTable" aria-label="Expand table">⤢</button>
+        </div>
+        <div class="table-buttons">
+          <button id="clearTableBtn" class="secondary-button" type="button" data-i18n="clearTable">🗑️ Clear</button>
+          <button id="exportCsvBtn" class="secondary-button" type="button" data-i18n="exportCsv">⬇️ Export CSV</button>
+        </div>
+        <div class="table-scroll">
+          <table id="resultsTable">
+            <thead>
+              <tr>
+                <th data-i18n="thRun">#</th>
+                <th data-i18n="thAngle">A(°)</th>
+                <th data-i18n="thFins">B</th>
+                <th data-i18n="thWater">C(mL)</th>
+                <th data-i18n="thPressure">D(psi)</th>
+                <th data-i18n="thDistance">Distance(m)</th>
+                <th class="col-extra" data-i18n="thFlightTime">Flight time(s)</th>
+                <th class="col-extra" data-i18n="thMaxAltitude">Max altitude(m)</th>
+                <th class="col-extra" data-i18n="thMode">Mode</th>
+              </tr>
+            </thead>
+            <tbody id="resultsTableBody">
+              <tr class="empty-row"><td colspan="9" data-i18n="tableEmpty">No results yet — press Launch to start</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="note" data-i18n="tableNote">* Results are kept in this page's memory only; refreshing clears them — use "Export CSV" to save a file.</p>
+      </aside>
+    </section>
+
+    <!-- ===================== Main Effects / Interaction Plot ===================== -->
+    <section class="effects-section" id="effectsSection" aria-label="กราฟผลกระทบหลัก/ปฏิสัมพันธ์">
+      <div class="panel-heading">
+        <div><h2 data-i18n="effectsHeading">Main Effects / Interaction Plot</h2></div>
+      </div>
+      <p class="subtitle" data-i18n="effectsSubheading">See how each factor affects landing distance across your logged runs.</p>
+
+      <div class="effects-grid">
+        <aside class="panel effects-controls" aria-label="ตัวควบคุมกราฟ">
+          <fieldset>
+            <legend data-i18n="effectsModeLabel">Plot type</legend>
+            <div class="segmented">
+              <label><input type="radio" name="effectsMode" value="main" checked /><span data-i18n="effectsModeMain">Main Effects Plot</span></label>
+              <label><input type="radio" name="effectsMode" value="interaction" /><span data-i18n="effectsModeInteraction">Interaction Plot</span></label>
+            </div>
+          </fieldset>
+
+          <div class="param-group">
+            <label for="effectsFactorX" data-i18n="effectsFactorXLabel">Factor (X-axis)</label>
+            <select id="effectsFactorX">
+              <option value="angleDeg" data-i18n="factorNameAngle">Launch Angle (A)</option>
+              <option value="fins" data-i18n="factorNameFins">Number of Fins (B)</option>
+              <option value="waterVolumeML" data-i18n="factorNameWater">Water Volume (C)</option>
+              <option value="pressurePSI" data-i18n="factorNamePressure">Chamber Pressure (D)</option>
+            </select>
+          </div>
+
+          <div class="param-group" id="effectsFactorGroupWrap" hidden>
+            <label for="effectsFactorGroup" data-i18n="effectsFactorGroupLabel">Grouping factor (color)</label>
+            <select id="effectsFactorGroup">
+              <option value="angleDeg" data-i18n="factorNameAngle">Launch Angle (A)</option>
+              <option value="fins" data-i18n="factorNameFins">Number of Fins (B)</option>
+              <option value="waterVolumeML" data-i18n="factorNameWater">Water Volume (C)</option>
+              <option value="pressurePSI" data-i18n="factorNamePressure">Chamber Pressure (D)</option>
+            </select>
+          </div>
+
+          <p class="hint" data-i18n="effectsResponseNote">Y-axis: mean landing distance (m)</p>
+        </aside>
+
+        <section class="panel chart-card effects-chart-card" aria-label="กราฟ">
+          <div class="chart-title">
+            <h3 id="effectsChartTitle">Launch Angle (A)</h3>
+            <span data-i18n="effectsChartHint">Mean distance per value, from logged runs</span>
+          </div>
+          <canvas id="effectsChart" width="700" height="260" aria-label="Main effects / interaction plot"></canvas>
+          <p id="effectsChartEmpty" class="chart-empty" data-i18n="effectsEmptyDefault">Log at least 2 runs with different values to see this chart.</p>
+          <div id="effectsLegend" class="effects-legend" hidden></div>
+        </section>
+      </div>
+    </section>
+  </main>
+
+  <div id="tableBackdrop"></div>
+
+  <script src="physics.js?v=18"></script>
+  <script src="i18n.js?v=18"></script>
+  <script src="app.js?v=18"></script>
+</body>
+</html>

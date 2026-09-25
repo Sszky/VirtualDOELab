@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Virtual DOE Lab</title>
+<link rel="stylesheet" href="home.css?v=2" />
+</head>
+<body>
+<header class="topbar">
+  <div class="brand">
+    <span class="brand-mark">V</span>
+    <div>
+      <strong>Virtual DOE Lab</strong>
+      <small>Design of Experiments</small>
+    </div>
+  </div>
+  <div class="header-actions">
+    <button id="languageButton" class="icon-button" type="button" aria-label="Switch language">EN</button>
+    <button id="themeButton" class="icon-button" type="button" aria-label="Switch color theme">☾</button>
+  </div>
+</header>
+
+<main>
+  <section class="intro">
+    <p class="eyebrow">VIRTUAL DOE LAB</p>
+    <h1>Virtual DOE Lab</h1>
+    <p data-i18n="subtitle">เลือกการทดลอง ปรับปัจจัย แล้วเก็บข้อมูลไปวิเคราะห์ DOE</p>
+  </section>
+
+  <nav class="lab-grid" aria-label="Experiments">
+    <a class="lab-card" href="parachute/index.html">
+      <div class="lab-card-top"><span class="lab-module">MODULE 01</span></div>
+      <div class="lab-icon" aria-hidden="true">
+        <svg viewBox="0 0 64 64">
+          <path d="M8 28a24 18 0 0 1 48 0Z" fill="currentColor" />
+          <path d="M8 28q6-5 12 0q6-5 12 0q6-5 12 0q6-5 12 0" fill="none" stroke="var(--panel)" stroke-width="2" />
+          <path d="M9 29 29 48M55 29 35 48M24 29 31 48M40 29 33 48" stroke="var(--muted)" stroke-width="1.6" fill="none" />
+          <rect x="27" y="47" width="10" height="9" rx="2" fill="var(--gold)" />
+        </svg>
+      </div>
+      <h2 data-i18n="parachuteName">ร่มชูชีพ</h2>
+      <p data-i18n="parachuteDesc">ปรับรูปทรง วัสดุ ขนาดร่ม และความยาวเชือก แล้ววัดเวลาตก</p>
+      <span class="lab-cta"><span data-i18n="start">เริ่มทดลอง</span><span aria-hidden="true">→</span></span>
+    </a>
+
+    <a class="lab-card" href="waterBottleRocket/index.html">
+      <div class="lab-card-top"><span class="lab-module">MODULE 02</span></div>
+      <div class="lab-icon" aria-hidden="true">
+        <svg viewBox="0 0 64 64">
+          <path d="M32 4c7 6 10 14 10 24v20H22V28c0-10 3-18 10-24Z" fill="currentColor" />
+          <path d="M22 36 12 50h10ZM42 36l10 14H42Z" fill="var(--gold)" />
+          <circle cx="32" cy="24" r="5" fill="var(--panel)" />
+          <path d="M26 50h12l-2 6h-8Z" fill="var(--muted)" />
+          <path d="M28 58q4 5 8 0" fill="none" stroke="var(--gold)" stroke-width="2" stroke-linecap="round" />
+        </svg>
+      </div>
+      <h2 data-i18n="rocketName">จรวดขวดน้ำ</h2>
+      <p data-i18n="rocketDesc">ปรับมุมยิง จำนวนครีบ ปริมาณน้ำ และแรงดัน แล้ววัดระยะทาง</p>
+      <span class="lab-cta"><span data-i18n="start">เริ่มทดลอง</span><span aria-hidden="true">→</span></span>
+    </a>
+
+    <a class="lab-card" href="paperHelicopter/index.html">
+      <div class="lab-card-top"><span class="lab-module">MODULE 03</span></div>
+      <div class="lab-icon" aria-hidden="true">
+        <svg viewBox="0 0 64 64">
+          <path d="M31 22 8 12l2 8 21 6ZM33 22l23-10-2 8-21 6Z" fill="currentColor" />
+          <rect x="28" y="22" width="8" height="30" rx="1" fill="var(--gold)" />
+          <path d="M28 40h-5l5 5M36 40h5l-5 5" fill="none" stroke="var(--muted)" stroke-width="1.6" />
+          <rect x="29" y="52" width="6" height="4" fill="var(--muted)" />
+        </svg>
+      </div>
+      <h2 data-i18n="heliName">เฮลิคอปเตอร์กระดาษ</h2>
+      <p data-i18n="heliDesc">จำลองการตกแบบหมุนของใบพัดกระดาษ</p>
+      <span class="lab-cta"><span data-i18n="start">เริ่มทดลอง</span><span aria-hidden="true">→</span></span>
+    </a>
+
+    <a class="lab-card" href="catapult/index.html">
+      <div class="lab-card-top"><span class="lab-module">MODULE 04</span></div>
+      <div class="lab-icon" aria-hidden="true">
+        <svg viewBox="0 0 64 64">
+          <rect x="8" y="48" width="48" height="6" rx="2" fill="var(--muted)" />
+          <path d="M22 48 32 34l10 14" fill="none" stroke="var(--gold)" stroke-width="3" stroke-linejoin="round" />
+          <path d="M14 42 50 18" stroke="currentColor" stroke-width="4" stroke-linecap="round" />
+          <path d="M44 16q6-6 10 0" fill="none" stroke="currentColor" stroke-width="3" />
+          <circle cx="49" cy="11" r="4" fill="var(--gold)" />
+        </svg>
+      </div>
+      <h2 data-i18n="catapultName">เครื่องยิงหิน</h2>
+      <p data-i18n="catapultDesc">จำลองการยิงวัตถุด้วยแขนคาน</p>
+      <span class="lab-cta"><span data-i18n="start">เริ่มทดลอง</span><span aria-hidden="true">→</span></span>
+    </a>
+  </nav>
+</main>
+
+<footer data-i18n="footer">Virtual DOE Lab · การจำลองเพื่อการศึกษา ผลลัพธ์เป็นค่าประมาณจากแบบจำลอง</footer>
+
+<script>
+(function () {
+  const I18N = {
+    th: {
+      subtitle: 'เลือกการทดลอง ปรับปัจจัย แล้วเก็บข้อมูลไปวิเคราะห์ DOE',
+      start: 'เริ่มทดลอง',
+      soon: 'เร็วๆ นี้',
+      notReady: 'ยังไม่เปิดให้ทดลอง',
+      parachuteName: 'ร่มชูชีพ',
+      parachuteDesc: 'ปรับรูปทรง วัสดุ ขนาดร่ม และความยาวเชือก แล้ววัดเวลาตก',
+      rocketName: 'จรวดขวดน้ำ',
+      rocketDesc: 'ปรับมุมยิง จำนวนครีบ ปริมาณน้ำ และแรงดัน แล้ววัดระยะทาง',
+      heliName: 'เฮลิคอปเตอร์กระดาษ',
+      heliDesc: 'จำลองการตกแบบหมุนของใบพัดกระดาษ',
+      catapultName: 'เครื่องยิงหิน',
+      catapultDesc: 'จำลองการยิงวัตถุด้วยแขนคาน',
+      footer: 'Virtual DOE Lab · การจำลองเพื่อการศึกษา ผลลัพธ์เป็นค่าประมาณจากแบบจำลอง'
+    },
+    en: {
+      subtitle: 'Pick an experiment, set the factors, and collect data for your DOE analysis.',
+      start: 'Start experiment',
+      soon: 'Coming soon',
+      notReady: 'Not available yet',
+      parachuteName: 'Parachute',
+      parachuteDesc: 'Vary canopy shape, material, size and string length, then measure fall time.',
+      rocketName: 'Water Bottle Rocket',
+      rocketDesc: 'Vary launch angle, fins, water volume and pressure, then measure distance.',
+      heliName: 'Paper Helicopter',
+      heliDesc: 'Simulate the spinning descent of a paper rotor.',
+      catapultName: 'Catapult',
+      catapultDesc: 'Simulate a lever-arm projectile launch.',
+      footer: 'Virtual DOE Lab · Educational simulation — results are model estimates.'
+    }
+  };
+
+  let lang = 'th';
+  const languageButton = document.getElementById('languageButton');
+  const themeButton = document.getElementById('themeButton');
+
+  function applyTranslations() {
+    document.documentElement.lang = lang;
+    document.querySelectorAll('[data-i18n]').forEach(function (el) {
+      const text = I18N[lang][el.dataset.i18n];
+      if (text) el.textContent = text;
+    });
+    languageButton.textContent = lang === 'th' ? 'EN' : 'TH';
+  }
+
+  languageButton.addEventListener('click', function () {
+    lang = lang === 'th' ? 'en' : 'th';
+    applyTranslations();
+  });
+
+  themeButton.addEventListener('click', function () {
+    const dark = document.body.classList.toggle('dark');
+    themeButton.textContent = dark ? '☀' : '☾';
+  });
+
+  applyTranslations();
+})();
+</script>
+</body>
+</html>

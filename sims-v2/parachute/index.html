@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>การทดลองร่มชูชีพ</title>
+<link rel="stylesheet" href="style.css?v=2" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-mark">🪂</span>
+      <div>
+        <strong data-i18n="brandName">Parachute Lab</strong>
+        <small data-i18n="brandTagline">Design of Experiments</small>
+      </div>
+    </div>
+    <div class="header-actions">
+      <a class="icon-button home-button" href="../index.html" aria-label="Home" title="หน้าแรก · Home"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M3 11.5 12 4l9 7.5M5.5 9.5V20h5v-6h3v6h5V9.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+      <button id="languageButton" class="icon-button" type="button" aria-label="Switch language">EN</button>
+      <button id="themeButton" class="icon-button" type="button" aria-label="Switch color theme">☾</button>
+    </div>
+  </header>
+
+  <main>
+    <section class="intro">
+      <p class="eyebrow" data-i18n="eyebrow">VIRTUAL DOE LAB · PARACHUTE MODULE</p>
+      <h1 data-i18n="title">Parachute Experiment</h1>
+      <p class="subtitle" data-i18n="subtitle">Set the factors and press Drop to watch the parachute fall and record the fall time.</p>
+    </section>
+
+    <section class="workspace" id="workspace">
+      <!-- ===================== แผงควบคุม ===================== -->
+      <aside class="panel controls-panel" aria-label="แผงควบคุมพารามิเตอร์">
+        <div class="panel-heading">
+          <div><h2 data-i18n="factorsHeading">Set factors</h2></div>
+        </div>
+
+        <fieldset class="param-group">
+          <legend data-i18n="shapeLabel">A: Canopy shape</legend>
+          <div class="segmented segmented-3">
+            <label><input type="radio" name="shape" value="round" checked /><span data-i18n="round">Round</span></label>
+            <label><input type="radio" name="shape" value="square" /><span data-i18n="square">Square</span></label>
+            <label><input type="radio" name="shape" value="hexagon" /><span data-i18n="hexagon">Hexagon</span></label>
+          </div>
+        </fieldset>
+
+        <fieldset class="param-group">
+          <legend data-i18n="materialLabel">B: Material</legend>
+          <div class="segmented segmented-3">
+            <label><input type="radio" name="material" value="plastic" checked /><span data-i18n="plastic">Plastic</span></label>
+            <label><input type="radio" name="material" value="nylon" /><span data-i18n="nylon">Nylon</span></label>
+            <label><input type="radio" name="material" value="paper" /><span data-i18n="paper">Paper</span></label>
+          </div>
+        </fieldset>
+
+        <div class="param-group">
+          <label for="sizeNumber"><span data-i18n="sizeLabel">C: Canopy diameter (cm)</span> <span class="range-hint" data-i18n="sizeHint">Range 30–90 cm</span></label>
+          <div class="param-row">
+            <input type="range" id="sizeRange" min="30" max="90" step="5" value="50" />
+            <input type="number" id="sizeNumber" min="30" max="90" step="5" value="50" />
+          </div>
+        </div>
+
+        <div class="param-group">
+          <label for="stringNumber"><span data-i18n="stringLabel">D: String length (cm)</span> <span class="range-hint" data-i18n="stringHint">Range 20–80 cm</span></label>
+          <div class="param-row">
+            <input type="range" id="stringRange" min="20" max="80" step="5" value="40" />
+            <input type="number" id="stringNumber" min="20" max="80" step="5" value="40" />
+          </div>
+        </div>
+
+        <div class="param-group constant-group">
+          <label for="heightNumber"><span data-i18n="heightLabel">Drop height (m)</span> <span class="range-hint" data-i18n="heightHint">Constant, not a factor</span></label>
+          <div class="param-row">
+            <input type="range" id="heightRange" min="10" max="50" step="5" value="20" />
+            <input type="number" id="heightNumber" min="10" max="50" step="5" value="20" />
+          </div>
+        </div>
+
+        <fieldset>
+          <legend data-i18n="mode">Experiment mode</legend>
+          <div class="segmented">
+            <label><input type="radio" name="mode" value="deterministic" checked /><span data-i18n="deterministic">Deterministic</span></label>
+            <label><input type="radio" name="mode" value="stochastic" /><span data-i18n="stochastic">Stochastic</span></label>
+          </div>
+          <p class="hint" id="modeHint" data-i18n="detHint">Same factors always produce the same result.</p>
+        </fieldset>
+
+        <button id="launchBtn" class="primary-button" type="button" data-i18n="launch">🪂 Drop</button>
+        <div id="warningBox" class="warning-box" hidden></div>
+
+        <details class="constants-note">
+          <summary data-i18n="constantsSummary">Fixed constants used in the model</summary>
+          <ul>
+            <li data-i18n="constantsMass">Payload + parachute mass 0.12 kg.</li>
+            <li data-i18n="constantsShape">Base Cd by shape: round 1.50, square 1.28, hexagon 1.40.</li>
+            <li data-i18n="constantsMaterial">Material factor: plastic ×1.02, nylon ×1.08, paper ×0.92.</li>
+            <li data-i18n="constantsMethod">Gravity + quadratic air drag (½ρCdAv²), integrated every 0.005 s.</li>
+          </ul>
+        </details>
+      </aside>
+
+      <!-- ===================== แอนิเมชัน ===================== -->
+      <section class="panel simulation-panel" aria-label="ผลการจำลอง">
+        <div class="panel-heading">
+          <div><h2 data-i18n="simulateHeading">Simulate</h2></div>
+        </div>
+
+        <div class="scene drop-scene" id="scene">
+          <div class="scene-sun"></div>
+          <div class="scene-cloud scene-cloud-a"></div>
+          <div class="scene-cloud scene-cloud-b"></div>
+          <div class="scene-ground">
+            <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+          </div>
+          <div class="release-line" id="releaseLine"></div>
+          <div class="axis-y" id="axisY"></div>
+          <span class="axis-label y-label" data-i18n="axisAltitude">Height (m)</span>
+          <div class="actor" id="actor"></div>
+        </div>
+
+        <div id="liveStats" class="live-stats"></div>
+      </section>
+
+      <!-- ===================== ตารางผล ===================== -->
+      <aside class="panel results-sidebar" id="resultsSidebar" aria-label="ตารางผลการทดลอง">
+        <div class="table-toolbar">
+          <h2 data-i18n="resultsHeading">Run history</h2>
+          <button id="expandTableBtn" class="icon-button" type="button" data-i18n="expandTable" aria-label="Expand table">⤢</button>
+        </div>
+        <div class="table-buttons">
+          <button id="clearTableBtn" class="secondary-button" type="button" data-i18n="clearTable">🗑️ Clear</button>
+          <button id="exportCsvBtn" class="secondary-button" type="button" data-i18n="exportCsv">⬇️ Export CSV</button>
+        </div>
+        <div class="table-scroll">
+          <table id="resultsTable">
+            <thead>
+              <tr>
+                <th data-i18n="thRun">#</th>
+                <th data-i18n="thShape">A</th>
+                <th data-i18n="thMaterial">B</th>
+                <th data-i18n="thSize">C</th>
+                <th data-i18n="thString">D</th>
+                <th data-i18n="thTime">Fall time(s)</th>
+                <th class="col-extra" data-i18n="thImpactSpeed">Impact speed(m/s)</th>
+                <th class="col-extra" data-i18n="thCd">Cd</th>
+                <th class="col-extra" data-i18n="thHeight">Height(m)</th>
+                <th class="col-extra" data-i18n="thMode">Mode</th>
+              </tr>
+            </thead>
+            <tbody id="resultsTableBody"></tbody>
+          </table>
+        </div>
+        <p class="note" data-i18n="tableNote">* Results are kept in this page's memory only; refreshing clears them — use "Export CSV" to save a file.</p>
+      </aside>
+    </section>
+
+    <!-- ===================== Main Effects / Interaction Plot ===================== -->
+    <section class="effects-section" id="effectsSection" aria-label="กราฟผลกระทบหลัก/ปฏิสัมพันธ์">
+      <div class="panel-heading">
+        <div><h2 data-i18n="effectsHeading">Main Effects / Interaction Plot</h2></div>
+      </div>
+      <p class="subtitle" data-i18n="effectsSubheading">See how each factor affects fall time across your logged runs.</p>
+
+      <div class="effects-grid">
+        <aside class="panel effects-controls" aria-label="ตัวควบคุมกราฟ">
+          <fieldset>
+            <legend data-i18n="effectsModeLabel">Plot type</legend>
+            <div class="segmented">
+              <label><input type="radio" name="effectsMode" value="main" checked /><span data-i18n="effectsModeMain">Main Effects Plot</span></label>
+              <label><input type="radio" name="effectsMode" value="interaction" /><span data-i18n="effectsModeInteraction">Interaction Plot</span></label>
+            </div>
+          </fieldset>
+
+          <div class="param-group">
+            <label for="effectsFactorX" data-i18n="effectsFactorXLabel">Factor (X-axis)</label>
+            <select id="effectsFactorX">
+              <option value="shape" data-i18n="factorName_shape">Canopy shape (A)</option>
+              <option value="material" data-i18n="factorName_material">Material (B)</option>
+              <option value="diameterCm" data-i18n="factorName_diameterCm">Canopy diameter (C)</option>
+              <option value="stringCm" data-i18n="factorName_stringCm">String length (D)</option>
+            </select>
+          </div>
+
+          <div class="param-group" id="effectsFactorGroupWrap" hidden>
+            <label for="effectsFactorGroup" data-i18n="effectsFactorGroupLabel">Grouping factor (color)</label>
+            <select id="effectsFactorGroup">
+              <option value="shape" data-i18n="factorName_shape">Canopy shape (A)</option>
+              <option value="material" data-i18n="factorName_material">Material (B)</option>
+              <option value="diameterCm" data-i18n="factorName_diameterCm">Canopy diameter (C)</option>
+              <option value="stringCm" data-i18n="factorName_stringCm">String length (D)</option>
+            </select>
+          </div>
+
+          <p class="hint" data-i18n="effectsResponseNote">Y-axis: mean fall time (s)</p>
+        </aside>
+
+        <section class="panel chart-card effects-chart-card" aria-label="กราฟ">
+          <div class="chart-title">
+            <h3 id="effectsChartTitle">Canopy shape (A)</h3>
+            <span data-i18n="effectsChartHint">Mean fall time per value, from logged runs</span>
+          </div>
+          <canvas id="effectsChart" width="700" height="260" aria-label="Main effects / interaction plot"></canvas>
+          <p id="effectsChartEmpty" class="chart-empty">Log at least 2 runs with different values to see this chart.</p>
+          <div id="effectsLegend" class="effects-legend" hidden></div>
+        </section>
+      </div>
+    </section>
+  </main>
+
+  <div id="tableBackdrop"></div>
+
+  <script src="physics.js?v=1"></script>
+  <script src="i18n.js?v=2"></script>
+  <script src="app.js?v=2"></script>
+</body>
+</html>
