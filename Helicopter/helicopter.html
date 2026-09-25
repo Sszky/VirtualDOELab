@@ -99,7 +99,9 @@
           <button id="btnEn" type="button">EN</button>
         </div>
 
-        <span class="student-chip" data-i18n="user_chip">👤 นักศึกษา</span>
+        <img class="account-icon" src="icon/account.png" alt="Account">
+          <span class="student-chip" data-i18n="user_chip">นักศึกษา</span>
+        </img>
       </div>
     </header>
 
@@ -240,32 +242,32 @@
         <div class="simulator-toolbar" id="simulatorToolbar">
           <div class="toolbar-group">
             <button class="toolbar-button icon-button" type="button" title="ลาก" 
-              data-i18n-title="tt_drag">⠿</button>
+              data-i18n-title="tt_drag"><img class="toolbar-icon" src="icon/dragHandle.png" alt="Drag"></button>
 
             <button class="toolbar-button icon-button" id="tbReset" type="button" title="รีเซ็ตตำแหน่ง" 
-              data-i18n-title="tt_reset">⌂</button>
+              data-i18n-title="tt_reset"><img class="toolbar-icon" src="icon/reset.png" alt="Reset"></button>
 
             <button class="toolbar-button icon-button" id="tbExport" type="button" title="ส่งออก CSV" 
-              data-i18n-title="tt_export">▣</button>
+              data-i18n-title="tt_export"><img class="toolbar-icon" src="icon/exportCSV.png" alt="Export CSV"></button>
 
             <button class="toolbar-button icon-button" id="tbClear" type="button" title="ล้างข้อมูล" 
-              data-i18n-title="tt_clear">⌫</button>
+              data-i18n-title="tt_clear"><img class="toolbar-icon" src="icon/clearData.png" alt="Clear data"></button>
           </div>
 
           <div class="toolbar-separator"></div>
 
           <div class="toolbar-group">
             <button class="toolbar-button icon-button" id="tbOverview" type="button" title="ภาพรวม" 
-              data-i18n-title="tt_overview">◫</button>
+              data-i18n-title="tt_overview"><img class="toolbar-icon" src="icon/frame_overview.png" alt="Overview"></button>
 
             <button class="toolbar-button icon-button" id="tbFit" type="button" title="พอดีหน้าจอ" 
               data-i18n-title="tt_fit">⛶</button>
 
             <button class="toolbar-button icon-button" id="tbUndo" type="button" title="ย้อนกลับ" 
-              data-i18n-title="tt_undo">↺</button>
+              data-i18n-title="tt_undo"><img class="toolbar-icon" src="icon/undo.png" alt="Undo"></button>
 
             <button class="toolbar-button run-toolbar-button" id="tbRun" type="button" title="เริ่มทดลอง" 
-              data-i18n-title="tt_run">▶</button>
+              data-i18n-title="tt_run"><img class="toolbar-icon toolbar-icon-run" src="icon/run_experiment.png" alt="Run experiment"></button>
           </div>
 
           <div class="toolbar-separator"></div>
@@ -367,11 +369,11 @@
           </button>
 
           <button class="action-button action-outline" id="runAllBtn" type="button">
-            ⟳ <span data-i18n="btn_runall">รันครบ 2⁴ ครั้ง (16 รัน)</span>
+            <span data-i18n="btn_runall">รันครบ 2⁴ ครั้ง (16 รัน)</span>
           </button>
 
           <button class="action-button action-clear" id="clearBtn" type="button">
-            ✕ <span data-i18n="btn_clear">ล้างข้อมูล</span>
+            <span data-i18n="btn_clear">ล้างข้อมูล</span>
           </button>
         </div>
       </aside>

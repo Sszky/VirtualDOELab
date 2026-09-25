@@ -16,7 +16,7 @@ const I18N = {
   menu_fit: { th: 'รีเซ็ตซูม', en: 'Reset zoom' },
   menu_about: { th: 'เกี่ยวกับโมเดลจำลอง', en: 'About this model' },
 
-  user_chip: { th: '👤 นักศึกษา', en: '👤 Student' },
+  user_chip: { th: 'นักศึกษา', en: 'Student' },
   theme_modal_title: { th: 'เลือกธีม', en: 'Select Theme' },
   theme_dark_label: { th: 'Dark Theme', en: 'Dark Theme' },
   theme_light_label: { th: 'Light Theme', en: 'Light Theme' },
@@ -664,7 +664,7 @@ function updateZoomLabel() {
 }
  
 function setZoom(value) {
-  zoomLevel = Math.max(ZOOM_MIN, Math.min(ZOOM_MAX, value));
+  zoomLevel = Math.round(Math.max(ZOOM_MIN, Math.min(ZOOM_MAX, value)));
  
   document.getElementById('zoomSlider').value = zoomLevel;
   document.getElementById('simulatorStageFrame').style.transform =
