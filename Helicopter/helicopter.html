@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Paper Helicopter DOE Simulator</title>
+  <link rel="stylesheet" href="helicopter.css">
+</head>
+
+<body>
+  <div class="top-stripe"></div>
+
+  <div class="app-shell" id="appShell">
+
+    <!-- ==================== MAIN NAVBAR ==================== -->
+    <header class="main-navbar" id="mainNavbar">
+      <div class="navbar-left">
+        <a class="logo" id="appLogo" href="#" aria-label="LOGO">
+          <span class="logo-name">VirtualDOELab</span>
+        </a>
+
+        <nav class="navbar-menu" id="navbarMenu" aria-label="Main menu">
+
+          <div class="nav-item" id="projectMenu">
+            <button class="nav-button" type="button" aria-expanded="false">
+              <span data-i18n="menu_project">โปรเจค</span>
+            </button>
+            <div class="dropdown-menu" id="projectDropdown">
+              <button class="dropdown-item" type="button" id="menuNewProject">
+                <span data-i18n="menu_new_project">New Project</span>
+              </button>
+              <button class="dropdown-item" type="button" id="menuSave">
+                <span data-i18n="menu_save">Save</span>
+                <kbd class="dropdown-shortcut">Ctrl+S</kbd>
+              </button>
+              <div class="dropdown-separator" role="separator"></div>
+              <button class="dropdown-item" type="button" id="menuExport">
+                <span data-i18n="menu_export">Export as File CSV</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="nav-item" id="factorMenu">
+            <button class="nav-button" type="button" aria-expanded="false">
+              <span data-i18n="menu_factors">ปัจจัย</span>
+            </button>
+            <div class="dropdown-menu" id="factorDropdown">
+              <button class="dropdown-item" type="button" id="menuRunAll" data-i18n="menu_runall">
+                รันครบ 2⁴ ครั้ง (16 รัน)
+              </button>
+              <button class="dropdown-item" type="button" id="menuClear" data-i18n="menu_clear">
+                ล้างข้อมูล
+              </button>
+              <div class="dropdown-separator" role="separator"></div>
+              <button class="dropdown-item" type="button" id="menuTheme" data-i18n="menu_theme">
+                ธีม
+              </button>
+            </div>
+          </div>
+
+          <div class="nav-item" id="toolsMenu">
+            <button class="nav-button" type="button" aria-expanded="false">
+              <span data-i18n="menu_tools">เครื่องมือ</span>
+            </button>
+            <div class="dropdown-menu" id="toolsDropdown">
+              <button class="dropdown-item" type="button" id="menuUndo" data-i18n="menu_undo">
+                ย้อนกลับรันล่าสุด
+              </button>
+              <button class="dropdown-item" type="button" id="menuFit" data-i18n="menu_fit">
+                รีเซ็ตซูม
+              </button>
+            </div>
+          </div>
+
+          <div class="nav-item" id="helpMenu">
+            <button class="nav-button" type="button" aria-expanded="false">
+              <span data-i18n="menu_help">ช่วยเหลือ</span>
+            </button>
+            <div class="dropdown-menu" id="helpDropdown">
+              <button class="dropdown-item" type="button" id="menuTutorial" data-i18n="menu_tutorial">
+                แนะนำการใช้งาน
+              </button>
+              <button class="dropdown-item" type="button" id="menuAbout" data-i18n="menu_about">
+                เกี่ยวกับโมเดลจำลอง
+              </button>
+            </div>
+          </div>
+
+        </nav>
+      </div>
+
+      <div class="project-title" id="projectTitle">
+        Paper Helicopter DOE Lab
+      </div>
+
+      <div class="navbar-right">
+        <div class="language-switcher" aria-label="Language">
+          <button id="btnTh" class="active" type="button">TH</button>
+          <button id="btnEn" type="button">EN</button>
+        </div>
+
+        <span class="student-chip" data-i18n="user_chip">👤 นักศึกษา</span>
+      </div>
+    </header>
+
+    <div class="menu-overlay" id="menuOverlay"></div>
+
+    <!-- ==================== THEME MODAL ==================== -->
+    <div class="theme-modal-overlay" id="themeModalOverlay">
+      <div class="theme-modal" role="dialog" aria-modal="true" aria-labelledby="themeModalTitle">
+        <div class="theme-modal-head">
+          <h3 id="themeModalTitle" data-i18n="theme_modal_title">เลือกธีม</h3>
+          <button class="theme-modal-close" id="themeModalClose" type="button">✕</button>
+        </div>
+
+        <div class="theme-cards">
+          <div class="theme-card theme-card-dark selected" id="cardDark" data-theme="dark">
+            <div class="theme-card-preview">
+              <div class="prev-panel"></div>
+              <div class="prev-lines"><span></span><span></span><span></span></div>
+            </div>
+            <div class="theme-card-label">
+              <input type="radio" name="themeChoice" id="radioDark" checked>
+              <label for="radioDark" data-i18n="theme_dark_label">Dark Theme</label>
+            </div>
+          </div>
+
+          <div class="theme-card theme-card-light" id="cardLight" data-theme="light">
+            <div class="theme-card-preview">
+              <div class="prev-panel"></div>
+              <div class="prev-lines"><span></span><span></span><span></span></div>
+            </div>
+            <div class="theme-card-label">
+              <input type="radio" name="themeChoice" id="radioLight">
+              <label for="radioLight" data-i18n="theme_light_label">Light Theme</label>
+            </div>
+          </div>
+        </div>
+
+        <div class="theme-modal-actions">
+          <button class="theme-apply-btn" id="themeApplyBtn" type="button" data-i18n="theme_apply">
+            ใช้ธีมนี้
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== TAB BAR ==================== -->
+    <div class="experiment-tabbar" id="experimentTabbar">
+      <div class="experiment-tab active">
+        <span data-i18n="tab_experiment">การทดลอง</span>
+        <span class="tab-close">✕</span>
+      </div>
+      <button class="tab-add" type="button">+</button>
+    </div>
+
+    <!-- ==================== MAIN WORKSPACE ==================== -->
+    <main class="main-workspace" id="mainWorkspace">
+
+      <!-- LEFT: FACTOR PANEL -->
+      <aside class="panel factor-panel" id="factorPanel">
+        <div class="panel-header">
+          <div class="panel-drag-handle"></div>
+          <div class="panel-title" data-i18n="panel_factors_title">ปัจจัยการทดลอง</div>
+        </div>
+
+        <div class="panel-content">
+          <input
+            class="factor-search"
+            id="factorSearch"
+            type="search"
+            placeholder="ค้นหาปัจจัย..."
+            data-i18n-placeholder="search_placeholder"
+          >
+
+          <details class="accordion-item" open>
+            <summary data-i18n="wing_title">ปีก</summary>
+            <div class="accordion-content" id="wingSliders"></div>
+          </details>
+
+          <details class="accordion-item" open>
+            <summary data-i18n="body_title">ลำตัว</summary>
+            <div class="accordion-content" id="bodySliders"></div>
+          </details>
+
+          <details class="accordion-item">
+            <summary data-i18n="misc_title">อื่น ๆ</summary>
+            <div class="accordion-content">
+              <p class="misc-note" data-i18n="misc_note">
+                โมเดลจำลองนี้ใช้สมการประมาณค่าเชิงเส้นจากปัจจัย WL, WW, BL, BW 
+                เพื่อสาธิตหลักการออกแบบการทดลองแบบ 2⁴ full-factorial
+                ไม่ใช่ข้อมูลจากการทดลองจริง
+              </p>
+
+              <table class="factor-reference-table">
+                <thead>
+                  <tr>
+                    <th data-i18n="th_factor">ปัจจัย</th>
+                    <th data-i18n="th_low">ต่ำ</th>
+                    <th data-i18n="th_high">สูง</th>
+                  </tr>
+                </thead>
+                <tbody id="factorTable"></tbody>
+              </table>
+            </div>
+          </details>
+        </div>
+      </aside>
+
+      <!-- CENTER: SIMULATOR -->
+      <section class="simulator-panel" id="simulatorPanel">
+
+        <div class="simulator-header" id="simulatorHeader">
+          <div class="simulator-title">
+            <span class="stage-chip" data-i18n="chip_stage">พื้นที่จำลอง</span>
+            <span class="simulator-subtitle">Paper Helicopter</span>
+          </div>
+
+          <!-- Readouts are now in the top-right and never sit underneath the stage -->
+          <div class="simulation-stats" id="simulationStats">
+            <div class="stat-card">
+              <div class="stat-label" data-i18n="readout_time">เวลาในการตก</div>
+              <div class="stat-value">
+                <span id="timeVal">—</span>
+                <span class="stat-unit">s</span>
+              </div>
+            </div>
+
+            <div class="stat-card">
+              <div class="stat-label" data-i18n="readout_height">ความสูงที่ปล่อย</div>
+              <div class="stat-value stat-value-small">
+                <span id="heightReadout">2.00</span>
+                <span class="stat-unit">m</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- CircuitVerse-inspired simulator toolbar -->
+        <div class="simulator-toolbar" id="simulatorToolbar">
+          <div class="toolbar-group">
+            <button class="toolbar-button icon-button" type="button" title="ลาก" 
+              data-i18n-title="tt_drag">⠿</button>
+
+            <button class="toolbar-button icon-button" id="tbReset" type="button" title="รีเซ็ตตำแหน่ง" 
+              data-i18n-title="tt_reset">⌂</button>
+
+            <button class="toolbar-button icon-button" id="tbExport" type="button" title="ส่งออก CSV" 
+              data-i18n-title="tt_export">▣</button>
+
+            <button class="toolbar-button icon-button" id="tbClear" type="button" title="ล้างข้อมูล" 
+              data-i18n-title="tt_clear">⌫</button>
+          </div>
+
+          <div class="toolbar-separator"></div>
+
+          <div class="toolbar-group">
+            <button class="toolbar-button icon-button" id="tbOverview" type="button" title="ภาพรวม" 
+              data-i18n-title="tt_overview">◫</button>
+
+            <button class="toolbar-button icon-button" id="tbFit" type="button" title="พอดีหน้าจอ" 
+              data-i18n-title="tt_fit">⛶</button>
+
+            <button class="toolbar-button icon-button" id="tbUndo" type="button" title="ย้อนกลับ" 
+              data-i18n-title="tt_undo">↺</button>
+
+            <button class="toolbar-button run-toolbar-button" id="tbRun" type="button" title="เริ่มทดลอง" 
+              data-i18n-title="tt_run">▶</button>
+          </div>
+
+          <div class="toolbar-separator"></div>
+
+          <div class="zoom-control" aria-label="Zoom">
+            <button class="toolbar-button zoom-button" id="zoomMinus" type="button">−</button>
+            <input type="range" id="zoomSlider" min="50" max="200" value="100" aria-label="Zoom">
+            <span class="zoom-value" id="zoomValue">100%</span>
+            <button class="toolbar-button zoom-button" id="zoomPlus" type="button">+</button>
+          </div>
+        </div>
+
+        <div class="simulator-canvas-area" id="simulatorCanvasArea">
+          <div class="simulator-stage-frame" id="simulatorStageFrame">
+            <div class="simulator-stage" id="stage">
+              <div class="helicopter-wrap" id="heliWrap">
+                <div class="helicopter-blade helicopter-blade-left"></div>
+                <div class="helicopter-blade helicopter-blade-right"></div>
+                <div class="helicopter-body"></div>
+                <div class="helicopter-clip"></div>
+              </div>
+              <div class="ground-line"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="simulator-footer" id="simulatorFooter">
+          <div class="simulation-message" id="result" aria-live="polite"></div>
+
+          <div class="simulator-mode-status">
+            <span data-i18n="mode_status_label">โหมด</span>
+            <strong id="modeStatus">Deterministic ON</strong>
+          </div>
+        </div>
+      </section>
+
+      <!-- RIGHT: PROPERTIES PANEL -->
+      <aside class="panel properties-panel" id="propertiesPanel">
+        <div class="panel-header">
+          <div class="panel-drag-handle"></div>
+          <div class="panel-title" data-i18n="panel_props_title">คุณสมบัติ</div>
+        </div>
+
+        <div class="panel-content">
+          <div class="section-label" data-i18n="section_props">คุณสมบัติการทดลอง</div>
+
+          <label class="field-label" for="projNameInput" data-i18n="label_projname">
+            ชื่อโปรเจค:
+          </label>
+          <input
+            type="text"
+            class="text-input"
+            id="projNameInput"
+            value="Paper Helicopter DOE Lab"
+          >
+
+          <label class="field-label" for="designTypeInput" data-i18n="label_design">
+            รูปแบบการทดลอง:
+          </label>
+          <input
+            type="text"
+            class="text-input"
+            id="designTypeInput"
+            value="2⁴ Full Factorial"
+            readonly
+          >
+
+          <label class="field-label" data-i18n="label_height">
+            ความสูงที่ปล่อย (ซม.):
+          </label>
+          <div class="height-stepper">
+            <button id="heightMinus" type="button">−</button>
+            <input type="text" id="heightInput" value="200" readonly>
+            <button id="heightPlus" type="button">+</button>
+          </div>
+
+          <div class="toggle-row">
+            <label for="stoToggle" data-i18n="toggle_sto">โหมดสุ่ม (Stochastic):</label>
+            <label class="switch">
+              <input type="checkbox" id="stoToggle">
+              <span class="switch-track"></span>
+            </label>
+          </div>
+
+          <!-- Replaces Lite Mode with a useful, functional grid display option -->
+          <div class="toggle-row">
+            <label for="gridToggle" data-i18n="toggle_grid">แสดงกริด (Grid):</label>
+            <span class="toggle-row-right">
+              <span class="grid-status-badge" id="gridStatus"></span>
+              <label class="switch">
+                <input type="checkbox" id="gridToggle" checked>
+                <span class="switch-track"></span>
+              </label>
+            </span>
+          </div>
+
+          <button class="action-button action-run" id="runBtn" type="button">
+            ▶ <span data-i18n="btn_run">เริ่มทดลอง</span>
+          </button>
+
+          <button class="action-button action-outline" id="runAllBtn" type="button">
+            ⟳ <span data-i18n="btn_runall">รันครบ 2⁴ ครั้ง (16 รัน)</span>
+          </button>
+
+          <button class="action-button action-clear" id="clearBtn" type="button">
+            ✕ <span data-i18n="btn_clear">ล้างข้อมูล</span>
+          </button>
+        </div>
+      </aside>
+
+    </main>
+
+    <!-- ==================== RESULTS ==================== -->
+    <section class="results-section" id="resultsSection">
+
+      <div class="result-card">
+        <div class="card-top-line"></div>
+        <h2 data-i18n="card_log_title">ตารางบันทึกผลการทดลอง</h2>
+
+        <div class="table-scroll">
+          <table class="experiment-log-table">
+            <thead>
+              <tr>
+                <th>Run</th>
+                <th>WL (cm)</th>
+                <th>WW (cm)</th>
+                <th>BL (cm)</th>
+                <th>BW (cm)</th>
+                <th data-i18n="th_flighttime">เวลา (s)</th>
+              </tr>
+            </thead>
+            <tbody id="logBody"></tbody>
+          </table>
+        </div>
+
+        <div class="export-message" id="exportMsg"></div>
+      </div>
+
+      <div class="results-grid">
+        <div class="result-card">
+          <div class="card-top-line"></div>
+          <h2 data-i18n="card_main_effects_title">กราฟผลกระทบหลัก</h2>
+          <svg class="result-chart" id="mainEffectsChart" viewBox="0 0 400 180"></svg>
+          <div class="chart-note" data-i18n="main_effects_note">
+            ค่าเฉลี่ยผลลัพธ์ฝั่งต่ำเทียบกับฝั่งสูงของแต่ละปัจจัย
+          </div>
+        </div>
+
+        <div class="result-card">
+          <div class="card-top-line"></div>
+          <h2 data-i18n="card_interaction_title">กราฟอันตรกิริยา (WL × WW)</h2>
+          <svg class="result-chart" id="interactionChart" viewBox="0 0 400 180"></svg>
+
+          <div class="chart-legend">
+            <span>
+              <span class="legend-dot legend-low"></span>
+              <span data-i18n="legend_low">WW = ต่ำ</span>
+            </span>
+            <span>
+              <span class="legend-dot legend-high"></span>
+              <span data-i18n="legend_high">WW = สูง</span>
+            </span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- ==================== TUTORIAL GUIDE ==================== -->
+  <div class="tutorial-layer" id="tutorialLayer" aria-hidden="true">
+    <div class="tutorial-spotlight" id="tutorialSpotlight"></div>
+    <div class="tutorial-popover" id="tutorialPopover" role="dialog" aria-labelledby="tutorialTitle">
+      <div class="tutorial-count" id="tutorialCount"></div>
+      <h3 class="tutorial-title" id="tutorialTitle"></h3>
+      <p class="tutorial-text" id="tutorialText"></p>
+      <div class="tutorial-actions">
+        <button class="tutorial-btn tutorial-btn-ghost" id="tutorialSkip" type="button" data-i18n="tut_skip">ข้าม</button>
+        <span class="tutorial-spacer"></span>
+        <button class="tutorial-btn" id="tutorialPrev" type="button" data-i18n="tut_prev">ย้อนกลับ</button>
+        <button class="tutorial-btn tutorial-btn-primary" id="tutorialNext" type="button" data-i18n="tut_next">ถัดไป</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script src="helicopter.js"></script>
+</body>
+</html>
