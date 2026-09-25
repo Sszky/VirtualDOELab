@@ -903,3 +903,67 @@ input:focus-visible {
     transition: none !important;
   }
 }
+
+/* =========================
+   HOME BUTTON
+   ========================= */
+
+.topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.home-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+
+  padding: 8px 10px;
+
+  color: var(--muted);
+  text-decoration: none;
+
+  border-radius: 9px;
+
+  font-size: 0.82rem;
+  font-weight: 600;
+
+  transition:
+    color 0.15s ease,
+    background 0.15s ease;
+}
+
+.home-icon {
+  font-size: 1.15rem;
+  line-height: 1;
+}
+
+.home-button:hover {
+  color: #7a0019;
+  background: rgba(122, 0, 25, 0.06);
+}
+
+/* Dark mode */
+body.dark .home-button:hover {
+  color: #d5a62e;
+  background: rgba(213, 166, 46, 0.08);
+}
+
+/* Mobile */
+@media (max-width: 600px) {
+  .topbar-left {
+    gap: 8px;
+  }
+
+  .home-button {
+    width: 38px;
+    height: 38px;
+    padding: 0;
+    justify-content: center;
+  }
+
+  .home-text {
+    display: none;
+  }
+}

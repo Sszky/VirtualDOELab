@@ -1,0 +1,801 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <meta
+    name="description"
+    content="Virtual DOE Lab for learning Design of Experiments through interactive simulations."
+  >
+
+  <title>Virtual DOE Lab</title>
+
+  <link rel="stylesheet" href="main.css">
+  <script src="main.js" defer></script>
+</head>
+
+<body>
+
+  <!-- =========================
+       HEADER
+  ========================== -->
+
+  <header class="topbar">
+
+    <a class="brand" href="#home">
+
+      <div class="brand-mark">
+        DOE
+      </div>
+
+      <div class="brand-copy">
+        <strong>Virtual DOE Lab</strong>
+
+        <small data-i18n="department">
+          Industrial Engineering
+        </small>
+      </div>
+
+    </a>
+
+
+    <nav class="nav">
+
+      <a href="#experiments" data-i18n="navExperiments">
+        Experiments
+      </a>
+
+      <a href="#about" data-i18n="navAbout">
+        How it works
+      </a>
+
+      <button
+        id="languageButton"
+        class="language-button"
+        type="button"
+        aria-label="Switch language"
+      >
+        TH
+      </button>
+
+    </nav>
+
+  </header>
+
+
+  <!-- =========================
+       MAIN
+  ========================== -->
+
+  <main id="home">
+
+    <!-- =========================
+         HERO
+    ========================== -->
+
+    <section class="hero">
+
+      <div class="hero-inner">
+
+        <div class="hero-copy">
+
+          <p class="section-label" data-i18n="heroLabel">
+            VIRTUAL DOE LAB
+          </p>
+
+          <h1 data-i18n="heroTitle">
+            Learn Design of Experiments by trying it yourself.
+          </h1>
+
+          <p
+            class="hero-description"
+            data-i18n="heroDescription"
+          >
+            Change experimental factors, run a simulation,
+            collect the response, and compare your results.
+          </p>
+
+          <div class="hero-actions">
+
+            <a
+              class="primary-button"
+              href="#experiments"
+            >
+              <span data-i18n="startExperiment">
+                Choose an experiment
+              </span>
+
+              <span aria-hidden="true">↓</span>
+            </a>
+
+          </div>
+
+        </div>
+
+
+        <!-- SMALL LAB PREVIEW -->
+
+        <div class="lab-preview">
+
+          <div class="preview-top">
+
+            <div>
+              <span
+                class="preview-label"
+                data-i18n="labProcess"
+              >
+                LAB PROCESS
+              </span>
+
+              <h2 data-i18n="previewTitle">
+                From factors to results
+              </h2>
+            </div>
+
+            <span class="ready-badge">
+              <span class="status-dot"></span>
+
+              <span data-i18n="ready">
+                Ready
+              </span>
+            </span>
+
+          </div>
+
+
+          <div class="preview-list">
+
+            <div class="preview-step">
+
+              <span class="step-number">
+                01
+              </span>
+
+              <div>
+                <strong data-i18n="setFactors">
+                  Set factors
+                </strong>
+
+                <p data-i18n="setFactorsDescription">
+                  Choose the values you want to test.
+                </p>
+              </div>
+
+            </div>
+
+
+            <div class="preview-step">
+
+              <span class="step-number">
+                02
+              </span>
+
+              <div>
+                <strong data-i18n="runSimulation">
+                  Run simulation
+                </strong>
+
+                <p data-i18n="runSimulationDescription">
+                  See how the system responds.
+                </p>
+              </div>
+
+            </div>
+
+
+            <div class="preview-step">
+
+              <span class="step-number">
+                03
+              </span>
+
+              <div>
+                <strong data-i18n="compareData">
+                  Compare data
+                </strong>
+
+                <p data-i18n="compareDataDescription">
+                  Use the results to study factor effects.
+                </p>
+              </div>
+
+            </div>
+
+          </div>
+
+
+          <div class="mini-chart">
+
+            <div class="chart-head">
+
+              <span data-i18n="exampleResponse">
+                Example response
+              </span>
+
+              <span>Fall time (s)</span>
+
+            </div>
+
+
+            <div class="chart-area">
+
+              <div class="chart-y-label">5.0</div>
+              <div class="chart-y-label">4.0</div>
+              <div class="chart-y-label">3.0</div>
+
+              <div class="chart-bars">
+
+                <div
+                  class="chart-column"
+                  style="--bar-height: 42%"
+                >
+                  <div class="bar"></div>
+                  <small>A</small>
+                </div>
+
+                <div
+                  class="chart-column"
+                  style="--bar-height: 63%"
+                >
+                  <div class="bar"></div>
+                  <small>B</small>
+                </div>
+
+                <div
+                  class="chart-column"
+                  style="--bar-height: 52%"
+                >
+                  <div class="bar"></div>
+                  <small>C</small>
+                </div>
+
+                <div
+                  class="chart-column"
+                  style="--bar-height: 78%"
+                >
+                  <div class="bar"></div>
+                  <small>D</small>
+                </div>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- =========================
+         EXPERIMENTS
+    ========================== -->
+
+    <section
+      id="experiments"
+      class="experiments-section"
+    >
+
+      <div class="section-heading">
+
+        <div>
+
+          <p
+            class="section-label"
+            data-i18n="modulesLabel"
+          >
+            SIMULATION MODULES
+          </p>
+
+          <h2 data-i18n="experimentsTitle">
+            Choose an experiment
+          </h2>
+
+        </div>
+
+        <p
+          class="section-description"
+          data-i18n="experimentsDescription"
+        >
+          Each simulation lets you change factors and
+          observe how they affect the response.
+        </p>
+
+      </div>
+
+
+      <div class="experiment-grid">
+
+
+        <!-- =====================
+             PARACHUTE
+        ====================== -->
+
+        <article class="experiment-card">
+
+          <div class="card-top">
+
+            <span class="module-number">
+              01
+            </span>
+
+            <span
+              class="status available"
+              data-i18n="available"
+            >
+              Available
+            </span>
+
+          </div>
+
+
+          <div class="experiment-visual parachute-visual">
+
+            <span aria-hidden="true">
+              🪂
+            </span>
+
+          </div>
+
+
+          <div class="card-content">
+
+            <h3 data-i18n="parachuteTitle">
+              Parachute
+            </h3>
+
+            <p data-i18n="parachuteDescription">
+              Explore how canopy shape, material,
+              size, and string length affect fall time.
+            </p>
+
+
+            <div class="factor-list">
+
+              <span data-i18n="shape">
+                Shape
+              </span>
+
+              <span data-i18n="material">
+                Material
+              </span>
+
+              <span data-i18n="size">
+                Size
+              </span>
+
+              <span data-i18n="stringLength">
+                String length
+              </span>
+
+            </div>
+
+          </div>
+
+
+          <a
+            class="open-button"
+            href="../parachute/parachute.html"
+          >
+
+            <span data-i18n="openLab">
+              Open lab
+            </span>
+
+            <span aria-hidden="true">
+              →
+            </span>
+
+          </a>
+
+        </article>
+
+
+        <!-- =====================
+             PAPER HELICOPTER
+        ====================== -->
+
+        <article class="experiment-card">
+
+          <div class="card-top">
+
+            <span class="module-number">
+              02
+            </span>
+
+            <span
+              class="status available"
+              data-i18n="available"
+            >
+              Available
+            </span>
+
+          </div>
+
+
+          <div class="experiment-visual helicopter-visual">
+
+            <span aria-hidden="true">
+              🚁
+            </span>
+
+          </div>
+
+
+          <div class="card-content">
+
+            <h3 data-i18n="helicopterTitle">
+              Paper Helicopter
+            </h3>
+
+            <p data-i18n="helicopterDescription">
+              Change the helicopter dimensions and
+              observe how they affect flight time.
+            </p>
+
+
+            <div class="factor-list">
+
+              <span data-i18n="rotor">
+                Rotor
+              </span>
+
+              <span data-i18n="body">
+                Body
+              </span>
+
+              <span data-i18n="fold">
+                Fold
+              </span>
+
+            </div>
+
+          </div>
+
+
+          <a
+            class="open-button"
+            href="../Helicopter/helicopter.html"
+          >
+
+            <span data-i18n="openLab">
+              Open lab
+            </span>
+
+            <span aria-hidden="true">
+              →
+            </span>
+
+          </a>
+
+        </article>
+
+
+        <!-- =====================
+             CATAPULT
+        ====================== -->
+
+        <article class="experiment-card unavailable">
+
+          <div class="card-top">
+
+            <span class="module-number">
+              03
+            </span>
+
+            <span
+              class="status coming"
+              data-i18n="comingSoon"
+            >
+              Coming soon
+            </span>
+
+          </div>
+
+
+          <div class="experiment-visual catapult-visual">
+
+            <span aria-hidden="true">
+              ⚙️
+            </span>
+
+          </div>
+
+
+          <div class="card-content">
+
+            <h3 data-i18n="catapultTitle">
+              Catapult
+            </h3>
+
+            <p data-i18n="catapultDescription">
+              Study how launch angle, pivot position,
+              and tension affect launch distance.
+            </p>
+
+
+            <div class="factor-list">
+
+              <span data-i18n="angle">
+                Angle
+              </span>
+
+              <span data-i18n="pivot">
+                Pivot
+              </span>
+
+              <span data-i18n="tension">
+                Tension
+              </span>
+
+            </div>
+
+          </div>
+
+
+          <div class="disabled-button">
+
+            <span data-i18n="notAvailable">
+              Not available yet
+            </span>
+
+          </div>
+
+        </article>
+
+
+        <!-- =====================
+             WATER BOTTLE ROCKET
+        ====================== -->
+
+        <article class="experiment-card">
+
+          <div class="card-top">
+
+            <span class="module-number">
+              04
+            </span>
+
+            <span
+              class="status available"
+              data-i18n="available"
+            >
+              Available
+            </span>
+
+          </div>
+
+
+          <div class="experiment-visual rocket-visual">
+
+            <span aria-hidden="true">
+              🚀
+            </span>
+
+          </div>
+
+
+          <div class="card-content">
+
+            <h3 data-i18n="rocketTitle">
+              Water Bottle Rocket
+            </h3>
+
+            <p data-i18n="rocketDescription">
+              Explore a 2⁴ full factorial experiment
+              using angle, fins, water, and pressure.
+            </p>
+
+
+            <div class="factor-list">
+
+              <span data-i18n="angle">
+                Angle
+              </span>
+
+              <span data-i18n="fins">
+                Fins
+              </span>
+
+              <span data-i18n="water">
+                Water
+              </span>
+
+              <span data-i18n="pressure">
+                Pressure
+              </span>
+
+            </div>
+
+          </div>
+
+
+          <a
+            class="open-button"
+            href="../waterBottleRocket/index.html"
+          >
+
+            <span data-i18n="openLab">
+              Open lab
+            </span>
+
+            <span aria-hidden="true">
+              →
+            </span>
+
+          </a>
+
+        </article>
+
+      </div>
+
+    </section>
+
+
+    <!-- =========================
+         HOW IT WORKS
+    ========================== -->
+
+    <section
+      id="about"
+      class="workflow-section"
+    >
+
+      <div class="workflow-heading">
+
+        <p
+          class="section-label"
+          data-i18n="workflowLabel"
+        >
+          HOW IT WORKS
+        </p>
+
+        <h2 data-i18n="workflowTitle">
+          Same workflow for every experiment.
+        </h2>
+
+        <p data-i18n="workflowIntro">
+          The modules use a similar process so you can
+          focus on the experiment instead of learning
+          a new interface every time.
+        </p>
+
+      </div>
+
+
+      <div class="workflow-list">
+
+
+        <article class="workflow-item">
+
+          <span class="workflow-number">
+            01
+          </span>
+
+          <div>
+
+            <h3 data-i18n="configure">
+              Configure
+            </h3>
+
+            <p data-i18n="configureDescription">
+              Select factor levels for the experiment.
+            </p>
+
+          </div>
+
+        </article>
+
+
+        <article class="workflow-item">
+
+          <span class="workflow-number">
+            02
+          </span>
+
+          <div>
+
+            <h3 data-i18n="simulate">
+              Simulate
+            </h3>
+
+            <p data-i18n="simulateDescription">
+              Run the experiment and observe the response.
+            </p>
+
+          </div>
+
+        </article>
+
+
+        <article class="workflow-item">
+
+          <span class="workflow-number">
+            03
+          </span>
+
+          <div>
+
+            <h3 data-i18n="record">
+              Record
+            </h3>
+
+            <p data-i18n="recordDescription">
+              Each run is automatically added to the
+              experiment history.
+            </p>
+
+          </div>
+
+        </article>
+
+
+        <article class="workflow-item">
+
+          <span class="workflow-number">
+            04
+          </span>
+
+          <div>
+
+            <h3 data-i18n="analyze">
+              Analyze
+            </h3>
+
+            <p data-i18n="analyzeDescription">
+              Compare the results using tables and graphs.
+            </p>
+
+          </div>
+
+        </article>
+
+      </div>
+
+    </section>
+
+  </main>
+
+
+  <!-- =========================
+       FOOTER
+  ========================== -->
+
+  <footer class="footer">
+
+    <div>
+
+      <strong>
+        Virtual DOE Lab
+      </strong>
+
+      <span data-i18n="department">
+        Industrial Engineering
+      </span>
+
+    </div>
+
+
+    <p data-i18n="footerText">
+      Educational simulation — results are model estimates.
+    </p>
+
+
+    <span>
+      © 2026
+    </span>
+
+  </footer>
+
+</body>
+
+</html>
