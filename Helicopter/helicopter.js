@@ -37,7 +37,7 @@ const I18N = {
   th_low: { th: 'ต่ำ', en: 'Low' },
   th_high: { th: 'สูง', en: 'High' },
 
-  chip_stage: { th: 'พื้นที่จำลอง', en: 'Simulation Area' },
+  chip_stage: { th: 'การจำลองเฮลิคอปเตอร์กระดาษ', en: 'Paper Helicopter Simulator' },
 
   tt_drag: { th: 'ลาก', en: 'Drag' },
   tt_reset: { th: 'รีเซ็ตตำแหน่ง', en: 'Reset position' },
@@ -387,15 +387,15 @@ function currentMode() {
   return document.getElementById('stoToggle').checked ? 'sto' : 'det';
 }
  
-/* ==================== GRID DISPLAY ==================== */
+/* ==================== GRID DISPLAY - Replaces Lite Mode with a real, useful simulator option ==================== */
  
 function isGridEnabled() {
   return document.getElementById('gridToggle').checked;
 }
  
 function updateGridDisplay() {
-  const canvasArea = document.getElementById('simulatorCanvasArea');
-  canvasArea.classList.toggle('grid-off', !isGridEnabled());
+  const stage = document.getElementById('stage');
+  stage.classList.toggle('grid-off', !isGridEnabled());
   updateGridStatus();
 }
  
@@ -405,6 +405,17 @@ function updateGridStatus() {
 }
  
 document.getElementById('gridToggle').addEventListener('change', updateGridDisplay);
+
+function updateModeStatus() {
+  const isStochastic = document.getElementById('stoToggle').checked;
+  const modeStatus = document.getElementById('modeStatus');
+
+  modeStatus.textContent = isStochastic ? 'Stochastic ON' : 'Deterministic ON';
+  modeStatus.classList.toggle('stochastic', isStochastic);
+}
+
+document.getElementById('stoToggle').addEventListener('change', updateModeStatus);
+
  
 /* ==================== PHYSICS-ISH RESPONSE MODEL ==================== */
  
@@ -631,12 +642,11 @@ document.getElementById('tbReset').onclick = () => {
 };
  
 document.getElementById('tbFit').onclick = () => {
-  setZoom(100);
+  resetHelicopterPosition();
 };
  
 document.getElementById('tbOverview').onclick = () => {
   resetHelicopterPosition();
-  setZoom(100);
 };
  
 document.getElementById('menuExport').onclick = exportCSV;
@@ -645,61 +655,13 @@ document.getElementById('menuClear').onclick = clearLog;
 document.getElementById('menuUndo').onclick = removeLastRun;
  
 document.getElementById('menuFit').onclick = () => {
-  setZoom(100);
+  resetHelicopterPosition();
 };
  
 document.getElementById('menuAbout').onclick = () => {
   document.getElementById('result').textContent = t('msg_about');
 };
- 
-/* ==================== ZOOM ==================== */
- 
-const ZOOM_MIN = 50;
-const ZOOM_MAX = 200;
- 
-let zoomLevel = 100;
- 
-function updateZoomLabel() {
-  document.getElementById('zoomValue').textContent = `${zoomLevel}%`;
-}
- 
-function setZoom(value) {
-  zoomLevel = Math.round(Math.max(ZOOM_MIN, Math.min(ZOOM_MAX, value)));
- 
-  document.getElementById('zoomSlider').value = zoomLevel;
-  document.getElementById('simulatorStageFrame').style.transform =
-    `scale(${zoomLevel / 100})`;
- 
-  updateZoomLabel();
-}
- 
-function applyZoom() {
-  setZoom(Number(document.getElementById('zoomSlider').value));
-}
- 
-document.getElementById('zoomSlider').addEventListener('input', applyZoom);
- 
-document.getElementById('zoomMinus').onclick = () => {
-  setZoom(zoomLevel - 10);
-};
- 
-document.getElementById('zoomPlus').onclick = () => {
-  setZoom(zoomLevel + 10);
-};
- 
-document.getElementById('simulatorCanvasArea').addEventListener(
-  'wheel',
-  event => {
-    event.preventDefault();
- 
-    const speed = event.ctrlKey ? 0.6 : 0.18;
-    setZoom(zoomLevel - event.deltaY * speed);
-  },
-  { passive: false }
-);
- 
-setZoom(100);
- 
+
 /* ==================== NAVBAR DROPDOWN ==================== */
  
 const menuItems = Array.from(document.querySelectorAll('.nav-item'));
@@ -1094,6 +1056,7 @@ function applyProjectState(state) {
     : 200;
  
   document.getElementById('stoToggle').checked = !!state.stochastic;
+  updateModeStatus();
   document.getElementById('gridToggle').checked = state.grid !== false;
  
   document.getElementById('projNameInput').value = name;
@@ -1113,7 +1076,6 @@ function applyProjectState(state) {
   updateGridDisplay();
   renderLog();
   renderCharts();
-  setZoom(100);
   resetHelicopterPosition();
  
   document.getElementById('timeVal').textContent = '—';
