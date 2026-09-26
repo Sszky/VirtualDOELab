@@ -1,158 +1,72 @@
-/* ==================== I18N is --> Lang TH/EN ==================== */
-
+/* -------------------- I18N : Language TH/EN -------------------- */
 const I18N = {
-  menu_project: { th: 'โปรเจค', en: 'Project' },
-  menu_factors: { th: 'ปัจจัย', en: 'Factors' },
-  menu_tools: { th: 'เครื่องมือ', en: 'Tools' },
-  menu_help: { th: 'ช่วยเหลือ', en: 'Help' },
-  menu_new_project: { th: 'โปรเจคใหม่', en: 'New Project' },
-  menu_save: { th: 'บันทึก', en: 'Save' },
-  menu_export: { th: 'ส่งออกไฟล์ CSV', en: 'Export as File CSV' },
-  menu_theme: { th: 'ธีม', en: 'Theme' },
-  menu_tutorial: { th: 'แนะนำการใช้งาน', en: 'Tutorial guide' },
-  menu_runall: { th: 'รันครบ 2⁴ ครั้ง (16 รัน)', en: 'Run full 2⁴ (16 runs)' },
-  menu_clear: { th: 'ล้างข้อมูล', en: 'Clear data' },
-  menu_undo: { th: 'ย้อนกลับรันล่าสุด', en: 'Undo last run' },
-  menu_fit: { th: 'รีเซ็ตซูม', en: 'Reset zoom' },
-  menu_about: { th: 'เกี่ยวกับโมเดลจำลอง', en: 'About this model' },
-
-  user_chip: { th: 'นักศึกษา', en: 'Student' },
-  theme_modal_title: { th: 'เลือกธีม', en: 'Select Theme' },
-  theme_dark_label: { th: 'Dark Theme', en: 'Dark Theme' },
-  theme_light_label: { th: 'Light Theme', en: 'Light Theme' },
-  theme_apply: { th: 'ใช้ธีมนี้', en: 'Apply Theme' },
-
-  tab_experiment: { th: 'การทดลอง', en: 'Experiment' },
-
-  panel_factors_title: { th: 'ปัจจัยการทดลอง', en: 'Experiment Factors' },
-  search_placeholder: { th: 'ค้นหาปัจจัย...', en: 'Search factors...' },
-  wing_title: { th: 'ปีก', en: 'Wing Dimensions' },
-  body_title: { th: 'ลำตัว', en: 'Body Dimensions' },
-  misc_title: { th: 'อื่น ๆ', en: 'Misc' },
-  misc_note: {
-    th: 'โมเดลจำลองนี้ใช้สมการประมาณค่าเชิงเส้นจากปัจจัย WL, WW, BL, BW เพื่อสาธิตหลักการออกแบบการทดลองแบบ 2⁴ full-factorial ไม่ใช่ข้อมูลจากการทดลองจริง',
-    en: 'This simulation uses a linear approximation from factors WL, WW, BL, BW to demonstrate 2⁴ full-factorial DOE principles — it is not real experimental data.'
+  module_title: { th: 'เฮลิคอปเตอร์กระดาษ', en: 'Paper Helicopter' },
+  module_subtitle: { th: 'การออกแบบการทดลอง', en: 'Design of Experiments' },
+  kicker: { th: 'การทดลองเสมือน DOE · เฮลิคอปเตอร์กระดาษ', en: 'Virtual DOE experiment · Paper Helicopter' },
+  page_title: { th: 'การจำลองเฮลิคอปเตอร์กระดาษ', en: 'Paper Helicopter Simulation' },
+  page_lede: {
+    th: 'ปรับพารามิเตอร์แล้วกด "เริ่มทดลอง" เพื่อดูวิถีการร่อนลงและบันทึกผลการทดลอง',
+    en: 'Adjust the parameters and press "Run experiment" to watch it descend and log the result.'
   },
-  th_factor: { th: 'ปัจจัย', en: 'Factor' },
-  th_low: { th: 'ต่ำ', en: 'Low' },
-  th_high: { th: 'สูง', en: 'High' },
-
-  chip_stage: { th: 'การจำลองเฮลิคอปเตอร์กระดาษ', en: 'Paper Helicopter Simulator' },
-
-  tt_drag: { th: 'ลาก', en: 'Drag' },
+  factors_title: { th: 'กำหนดปัจจัย', en: 'Set factors' },
+  reset_label: { th: 'รีเซ็ต', en: 'Reset' },
+  mode_label: { th: 'โหมดการทดลอง', en: 'Experiment mode' },
+  mode_det: { th: 'ค่าคงที่', en: 'Deterministic' },
+  mode_sto: { th: 'มีการสุ่ม', en: 'Stochastic' },
+  mode_note_det: { th: 'ปัจจัยเดิมจะให้ผลลัพธ์เท่าเดิมเสมอ', en: 'Same factors always produce the same result.' },
+  mode_note_sto: { th: 'ผลลัพธ์จะมีความคลาดเคลื่อนเล็กน้อยแบบสุ่มทุกครั้งที่ทดลอง', en: 'Results include small random noise on every run.' },
+  run_label: { th: 'เริ่มทดลอง', en: 'Run experiment' },
+  simulate_title: { th: 'การจำลอง', en: 'Simulate' },
+  status_ready: { th: 'พร้อม', en: 'READY' },
+  status_running: { th: 'กำลังทดลอง', en: 'RUNNING' },
+  stat_time: { th: 'เวลาในการตก', en: 'Fall time' },
+  stat_height: { th: 'ความสูงที่ปล่อย', en: 'Drop height' },
+  stat_speed: { th: 'ความเร็วเฉลี่ย', en: 'Average speed' },
+  results_title: { th: 'ตารางผลการทดลอง', en: 'Results table' },
+  clear_label: { th: 'ล้างตาราง', en: 'Clear' },
+  export_label: { th: 'ส่งออก CSV', en: 'Export CSV' },
+  col_time: { th: 'เวลา (s)', en: 'Time (s)' },
+  table_empty: {
+    th: 'ยังไม่มีผลการทดลอง — กด "เริ่มทดลอง" เพื่อเริ่มต้น',
+    en: 'No results yet — press "Run experiment" to start.'
+  },
+  table_footnote: {
+    th: '* ผลการทดลองเก็บไว้ในหน่วยความจำของหน้านี้เท่านั้น รีเฟรชหน้าเว็บแล้วข้อมูลจะหายไป — ใช้ปุ่ม "ส่งออก CSV" เพื่อบันทึกเป็นไฟล์',
+    en: '* Results live only in this page\'s memory — refreshing clears them. Use "Export CSV" to save a file.'
+  },
+  charts_title: { th: 'กราฟผลกระทบหลัก / กราฟปฏิสัมพันธ์', en: 'Main Effects / Interaction Plots' },
+  charts_lede: {
+    th: 'ดูว่าแต่ละปัจจัยส่งผลต่อเวลาในการตกอย่างไร จากผลการทดลองที่บันทึกไว้',
+    en: 'See how each factor affects fall time, based on the results you have logged.'
+  },
+  chart_type_label: { th: 'ชนิดกราฟ', en: 'Chart type' },
+  chart_main: { th: 'ผลกระทบหลัก (Main Effects)', en: 'Main Effects' },
+  chart_interaction: { th: 'ปฏิสัมพันธ์ (Interaction)', en: 'Interaction' },
+  axis_x_label: { th: 'ปัจจัย (แกน X)', en: 'Factor (X axis)' },
+  axis_trace_label: { th: 'ปัจจัยที่สอง (เส้น)', en: 'Second factor (line)' },
+  axis_y_note: { th: 'แกน Y: เวลาในการตกเฉลี่ย (s)', en: 'Y axis: average fall time (s)' },
+  chart_note: { th: 'ค่าเฉลี่ยเวลาต่อค่าที่บันทึกไว้', en: 'Average time from logged runs' },
+  chart_empty: {
+    th: 'บันทึกผลอย่างน้อย 2 ครั้งที่มีค่าปัจจัยนี้ต่างกัน เพื่อดูกราฟนี้',
+    en: 'Log at least 2 runs with different values of this factor to see this chart.'
+  },
+  search_placeholder: { th: 'ค้นหาปัจจัย...', en: 'Search factors...' },
+  search_empty: { th: 'ไม่พบปัจจัยที่ค้นหา', en: 'No matching factors.' },
+  group_wing: { th: 'มิติปีก', en: 'Wing Dimensions' },
+  group_body: { th: 'มิติลำตัว', en: 'Body Dimensions' },
   tt_reset: { th: 'รีเซ็ตตำแหน่ง', en: 'Reset position' },
+  tt_undo: { th: 'ย้อนกลับรันล่าสุด', en: 'Undo last run' },
   tt_export: { th: 'ส่งออก CSV', en: 'Export CSV' },
   tt_clear: { th: 'ล้างข้อมูล', en: 'Clear data' },
-  tt_overview: { th: 'ภาพรวม', en: 'Overview' },
-  tt_undo: { th: 'ย้อนกลับ', en: 'Undo' },
   tt_run: { th: 'เริ่มทดลอง', en: 'Run experiment' },
-
-  readout_time: { th: 'เวลาในการตก', en: 'Fall Time' },
-  readout_height: { th: 'ความสูงที่ปล่อย', en: 'Drop Height' },
-
-  panel_props_title: { th: 'คุณสมบัติ', en: 'Properties' },
-  section_props: { th: 'คุณสมบัติการทดลอง', en: 'Experiment Properties' },
-  label_projname: { th: 'ชื่อโปรเจค:', en: 'Project Name:' },
-  label_design: { th: 'รูปแบบการทดลอง:', en: 'Design Type:' },
-  label_height: { th: 'ความสูงที่ปล่อย (ซม.):', en: 'Drop Height (cm):' },
-  toggle_sto: { th: 'โหมดสุ่ม (Stochastic):', en: 'Stochastic Mode:' },
-  toggle_grid: { th: 'แสดงกริด (Grid):', en: 'Show Grid:' },
-
-  mode_status_label: { th: 'โหมด', en: 'Mode' },
-
-  btn_run: { th: 'เริ่มทดลอง', en: 'Run Experiment' },
-  btn_runall: { th: 'รันครบ 2⁴ ครั้ง (16 รัน)', en: 'Run full 2⁴ (16 runs)' },
-  btn_clear: { th: 'ล้างข้อมูล', en: 'Clear Data' },
-
-  card_log_title: { th: 'ตารางบันทึกผลการทดลอง', en: 'Experiment Log' },
-  th_flighttime: { th: 'เวลา (s)', en: 'Time (s)' },
-  card_main_effects_title: { th: 'กราฟผลกระทบหลัก', en: 'Main Effects Plot' },
-  main_effects_note: {
-    th: 'ค่าเฉลี่ยผลลัพธ์ฝั่งต่ำเทียบกับฝั่งสูงของแต่ละปัจจัย',
-    en: 'Average result at the low vs. high side of each factor.'
-  },
-  card_interaction_title: { th: 'กราฟอันตรกิริยา (WL × WW)', en: 'Interaction Plot (WL × WW)' },
-  legend_low: { th: 'WW = ต่ำ', en: 'WW = Low' },
-  legend_high: { th: 'WW = สูง', en: 'WW = High' },
-
-  factorA: { th: 'ความยาวปีก (WL)', en: 'Wing Length (WL)' },
-  factorB: { th: 'ความกว้างปีก (WW)', en: 'Wing Width (WW)' },
-  factorC: { th: 'ความยาวลำตัว (BL)', en: 'Body Length (BL)' },
-  factorD: { th: 'ความกว้างลำตัว (BW)', en: 'Body Width (BW)' },
-
-  badge_low: { th: 'ต่ำ (-)', en: 'Low (-)' },
-  badge_high: { th: 'สูง (+)', en: 'High (+)' },
-  badge_mid: { th: 'กลาง', en: 'Mid' },
-
-  msg_simulating: {
-    th: 'กำลังจำลอง... ปล่อยจากความสูง',
-    en: 'Simulating... dropped from height'
-  },
-  msg_flighttime: { th: 'เวลาบิน:', en: 'Flight time:' },
-  msg_runall_done: { th: 'รันครบ 16 การทดลองแล้ว', en: 'All 16 runs complete' },
-  msg_about: {
-    th: 'โมเดลจำลองสาธิตหลักการ DOE 2⁴ full-factorial (ไม่ใช่ข้อมูลจากการทดลองจริง)',
-    en: 'This model demonstrates 2⁴ full-factorial DOE principles (not real experimental data).'
-  },
-  msg_export_none: { th: 'ไม่มีข้อมูลให้ส่งออก', en: 'No data to export' },
-  msg_export_done: { th: 'ดาวน์โหลดไฟล์แล้ว', en: 'File downloaded' },
-  chart_no_data: { th: 'ยังไม่มีข้อมูลเพียงพอ', en: 'Not enough data yet' },
-
-  confirm_new_project: {
-    th: 'สร้างโปรเจคใหม่? ข้อมูลที่ยังไม่ได้บันทึกจะหายไป',
-    en: 'Start a new project? Unsaved data will be lost.'
-  },
-  msg_new_project: { th: 'สร้างโปรเจคใหม่แล้ว', en: 'New project created' },
-  msg_saved: { th: 'บันทึกโปรเจคแล้ว', en: 'Project saved' },
-  msg_save_failed: {
-    th: 'บันทึกไม่สำเร็จ (เบราว์เซอร์ไม่อนุญาตให้เก็บข้อมูล)',
-    en: 'Could not save (browser storage is unavailable)'
-  },
-
-  tut_skip: { th: 'ข้าม', en: 'Skip' },
-  tut_prev: { th: 'ย้อนกลับ', en: 'Back' },
-  tut_next: { th: 'ถัดไป', en: 'Next' },
-  tut_finish: { th: 'เสร็จสิ้น', en: 'Finish' },
-
-  tut1_title: { th: 'ยินดีต้อนรับสู่ Paper Helicopter DOE Lab', en: 'Welcome to Paper Helicopter DOE Lab' },
-  tut1_text: {
-    th: 'จำลองการทดลองเฮลิคอปเตอร์กระดาษเพื่อฝึกออกแบบการทดลอง (DOE) ทัวร์สั้น ๆ นี้จะพาไปรู้จักส่วนสำคัญของหน้าจอ',
-    en: 'Simulate paper helicopter experiments to practice Design of Experiments (DOE). This short tour introduces the main parts of the screen.'
-  },
-  tut2_title: { th: 'ปัจจัยการทดลอง', en: 'Experiment factors' },
-  tut2_text: {
-    th: 'เลื่อนแถบ WL, WW, BL, BW เพื่อกำหนดขนาดปีกและลำตัว ระดับต่ำ (−) หรือสูง (+) เฮลิคอปเตอร์ในพื้นที่จำลองจะเปลี่ยนตามทันที',
-    en: 'Move the WL, WW, BL, BW sliders to set wing and body sizes at the low (−) or high (+) level. The helicopter in the simulation area updates right away.'
-  },
-  tut3_title: { th: 'พื้นที่จำลอง', en: 'Simulation area' },
-  tut3_text: {
-    th: 'เฮลิคอปเตอร์จะถูกปล่อยจากความสูงที่กำหนดและหมุนตกลงมา เวลาที่ตกแสดงที่มุมขวาบน ใช้ลูกกลิ้งเมาส์เพื่อซูมได้',
-    en: 'The helicopter is dropped from the chosen height and spins down. The fall time appears at the top right. Use the mouse wheel to zoom.'
-  },
-  tut4_title: { th: 'แถบเครื่องมือ', en: 'Toolbar' },
-  tut4_text: {
-    th: 'รีเซ็ตตำแหน่ง ส่งออก CSV ล้างข้อมูล ย้อนกลับรันล่าสุด ปรับซูม และปุ่ม ▶ สำหรับเริ่มทดลอง',
-    en: 'Reset position, export CSV, clear data, undo the last run, adjust zoom, and press ▶ to run an experiment.'
-  },
-  tut5_title: { th: 'คุณสมบัติการทดลอง', en: 'Experiment properties' },
-  tut5_text: {
-    th: 'ตั้งความสูงที่ปล่อย เปิดโหมดสุ่ม (Stochastic) เพื่อใส่ความแปรปรวนแบบการทดลองจริง แล้วกด "เริ่มทดลอง" หรือ "รันครบ 2⁴ (16 รัน)"',
-    en: 'Set the drop height and turn on Stochastic mode to add real-experiment noise. Then press "Run Experiment" or "Run full 2⁴ (16 runs)".'
-  },
-  tut6_title: { th: 'เมนูโปรเจค', en: 'Project menu' },
-  tut6_text: {
-    th: 'สร้างโปรเจคใหม่ บันทึกงานไว้ในเบราว์เซอร์ (Ctrl+S) หรือส่งออกเป็นไฟล์ CSV เพื่อวิเคราะห์ต่อในโปรแกรมสถิติ',
-    en: 'Start a new project, save your work in the browser (Ctrl+S), or export a CSV file to analyze in statistical software.'
-  },
-  tut7_title: { th: 'เมนูปัจจัย', en: 'Factors menu' },
-  tut7_text: {
-    th: 'รันครบ 16 รัน ล้างข้อมูล และเปลี่ยนธีมสว่าง/มืดได้จากเมนูนี้',
-    en: 'Run all 16 runs, clear data, and switch between light and dark themes from this menu.'
-  },
-  tut8_title: { th: 'ตารางผลและกราฟ', en: 'Results and plots' },
-  tut8_text: {
-    th: 'ทุกรันถูกบันทึกในตาราง พร้อมกราฟผลกระทบหลักและกราฟอันตรกิริยา WL × WW ที่อัปเดตอัตโนมัติ',
-    en: 'Every run is logged in the table, with main effects and WL × WW interaction plots that update automatically.'
+  theme_modal_title: { th: 'เลือกธีม', en: 'Choose theme' },
+  theme_light: { th: 'สว่าง (Light)', en: 'Light' },
+  theme_dark: { th: 'มืด (Dark)', en: 'Dark' },
+  close_label: { th: 'ปิด', en: 'Close' },
+  footer_left: { th: 'Virtual DOE Lab · Paper Helicopter Module', en: 'Virtual DOE Lab · Paper Helicopter Module' },
+  footer_right: {
+    th: 'การจำลองเพื่อการศึกษา — ผลลัพธ์เป็นค่าประมาณจากแบบจำลอง',
+    en: 'Educational simulation — results are model estimates.'
   }
 };
 
@@ -164,340 +78,247 @@ function t(key) {
 
 function applyI18n() {
   document.querySelectorAll('[data-i18n]').forEach(element => {
-    element.textContent = t(element.dataset.i18n);
+    element.textContent = t(element.getAttribute('data-i18n'));
   });
-
-  document.querySelectorAll('[data-i18n-placeholder]').forEach(element => {
-    element.placeholder = t(element.dataset.i18nPlaceholder);
-  });
-
   document.querySelectorAll('[data-i18n-title]').forEach(element => {
-    element.title = t(element.dataset.i18nTitle);
+    element.title = t(element.getAttribute('data-i18n-title'));
   });
+  document.querySelectorAll('[data-i18n-placeholder]').forEach(element => {
+    element.placeholder = t(element.getAttribute('data-i18n-placeholder'));
+  });
+  document.getElementById('langToggle').textContent = LANG === 'th' ? 'EN' : 'TH';
 }
 
-function setLanguage(language) {
-  LANG = language;
-  document.documentElement.lang = language;
-
-  document.getElementById('btnTh').classList.toggle('active', language === 'th');
-  document.getElementById('btnEn').classList.toggle('active', language === 'en');
-
+document.getElementById('langToggle').addEventListener('click', () => {
+  LANG = LANG === 'th' ? 'en' : 'th';
   applyI18n();
+  renderFactorFields();
+  renderModeNote();
+  populateFactorSelects();
+  renderChart();
+});
 
-  document.querySelectorAll('.slider-field').forEach(element => {
-    const factor = FACTORS.find(item => item.key === element.dataset.key);
-    if (factor) {
-      element.querySelector('.factor-label').textContent = t(factor.i18nKey);
-    }
-  });
-
-  FACTORS.forEach(factor => updateSliderReadout(factor.key));
-  updateGridStatus();
-  renderCharts();
-
-  if (tutorialActive) {
-    showTutorialStep(tutorialIndex);
+/* -------------------- Theme -------------------- */
+function applyTheme(theme) {
+  document.body.dataset.theme = theme;
+  document.getElementById('themeToggle').textContent = theme === 'dark' ? '☀' : '☾';
+  try {
+    localStorage.setItem('paperHeliDoeTheme', theme);
+  } catch (error) {
+    /* storage unavailable (e.g. restricted file:// context) - ignore */
   }
 }
 
-document.getElementById('btnTh').onclick = () => setLanguage('th');
-document.getElementById('btnEn').onclick = () => setLanguage('en');
+function openThemeModal() {
+  document.getElementById('themeModalOverlay').classList.add('show');
+}
 
-/* ==================== FACTORS ==================== */
- 
+function closeThemeModal() {
+  document.getElementById('themeModalOverlay').classList.remove('show');
+}
+
+document.getElementById('themeToggle').addEventListener('click', openThemeModal);
+
+document.getElementById('themeModalClose').addEventListener('click', closeThemeModal);
+
+document.getElementById('themeModalOverlay').addEventListener('click', event => {
+  if (event.target.id === 'themeModalOverlay') closeThemeModal();
+});
+
+document.getElementById('themeOptionLight').addEventListener('click', () => {
+  applyTheme('light');
+  closeThemeModal();
+});
+
+document.getElementById('themeOptionDark').addEventListener('click', () => {
+  applyTheme('dark');
+  closeThemeModal();
+});
+
+let storedTheme = 'light';
+try {
+  storedTheme = localStorage.getItem('paperHeliDoeTheme') || 'light';
+} catch (error) {
+  /* storage unavailable - fall back to light */
+}
+applyTheme(storedTheme);
+
+/* -------------------- Factors -------------------- */
 const FACTORS = [
-  { key: 'WL', i18nKey: 'factorA', unit: 'cm', low: 8, high: 12 },
-  { key: 'WW', i18nKey: 'factorB', unit: 'cm', low: 3, high: 5 },
-  { key: 'BL', i18nKey: 'factorC', unit: 'cm', low: 5, high: 8 },
-  { key: 'BW', i18nKey: 'factorD', unit: 'cm', low: 2, high: 3 }
+  { key: 'A', th: 'ความยาวปีก (A)', en: 'Wing length (A)', unit: 'cm', low: 8, high: 12 },
+  { key: 'B', th: 'ความกว้างปีก (B)', en: 'Wing width (B)', unit: 'cm', low: 3, high: 5 },
+  { key: 'C', th: 'ความยาวลำตัว (C)', en: 'Body length (C)', unit: 'cm', low: 5, high: 8 },
+  { key: 'D', th: 'ความกว้างลำตัว (D)', en: 'Body width (D)', unit: 'cm', low: 2, high: 3 }
 ];
- 
-let DROP_HEIGHT_CM = 200;
- 
-const DEFAULT_VAL = {
-  WL: 10,
-  WW: 4,
-  BL: 6.5,
-  BW: 2.5
-};
- 
-let VAL = { ...DEFAULT_VAL };
- 
+const FACTOR_GROUPS = [
+  { id: 'wing', th: 'มิติปีก', en: 'Wing Dimensions', keys: ['A', 'B'] },
+  { id: 'body', th: 'มิติลำตัว', en: 'Body Dimensions', keys: ['C', 'D'] }
+];
+let OPEN_GROUPS = new Set(['wing', 'body']);
+let SEARCH_QUERY = '';
+
+const DROP_HEIGHT_M = 2.0;
+const DEFAULTS = { A: 10, B: 4, C: 6.5, D: 2.5 };
+let VAL = { ...DEFAULTS };
+
 function coded(key) {
   const factor = FACTORS.find(item => item.key === key);
   return -1 + 2 * (VAL[key] - factor.low) / (factor.high - factor.low);
 }
- 
-function levelBadge(codedValue) {
-  if (codedValue <= -0.85) {
-    return { cls: 'low', key: 'badge_low' };
-  }
- 
-  if (codedValue >= 0.85) {
-    return { cls: 'high', key: 'badge_high' };
-  }
- 
-  return { cls: '', key: 'badge_mid' };
-}
- 
-document.getElementById('factorTable').innerHTML = FACTORS.map(factor =>
-  `<tr>
-    <td><b>${factor.key}</b></td>
-    <td>${factor.low}</td>
-    <td>${factor.high}</td>
-  </tr>`
-).join('');
- 
-function buildSlider(factor) {
+
+function factorFieldHtml(factor) {
   const step = ((factor.high - factor.low) / 40).toFixed(2);
- 
   return `
-    <div class="slider-field" data-key="${factor.key}">
-      <div class="field-head">
-        <span class="factor-label">${t(factor.i18nKey)}</span>
-        <span class="val" id="val${factor.key}">
-          ${VAL[factor.key].toFixed(1)} ${factor.unit}
-        </span>
+    <div class="factor-field">
+      <div class="factor-field-head">
+        <label for="sl${factor.key}">${LANG === 'th' ? factor.th : factor.en}</label>
+        <input type="number" id="num${factor.key}" class="factor-number"
+          min="${factor.low}" max="${factor.high}" step="${step}" value="${VAL[factor.key].toFixed(1)}">
       </div>
- 
-      <input
-        type="range"
-        id="sl${factor.key}"
-        min="${factor.low}"
-        max="${factor.high}"
-        step="${step}"
-        value="${VAL[factor.key]}"
-      >
- 
-      <div class="range-labels">
-        <span>${factor.low}${factor.unit}</span>
-        <span>${factor.high}${factor.unit}</span>
-      </div>
- 
-      <span class="level-badge" id="badge${factor.key}"></span>
+      <input type="range" id="sl${factor.key}"
+        min="${factor.low}" max="${factor.high}" step="${step}" value="${VAL[factor.key]}">
+      <p class="factor-hint">${LANG === 'th' ? 'ค่าตามตาราง' : 'Range'} ${factor.low}–${factor.high} ${factor.unit}</p>
     </div>
   `;
 }
- 
-document.getElementById('wingSliders').innerHTML =
-  buildSlider(FACTORS[0]) + buildSlider(FACTORS[1]);
- 
-document.getElementById('bodySliders').innerHTML =
-  buildSlider(FACTORS[2]) + buildSlider(FACTORS[3]);
- 
-FACTORS.forEach(factor => {
-  document.getElementById('sl' + factor.key).addEventListener('input', event => {
-    VAL[factor.key] = parseFloat(event.target.value);
-    updateSliderReadout(factor.key);
-    updateHelicopterPreview();
+
+function renderFactorFields() {
+  const container = document.getElementById('factorAccordion');
+  const query = SEARCH_QUERY.trim().toLowerCase();
+
+  const groupsHtml = FACTOR_GROUPS.map(group => {
+    const items = FACTORS.filter(f => group.keys.includes(f.key));
+    const visibleItems = items.filter(f => {
+      const label = (LANG === 'th' ? f.th : f.en).toLowerCase();
+      return !query || label.includes(query);
+    });
+
+    if (!visibleItems.length) return '';
+
+    const isOpen = query ? true : OPEN_GROUPS.has(group.id);
+    const groupLabel = LANG === 'th' ? group.th : group.en;
+
+    return `
+      <div class="accordion-group ${isOpen ? 'open' : ''}" data-group="${group.id}">
+        <button class="accordion-header" type="button" data-group="${group.id}">
+          <span>${groupLabel}</span>
+          <span class="accordion-chevron">▾</span>
+        </button>
+        <div class="accordion-body">
+          ${visibleItems.map(factorFieldHtml).join('')}
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  container.innerHTML = groupsHtml || `<p class="empty-state">${t('search_empty')}</p>`;
+
+  FACTORS.forEach(factor => {
+    const slider = document.getElementById('sl' + factor.key);
+    const number = document.getElementById('num' + factor.key);
+    if (!slider || !number) return;
+
+    slider.addEventListener('input', () => {
+      VAL[factor.key] = parseFloat(slider.value);
+      number.value = VAL[factor.key].toFixed(1);
+      updateHeliPreview();
+    });
+
+    number.addEventListener('change', () => {
+      let value = parseFloat(number.value);
+      if (Number.isNaN(value)) value = DEFAULTS[factor.key];
+      value = Math.min(factor.high, Math.max(factor.low, value));
+      VAL[factor.key] = value;
+      slider.value = value;
+      number.value = value.toFixed(1);
+      updateHeliPreview();
+    });
   });
-});
- 
-function updateSliderReadout(key) {
-  const factor = FACTORS.find(item => item.key === key);
-  const valueElement = document.getElementById('val' + key);
-  const badgeElement = document.getElementById('badge' + key);
- 
-  valueElement.textContent = `${VAL[key].toFixed(1)} ${factor.unit}`;
- 
-  const badge = levelBadge(coded(key));
-  badgeElement.textContent = t(badge.key);
-  badgeElement.className = `level-badge ${badge.cls}`;
+
+  container.querySelectorAll('.accordion-header').forEach(header => {
+    header.addEventListener('click', () => {
+      if (SEARCH_QUERY.trim()) return;
+      const groupId = header.dataset.group;
+      if (OPEN_GROUPS.has(groupId)) {
+        OPEN_GROUPS.delete(groupId);
+      } else {
+        OPEN_GROUPS.add(groupId);
+      }
+      header.closest('.accordion-group').classList.toggle('open');
+    });
+  });
 }
- 
-FACTORS.forEach(factor => updateSliderReadout(factor.key));
- 
-/* ==================== FACTOR SEARCH ==================== */
- 
+
 document.getElementById('factorSearch').addEventListener('input', event => {
-  const query = event.target.value.trim().toLowerCase();
- 
-  document.querySelectorAll('.slider-field').forEach(element => {
-    const factor = FACTORS.find(item => item.key === element.dataset.key);
- 
-    const searchText = (
-      I18N[factor.i18nKey].th + ' ' +
-      I18N[factor.i18nKey].en
-    ).toLowerCase();
- 
-    element.style.display = searchText.includes(query) ? '' : 'none';
+  SEARCH_QUERY = event.target.value;
+  renderFactorFields();
+});
+
+document.getElementById('resetBtn').addEventListener('click', () => {
+  VAL = { ...DEFAULTS };
+  renderFactorFields();
+  updateHeliPreview();
+});
+
+/* -------------------- Live Helicopter Preview -------------------- */
+function updateHeliPreview() {
+  const wrap = document.getElementById('heliWrap');
+  wrap.style.setProperty('--wingL', Math.round(24 + VAL.A * 5.2) + 'px');
+  wrap.style.setProperty('--wingW', Math.round(10 + VAL.B * 4.4) + 'px');
+  wrap.style.setProperty('--bodyH', Math.round(18 + VAL.C * 4.6) + 'px');
+  wrap.style.setProperty('--bodyW', Math.round(6 + VAL.D * 3.2) + 'px');
+}
+
+function resetHeliPosition() {
+  const wrap = document.getElementById('heliWrap');
+  wrap.style.transition = 'none';
+  wrap.style.top = '14px';
+  wrap.style.transform = 'translate(-50%,0) rotate(0deg)';
+}
+
+document.getElementById('tbReset').addEventListener('click', resetHeliPosition);
+
+/* -------------------- Mode (Deterministic / Stochastic) -------------------- */
+let MODE = 'det';
+
+function renderModeNote() {
+  document.getElementById('modeNote').textContent = t(MODE === 'det' ? 'mode_note_det' : 'mode_note_sto');
+}
+
+document.querySelectorAll('#modeSegmented .seg-btn').forEach(button => {
+  button.addEventListener('click', () => {
+    MODE = button.dataset.mode;
+    document.querySelectorAll('#modeSegmented .seg-btn').forEach(btn => btn.classList.toggle('active', btn === button));
+    renderModeNote();
   });
 });
- 
-/* ==================== HELICOPTER PREVIEW ==================== */
- 
-function updateHelicopterPreview() {
-  const helicopter = document.getElementById('heliWrap');
- 
-  const wingLength = Math.round(24 + VAL.WL * 5.2);
-  const wingWidth = Math.round(10 + VAL.WW * 4.4);
-  const bodyHeight = Math.round(18 + VAL.BL * 4.6);
-  const bodyWidth = Math.round(6 + VAL.BW * 3.2);
- 
-  helicopter.style.setProperty('--wingL', `${wingLength}px`);
-  helicopter.style.setProperty('--wingW', `${wingWidth}px`);
-  helicopter.style.setProperty('--bodyH', `${bodyHeight}px`);
-  helicopter.style.setProperty('--bodyW', `${bodyWidth}px`);
-}
- 
-updateHelicopterPreview();
- 
-/* ==================== PROJECT TITLE ==================== */
- 
-document.getElementById('projNameInput').addEventListener('input', event => {
-  document.getElementById('projectTitle').textContent =
-    event.target.value.trim() || 'Untitled';
-});
- 
-/* ==================== DROP HEIGHT ==================== */
- 
-function refreshHeightDisplay() {
-  document.getElementById('heightInput').value = DROP_HEIGHT_CM;
-  document.getElementById('heightReadout').textContent =
-    (DROP_HEIGHT_CM / 100).toFixed(2);
-}
- 
-document.getElementById('heightMinus').onclick = () => {
-  DROP_HEIGHT_CM = Math.max(100, DROP_HEIGHT_CM - 10);
-  refreshHeightDisplay();
-};
- 
-document.getElementById('heightPlus').onclick = () => {
-  DROP_HEIGHT_CM = Math.min(400, DROP_HEIGHT_CM + 10);
-  refreshHeightDisplay();
-};
- 
-refreshHeightDisplay();
- 
-/* ==================== SIMULATION MODES ==================== */
- 
-function currentMode() {
-  return document.getElementById('stoToggle').checked ? 'sto' : 'det';
-}
- 
-/* ==================== GRID DISPLAY - Replaces Lite Mode with a real, useful simulator option ==================== */
- 
-function isGridEnabled() {
-  return document.getElementById('gridToggle').checked;
-}
- 
-function updateGridDisplay() {
-  const stage = document.getElementById('stage');
-  const canvasArea = document.getElementById('simulatorCanvasArea');
-  const off = !isGridEnabled();
-  stage.classList.toggle('grid-off', off);
-  canvasArea.classList.toggle('grid-off', off);
-  updateGridStatus();
-}
- 
-function updateGridStatus() {
-  const statusElement = document.getElementById('gridStatus');
-  statusElement.textContent = isGridEnabled() ? 'ON' : 'OFF';
-}
- 
-document.getElementById('gridToggle').addEventListener('change', updateGridDisplay);
 
-function updateModeStatus() {
-  const isStochastic = document.getElementById('stoToggle').checked;
-  const modeStatus = document.getElementById('modeStatus');
-
-  modeStatus.textContent = isStochastic ? 'Stochastic ON' : 'Deterministic ON';
-  modeStatus.classList.toggle('stochastic', isStochastic);
-}
-
-document.getElementById('stoToggle').addEventListener('change', updateModeStatus);
-
- 
-/* ==================== PHYSICS-ISH RESPONSE MODEL ==================== */
- 
+/* -------------------- Response Model -------------------- */
 function flightTime(a, b, c, d, mode) {
-  let time =
-    3.0 +
-    0.5 * a +
-    0.3 * b -
-    0.20 * c -
-    0.15 * d +
-    0.10 * a * b;
- 
-  time *= DROP_HEIGHT_CM / 200;
- 
-  if (mode === 'sto') {
-    time += (Math.random() - 0.5) * 0.3;
-  }
- 
-  time = Math.max(0.6, time);
- 
-  return Math.round(time * 100) / 100;
+  let time = 3.0 + 0.5 * a + 0.3 * b - 0.20 * c - 0.15 * d + 0.10 * a * b;
+  if (mode === 'sto') time += (Math.random() - 0.5) * 0.3;
+  return Math.max(0.6, Math.round(time * 100) / 100);
 }
- 
-/* ==================== EXPERIMENT LOG ==================== */
- 
-let LOG = [];
- 
-function addRun(wlCm, wwCm, blCm, bwCm, time) {
-  LOG.push({
-    run: LOG.length + 1,
-    WL: wlCm,
-    WW: wwCm,
-    BL: blCm,
-    BW: bwCm,
-    t: time
-  });
- 
-  renderLog();
-  renderCharts();
-}
- 
-function removeLastRun() {
-  if (!LOG.length) {
-    return;
-  }
- 
-  LOG.pop();
- 
-  LOG.forEach((row, index) => {
-    row.run = index + 1;
-  });
- 
-  renderLog();
-  renderCharts();
-}
- 
-function renderLog() {
-  document.getElementById('logBody').innerHTML = LOG.map(row =>
-    `<tr>
-      <td>${row.run}</td>
-      <td>${row.WL.toFixed(1)}</td>
-      <td>${row.WW.toFixed(1)}</td>
-      <td>${row.BL.toFixed(1)}</td>
-      <td>${row.BW.toFixed(1)}</td>
-      <td>${row.t.toFixed(2)}</td>
-    </tr>`
-  ).join('');
-}
- 
-/* ==================== DROP ANIMATION ==================== */
- 
+
+/* -------------------- Run + Animation -------------------- */
 function animateDrop(time, callback) {
-  const helicopter = document.getElementById('heliWrap');
-  const stage = document.getElementById('stage');
- 
-  const maxY = Math.max(30, stage.clientHeight - 46);
- 
-  helicopter.style.transition = 'none';
-  helicopter.style.top = '8px';
-  helicopter.style.transform = 'translate(-50%, 0) rotate(0deg)';
+  const wrap = document.getElementById('heliWrap');
+  const stage = document.getElementById('stageVisual');
+  const maxY = stage.clientHeight - 50;
 
-  void helicopter.offsetHeight;   // รี animation ทุกครั้งที่มีการกดเริ่มการทดลอง
+  wrap.style.transition = 'none';
+  wrap.style.top = '14px';
+  wrap.style.transform = 'translate(-50%,0) rotate(0deg)';
 
-  helicopter.style.transition = `top ${time}s linear, transform ${time}s linear`;
-  helicopter.style.top = `${maxY}px`;
-  helicopter.style.transform = 'translate(-50%, 0) rotate(2520deg)';
- 
+  requestAnimationFrame(() => {
+    wrap.style.transition = `top ${time}s linear, transform ${time}s linear`;
+    wrap.style.top = maxY + 'px';
+    wrap.style.transform = `translate(-50%,0) rotate(${360 * 7}deg)`;
+  });
+
   setTimeout(callback, time * 1000);
 }
- 
+
 let isRunning = false;
 
 function setRunningState(running) {
@@ -506,799 +327,266 @@ function setRunningState(running) {
   document.getElementById('tbRun').disabled = running;
 }
 
-function runOne() {
-  if (isRunning) {
-    return;
-  }
-
+function runExperiment() {
+  if (isRunning) return;
   setRunningState(true);
 
-  const a = coded('WL');
-  const b = coded('WW');
-  const c = coded('BL');
-  const d = coded('BW');
+  const a = coded('A'), b = coded('B'), c = coded('C'), d = coded('D');
+  const time = flightTime(a, b, c, d, MODE);
 
-  const mode = currentMode();
-  const flightT = flightTime(a, b, c, d, mode);
-  const heightM = (DROP_HEIGHT_CM / 100).toFixed(2);
-
-  document.getElementById('result').textContent =
-    `${t('msg_simulating')} ${heightM} m`;
-
+  document.getElementById('statusPill').textContent = t('status_running');
   document.getElementById('timeVal').textContent = '…';
+  document.getElementById('speedVal').textContent = '…';
 
-  animateDrop(Math.min(flightT, 4), () => {
-    document.getElementById('timeVal').textContent = flightT.toFixed(2);
-
-    document.getElementById('result').innerHTML =
-      `${t('msg_flighttime')} <b>${flightT.toFixed(2)} s</b>`;
-
-    addRun(VAL.WL, VAL.WW, VAL.BL, VAL.BW, flightT);
+  animateDrop(Math.min(time, 4), () => {
+    document.getElementById('statusPill').textContent = t('status_ready');
+    document.getElementById('timeVal').textContent = time.toFixed(2);
+    document.getElementById('speedVal').textContent = (DROP_HEIGHT_M / time).toFixed(2);
+    addRun(VAL.A, VAL.B, VAL.C, VAL.D, time);
     setRunningState(false);
   });
 }
- 
-function runAll() {
-  const mode = currentMode();
-  const combinations = [];
- 
-  for (const a of [-1, 1]) {
-    for (const b of [-1, 1]) {
-      for (const c of [-1, 1]) {
-        for (const d of [-1, 1]) {
-          combinations.push([a, b, c, d]);
-        }
-      }
-    }
-  }
- 
-  function cmOf(factor, codedValue) {
-    return codedValue > 0 ? factor.high : factor.low;
-  }
- 
-  combinations.forEach(([a, b, c, d]) => {
-    const time = flightTime(a, b, c, d, mode);
- 
-    addRun(
-      cmOf(FACTORS[0], a),
-      cmOf(FACTORS[1], b),
-      cmOf(FACTORS[2], c),
-      cmOf(FACTORS[3], d),
-      time
-    );
-  });
- 
-  document.getElementById('result').textContent = t('msg_runall_done');
+
+document.getElementById('runBtn').addEventListener('click', runExperiment);
+document.getElementById('tbRun').addEventListener('click', runExperiment);
+
+/* -------------------- Log -------------------- */
+let LOG = [];
+
+function addRun(aCm, bCm, cCm, dCm, time) {
+  LOG.push({ run: LOG.length + 1, A: aCm, B: bCm, C: cCm, D: dCm, t: time });
+  renderLog();
+  renderChart();
 }
- 
-function clearLog() {
+
+function renderLog() {
+  const body = document.getElementById('logBody');
+  const empty = document.getElementById('tableEmpty');
+
+  body.innerHTML = LOG.map(row =>
+    `<tr><td>${row.run}</td><td>${row.A.toFixed(1)}</td><td>${row.B.toFixed(1)}</td>` +
+    `<td>${row.C.toFixed(1)}</td><td>${row.D.toFixed(1)}</td><td>${row.t.toFixed(2)}</td></tr>`
+  ).join('');
+
+  empty.style.display = LOG.length ? 'none' : 'block';
+}
+
+function undoLastRun() {
+  if (!LOG.length) return;
+  LOG.pop();
+  LOG.forEach((row, index) => { row.run = index + 1; });
+  renderLog();
+  renderChart();
+}
+
+document.getElementById('tbUndo').addEventListener('click', undoLastRun);
+document.getElementById('tbExport').addEventListener('click', () => document.getElementById('exportBtn').click());
+document.getElementById('tbClear').addEventListener('click', () => document.getElementById('clearBtn').click());
+
+document.getElementById('clearBtn').addEventListener('click', () => {
   LOG = [];
   renderLog();
-  renderCharts();
- 
-  document.getElementById('result').textContent = '';
+  renderChart();
   document.getElementById('timeVal').textContent = '—';
- 
-  resetHelicopterPosition();
-}
- 
-/* ==================== CSV EXPORT ==================== */
- 
-function exportCSV() {
-  const messageElement = document.getElementById('exportMsg');
- 
-  if (!LOG.length) {
-    messageElement.textContent = t('msg_export_none');
-    showToast(t('msg_export_none'));
-    return;
-  }
- 
-  let csv = 'Run,WL_cm,WW_cm,BL_cm,BW_cm,FlightTime_s\n';
- 
-  LOG.forEach(row => {
-    csv +=
-      `${row.run},${row.WL.toFixed(1)},${row.WW.toFixed(1)},` +
-      `${row.BL.toFixed(1)},${row.BW.toFixed(1)},${row.t.toFixed(2)}\n`;
-  });
- 
-  const blob = new Blob([csv], {
-    type: 'text/csv;charset=utf-8;'
-  });
- 
-  const url = URL.createObjectURL(blob);
-  const downloadLink = document.createElement('a');
- 
-  downloadLink.href = url;
-  downloadLink.download = 'paper_helicopter_doe_log.csv';
-  document.body.appendChild(downloadLink);
-  downloadLink.click();
-  document.body.removeChild(downloadLink);
- 
-  URL.revokeObjectURL(url);
- 
-  messageElement.textContent = t('msg_export_done');
-  showToast(t('msg_export_done'));
-}
- 
-/* ==================== HELICOPTER RESET ==================== */
- 
-function resetHelicopterPosition() {
-  const helicopter = document.getElementById('heliWrap');
- 
-  helicopter.style.transition = 'none';
-  helicopter.style.top = '8px';
-  helicopter.style.transform = 'translate(-50%, 0) rotate(0deg)';
-}
- 
-/* ==================== TOOLBAR + MAIN BUTTON EVENTS ==================== */
- 
-document.getElementById('runBtn').onclick = runOne;
-document.getElementById('runAllBtn').onclick = runAll;
-document.getElementById('clearBtn').onclick = clearLog;
- 
-document.getElementById('tbRun').onclick = runOne;
-document.getElementById('tbExport').onclick = exportCSV;
-document.getElementById('tbClear').onclick = clearLog;
-document.getElementById('tbUndo').onclick = removeLastRun;
- 
-document.getElementById('tbReset').onclick = () => {
-  resetHelicopterPosition();
-};
- 
-document.getElementById('tbOverview').onclick = () => {
-  resetHelicopterPosition();
-};
- 
-document.getElementById('menuExport').onclick = exportCSV;
-document.getElementById('menuRunAll').onclick = runAll;
-document.getElementById('menuClear').onclick = clearLog;
-document.getElementById('menuUndo').onclick = removeLastRun;
- 
-document.getElementById('menuFit').onclick = () => {
-  resetHelicopterPosition();
-};
- 
-document.getElementById('menuAbout').onclick = () => {
-  document.getElementById('result').textContent = t('msg_about');
-};
+  document.getElementById('speedVal').textContent = '—';
+});
 
-/* ==================== NAVBAR DROPDOWN ==================== */
- 
-const menuItems = Array.from(document.querySelectorAll('.nav-item'));
-const menuOverlay = document.getElementById('menuOverlay');
- 
-function closeAllMenus() {
-  menuItems.forEach(item => {
-    item.classList.remove('open');
- 
-    const button = item.querySelector('.nav-button');
-    if (button) {
-      button.setAttribute('aria-expanded', 'false');
-    }
+document.getElementById('exportBtn').addEventListener('click', () => {
+  if (!LOG.length) return;
+
+  let csv = 'Run,A_cm,B_cm,C_cm,D_cm,FlightTime_s\n';
+  LOG.forEach(row => {
+    csv += `${row.run},${row.A.toFixed(1)},${row.B.toFixed(1)},${row.C.toFixed(1)},${row.D.toFixed(1)},${row.t.toFixed(2)}\n`;
   });
- 
-  menuOverlay.classList.remove('show');
+
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = 'paper_helicopter_doe_log.csv';
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+});
+
+/* -------------------- Chart Control -------------------- */
+let CHART_TYPE = 'main';
+let CHART_X = 'A';
+let CHART_TRACE = 'B';
+
+function populateFactorSelects() {
+  const xSelect = document.getElementById('factorXSelect');
+  const traceSelect = document.getElementById('factorTraceSelect');
+
+  xSelect.innerHTML = FACTORS.map(f =>
+    `<option value="${f.key}" ${f.key === CHART_X ? 'selected' : ''}>${LANG === 'th' ? f.th : f.en}</option>`
+  ).join('');
+
+  traceSelect.innerHTML = FACTORS
+    .filter(f => f.key !== CHART_X)
+    .map(f => `<option value="${f.key}" ${f.key === CHART_TRACE ? 'selected' : ''}>${LANG === 'th' ? f.th : f.en}</option>`)
+    .join('');
 }
- 
-menuItems.forEach(item => {
-  const menuButton = item.querySelector('.nav-button');
- 
-  menuButton.addEventListener('click', event => {
-    event.stopPropagation();
- 
-    const isOpen = item.classList.contains('open');
- 
-    closeAllMenus();
- 
-    if (!isOpen) {
-      item.classList.add('open');
-      menuButton.setAttribute('aria-expanded', 'true');
-      menuOverlay.classList.add('show');
-    }
+
+document.getElementById('factorXSelect').addEventListener('change', event => {
+  CHART_X = event.target.value;
+  if (CHART_TRACE === CHART_X) {
+    CHART_TRACE = FACTORS.find(f => f.key !== CHART_X).key;
+  }
+  populateFactorSelects();
+  renderChart();
+});
+
+document.getElementById('factorTraceSelect').addEventListener('change', event => {
+  CHART_TRACE = event.target.value;
+  renderChart();
+});
+
+document.querySelectorAll('#chartTypeSegmented .seg-btn').forEach(button => {
+  button.addEventListener('click', () => {
+    CHART_TYPE = button.dataset.chart;
+    document.querySelectorAll('#chartTypeSegmented .seg-btn').forEach(btn => btn.classList.toggle('active', btn === button));
+    document.getElementById('factorTraceBlock').style.display = CHART_TYPE === 'interaction' ? 'block' : 'none';
+    renderChart();
   });
- 
-  item.querySelectorAll('.dropdown-item').forEach(dropdownItem => {
-    dropdownItem.addEventListener('click', () => {
-      closeAllMenus();
-    });
-  });
 });
- 
-menuOverlay.addEventListener('click', closeAllMenus);
- 
-document.addEventListener('click', event => {
-  if (!event.target.closest('.nav-item')) {
-    closeAllMenus();
-  }
-});
- 
-document.addEventListener('keydown', event => {
-  if (event.key === 'Escape') {
-    closeAllMenus();
-  }
-});
- 
-/* ==================== THEME SELECTOR ==================== */
- 
-const themeButton = document.getElementById('menuTheme');
-const themeOverlay = document.getElementById('themeModalOverlay');
-const themeCloseButton = document.getElementById('themeModalClose');
-const themeApplyButton = document.getElementById('themeApplyBtn');
- 
-const darkThemeCard = document.getElementById('cardDark');
-const lightThemeCard = document.getElementById('cardLight');
- 
-const darkThemeRadio = document.getElementById('radioDark');
-const lightThemeRadio = document.getElementById('radioLight');
- 
-function setActiveThemeCard(theme) {
-  darkThemeCard.classList.toggle('selected', theme === 'dark');
-  lightThemeCard.classList.toggle('selected', theme === 'light');
- 
-  darkThemeRadio.checked = theme === 'dark';
-  lightThemeRadio.checked = theme === 'light';
+
+/* -------------------- Chart Rendering -------------------- */
+function factorLabel(key) {
+  const factor = FACTORS.find(f => f.key === key);
+  return LANG === 'th' ? factor.th : factor.en;
 }
- 
-function applyTheme(theme) {
-  document.body.classList.toggle('theme-dark', theme === 'dark');
-  localStorage.setItem('helicopterDoeTheme', theme);
- 
-  setActiveThemeCard(theme);
-}
- 
-themeButton.onclick = () => {
-  themeOverlay.classList.add('show');
-};
- 
-themeCloseButton.onclick = () => {
-  themeOverlay.classList.remove('show');
-};
- 
-themeOverlay.addEventListener('click', event => {
-  if (event.target === themeOverlay) {
-    themeOverlay.classList.remove('show');
-  }
-});
- 
-darkThemeCard.onclick = () => setActiveThemeCard('dark');
-lightThemeCard.onclick = () => setActiveThemeCard('light');
- 
-themeApplyButton.onclick = () => {
-  const selectedTheme = lightThemeRadio.checked ? 'light' : 'dark';
- 
-  applyTheme(selectedTheme);
-  themeOverlay.classList.remove('show');
-};
- 
-applyTheme(localStorage.getItem('helicopterDoeTheme') || 'light');
- 
-/* ==================== CHARTS ==================== */
- 
+
 function codedOfRow(row, key) {
-  const factor = FACTORS.find(item => item.key === key);
+  const factor = FACTORS.find(f => f.key === key);
   return -1 + 2 * (row[key] - factor.low) / (factor.high - factor.low);
 }
- 
+
 function avgWhere(predicate) {
   const rows = LOG.filter(predicate);
- 
-  if (!rows.length) {
-    return null;
-  }
- 
+  if (!rows.length) return null;
   return rows.reduce((sum, row) => sum + row.t, 0) / rows.length;
 }
- 
-function renderCharts() {
-  renderMainEffects();
-  renderInteraction();
+
+function renderChart() {
+  document.getElementById('chartFactorTitle').textContent = factorLabel(CHART_X);
+
+  if (CHART_TYPE === 'main') {
+    renderMainEffectChart();
+  } else {
+    renderInteractionChart();
+  }
 }
- 
-function renderMainEffects() {
-  const svg = document.getElementById('mainEffectsChart');
-  const keys = ['WL', 'WW', 'BL', 'BW'];
- 
-  const effects = keys.map(key => {
-    const lowAverage = avgWhere(row => codedOfRow(row, key) < 0);
-    const highAverage = avgWhere(row => codedOfRow(row, key) > 0);
- 
-    if (lowAverage === null || highAverage === null) {
-      return null;
-    }
- 
-    return highAverage - lowAverage;
-  });
- 
-  const maxEffect = Math.max(
-    0.5,
-    ...effects.map(effect => Math.abs(effect || 0))
-  );
- 
-  const height = 180;
-  const middleY = 90;
-  const barWidth = 50;
- 
-  let bars = '';
- 
-  keys.forEach((key, index) => {
-    const effect = effects[index];
-    const x = 40 + index * 80;
- 
-    if (effect === null) {
-      bars += `
-        <text
-          x="${x + barWidth / 2}"
-          y="${middleY}"
-          font-size="10"
-          fill="var(--muted)"
-          text-anchor="middle"
-        >n/a</text>
-      `;
-    } else {
-      const barHeight =
-        (Math.abs(effect) / maxEffect) * 70;
- 
-      const y = effect >= 0
-        ? middleY - barHeight
-        : middleY;
- 
-      const color = effect >= 0
-        ? '#3f8efc'
-        : '#f5a524';
- 
-      bars += `
-        <rect
-          x="${x}"
-          y="${y}"
-          width="${barWidth}"
-          height="${barHeight}"
-          fill="${color}"
-          rx="3"
-        ></rect>
- 
-        <text
-          x="${x + barWidth / 2}"
-          y="${effect >= 0 ? y - 4 : y + barHeight + 12}"
-          font-size="10"
-          fill="var(--text)"
-          text-anchor="middle"
-        >${effect.toFixed(2)}</text>
-      `;
-    }
- 
-    bars += `
-      <text
-        x="${x + barWidth / 2}"
-        y="${height - 6}"
-        font-size="11"
-        fill="var(--text)"
-        text-anchor="middle"
-      >${key}</text>
+
+function drawAxes(svg, x0, x1, y0, y1, minValue, maxValue, tickCount) {
+  let ticks = '';
+  for (let i = 0; i <= tickCount; i++) {
+    const value = minValue + (i / tickCount) * (maxValue - minValue);
+    const y = y0 - (value - minValue) / (maxValue - minValue) * (y0 - y1);
+    ticks += `
+      <line x1="${x0}" y1="${y.toFixed(1)}" x2="${x1}" y2="${y.toFixed(1)}"
+        stroke="var(--border)" stroke-dasharray="2,3"></line>
+      <text x="${x0 - 8}" y="${(y + 3).toFixed(1)}" font-size="10" fill="var(--muted)"
+        text-anchor="end">${value.toFixed(2)}</text>
     `;
-  });
- 
-  svg.innerHTML =
-    `<line
-      x1="20"
-      y1="${middleY}"
-      x2="380"
-      y2="${middleY}"
-      stroke="var(--border)"
-    ></line>${bars}`;
+  }
+  return ticks +
+    `<line x1="${x0}" y1="${y0}" x2="${x0}" y2="${y1}" stroke="var(--border)"></line>
+     <line x1="${x0}" y1="${y0}" x2="${x1}" y2="${y0}" stroke="var(--border)"></line>`;
 }
- 
-function renderInteraction() {
-  const svg = document.getElementById('interactionChart');
- 
-  const aLevels = [-1, 1];
- 
-  const seriesLow = aLevels.map(a =>
-    avgWhere(row =>
-      Math.sign(codedOfRow(row, 'WL')) === a &&
-      codedOfRow(row, 'WW') < 0
-    )
-  );
- 
-  const seriesHigh = aLevels.map(a =>
-    avgWhere(row =>
-      Math.sign(codedOfRow(row, 'WL')) === a &&
-      codedOfRow(row, 'WW') > 0
-    )
-  );
- 
-  const allValues = [...seriesLow, ...seriesHigh]
-    .filter(value => value !== null);
- 
-  if (!allValues.length) {
-    svg.innerHTML = `
-      <text
-        x="200"
-        y="90"
-        font-size="12"
-        fill="var(--muted)"
-        text-anchor="middle"
-      >${t('chart_no_data')}</text>
-    `;
+
+function renderMainEffectChart() {
+  const svg = document.getElementById('chartSvg');
+  const emptyState = document.getElementById('chartEmpty');
+
+  const lowAverage = avgWhere(row => codedOfRow(row, CHART_X) < 0);
+  const highAverage = avgWhere(row => codedOfRow(row, CHART_X) > 0);
+
+  if (lowAverage === null || highAverage === null) {
+    svg.innerHTML = '';
+    emptyState.style.display = 'block';
     return;
   }
- 
+  emptyState.style.display = 'none';
+
+  const factor = FACTORS.find(f => f.key === CHART_X);
+  const x0 = 66, x1 = 400, y0 = 220, y1 = 30;
+  const minValue = Math.min(lowAverage, highAverage) - 0.2;
+  const maxValue = Math.max(lowAverage, highAverage) + 0.2;
+
+  const px = value => x0 + (value - factor.low) / (factor.high - factor.low) * (x1 - x0);
+  const py = value => y0 - (value - minValue) / (maxValue - minValue) * (y0 - y1);
+
+  svg.innerHTML = `
+    ${drawAxes(svg, x0, x1, y0, y1, minValue, maxValue, 4)}
+    <text x="${x0}" y="${y0 + 22}" font-size="11" fill="var(--text)" text-anchor="middle">${factor.low}${factor.unit}</text>
+    <text x="${x1}" y="${y0 + 22}" font-size="11" fill="var(--text)" text-anchor="middle">${factor.high}${factor.unit}</text>
+    <polyline points="${px(factor.low)},${py(lowAverage)} ${px(factor.high)},${py(highAverage)}"
+      fill="none" stroke="#7c2233" stroke-width="3"></polyline>
+    <circle cx="${px(factor.low)}" cy="${py(lowAverage)}" r="5" fill="#7c2233"></circle>
+    <circle cx="${px(factor.high)}" cy="${py(highAverage)}" r="5" fill="#7c2233"></circle>
+    <text x="${px(factor.low)}" y="${py(lowAverage) - 10}" font-size="10" fill="var(--text)" text-anchor="middle">${lowAverage.toFixed(2)} s</text>
+    <text x="${px(factor.high)}" y="${py(highAverage) - 10}" font-size="10" fill="var(--text)" text-anchor="middle">${highAverage.toFixed(2)} s</text>
+  `;
+}
+
+function renderInteractionChart() {
+  const svg = document.getElementById('chartSvg');
+  const emptyState = document.getElementById('chartEmpty');
+  const factor = FACTORS.find(f => f.key === CHART_X);
+
+  const cellAverage = (xSign, traceSign) =>
+    avgWhere(row => Math.sign(codedOfRow(row, CHART_X)) === xSign && Math.sign(codedOfRow(row, CHART_TRACE)) === traceSign);
+
+  const traceLow = [cellAverage(-1, -1), cellAverage(1, -1)];
+  const traceHigh = [cellAverage(-1, 1), cellAverage(1, 1)];
+  const allValues = [...traceLow, ...traceHigh].filter(v => v !== null);
+
+  if (allValues.length < 2) {
+    svg.innerHTML = '';
+    emptyState.style.display = 'block';
+    return;
+  }
+  emptyState.style.display = 'none';
+
+  const x0 = 66, x1 = 400, y0 = 220, y1 = 30;
   const minValue = Math.min(...allValues) - 0.2;
   const maxValue = Math.max(...allValues) + 0.2;
- 
-  const x0 = 60;
-  const x1 = 340;
-  const y0 = 150;
-  const y1 = 20;
- 
-  function px(index) {
-    return index === 0 ? x0 : x1;
-  }
- 
-  function py(value) {
-    return y0 -
-      (value - minValue) /
-      (maxValue - minValue) *
-      (y0 - y1);
-  }
- 
-  function pathFor(values, color) {
-    const points = values
-      .map((value, index) =>
-        value === null
-          ? null
-          : [px(index), py(value)]
-      )
-      .filter(Boolean);
- 
-    if (points.length < 2) {
-      return '';
-    }
- 
+  const px = index => (index === 0 ? x0 : x1);
+  const py = value => y0 - (value - minValue) / (maxValue - minValue) * (y0 - y1);
+
+  function lineFor(values, color) {
+    const points = values.map((v, i) => (v === null ? null : [px(i), py(v)])).filter(Boolean);
+    if (points.length < 2) return '';
     return `
-      <polyline
-        points="${points.map(point => point.join(',')).join(' ')}"
-        fill="none"
-        stroke="${color}"
-        stroke-width="2.5"
-      ></polyline>
-      ${points.map(point =>
-        `<circle
-          cx="${point[0]}"
-          cy="${point[1]}"
-          r="4"
-          fill="${color}"
-        ></circle>`
-      ).join('')}
+      <polyline points="${points.map(p => p.join(',')).join(' ')}" fill="none" stroke="${color}" stroke-width="3"></polyline>
+      ${points.map(p => `<circle cx="${p[0]}" cy="${p[1]}" r="5" fill="${color}"></circle>`).join('')}
     `;
   }
- 
-  svg.innerHTML =
-    `
-      <line
-        x1="${x0}"
-        y1="${y0}"
-        x2="${x1}"
-        y2="${y0}"
-        stroke="var(--border)"
-      ></line>
- 
-      <line
-        x1="${x0}"
-        y1="${y0}"
-        x2="${x0}"
-        y2="${y1}"
-        stroke="var(--border)"
-      ></line>
- 
-      <text
-        x="${x0}"
-        y="${y0 + 18}"
-        font-size="11"
-        fill="var(--text)"
-        text-anchor="middle"
-      >WL -</text>
- 
-      <text
-        x="${x1}"
-        y="${y0 + 18}"
-        font-size="11"
-        fill="var(--text)"
-        text-anchor="middle"
-      >WL +</text>
-    ` +
-    pathFor(seriesLow, '#3f8efc') +
-    pathFor(seriesHigh, '#f5a524');
-}
- 
-/* ==================== TOAST ==================== */
- 
-let toastTimer = null;
- 
-function showToast(message) {
-  const toast = document.getElementById('toast');
- 
-  toast.textContent = message;
-  toast.classList.add('show');
- 
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => toast.classList.remove('show'), 2200);
-}
- 
-/* ==================== Features: NEW / SAVE / LOAD ==================== */
- 
-const PROJECT_STORAGE_KEY = 'helicopterDoeProject';
-const DEFAULT_PROJECT_NAME = 'Paper Helicopter DOE Lab';
- 
-function collectProjectState() {
-  return {
-    name: document.getElementById('projNameInput').value,
-    VAL: { ...VAL },
-    height: DROP_HEIGHT_CM,
-    stochastic: document.getElementById('stoToggle').checked,
-    grid: document.getElementById('gridToggle').checked,
-    log: LOG
-  };
-}
- 
-function applyProjectState(state) {
-  const name = (state.name || DEFAULT_PROJECT_NAME);
- 
-  VAL = { ...DEFAULT_VAL };
-  FACTORS.forEach(factor => {
-    const value = state.VAL && Number(state.VAL[factor.key]);
-    if (Number.isFinite(value)) {
-      VAL[factor.key] = Math.min(factor.high, Math.max(factor.low, value));
-    }
-  });
- 
-  DROP_HEIGHT_CM = Number.isFinite(state.height)
-    ? Math.min(400, Math.max(100, state.height))
-    : 200;
- 
-  document.getElementById('stoToggle').checked = !!state.stochastic;
-  updateModeStatus();
-  document.getElementById('gridToggle').checked = state.grid !== false;
- 
-  document.getElementById('projNameInput').value = name;
-  document.getElementById('projectTitle').textContent = name.trim() || 'Untitled';
- 
-  LOG = (Array.isArray(state.log) ? state.log : [])
-    .filter(row => row && ['WL', 'WW', 'BL', 'BW', 't'].every(key => Number.isFinite(row[key])))
-    .map((row, index) => ({ ...row, run: index + 1 }));
- 
-  FACTORS.forEach(factor => {
-    document.getElementById('sl' + factor.key).value = VAL[factor.key];
-    updateSliderReadout(factor.key);
-  });
- 
-  updateHelicopterPreview();
-  refreshHeightDisplay();
-  updateGridDisplay();
-  renderLog();
-  renderCharts();
-  resetHelicopterPosition();
- 
-  document.getElementById('timeVal').textContent = '—';
-  document.getElementById('result').textContent = '';
-  document.getElementById('exportMsg').textContent = '';
-}
- 
-function newProject() {
-  if (LOG.length && !window.confirm(t('confirm_new_project'))) {
-    return;
+  function labelsFor(values, color) {
+    return values.map((v, i) => v === null ? '' :
+      `<text x="${px(i)}" y="${(py(v) - 10).toFixed(1)}" font-size="10" fill="${color}" text-anchor="middle">${v.toFixed(2)} s</text>`
+    ).join('');
   }
- 
-  applyProjectState({});
-  showToast(t('msg_new_project'));
+
+  svg.innerHTML = `
+    ${drawAxes(svg, x0, x1, y0, y1, minValue, maxValue, 4)}
+    <text x="${x0}" y="${y0 + 22}" font-size="11" fill="var(--text)" text-anchor="middle">${factor.low}${factor.unit}</text>
+    <text x="${x1}" y="${y0 + 22}" font-size="11" fill="var(--text)" text-anchor="middle">${factor.high}${factor.unit}</text>
+    ${lineFor(traceLow, '#7c2233')}
+    ${lineFor(traceHigh, '#e0a63a')}
+    ${labelsFor(traceLow, '#7c2233')}
+    ${labelsFor(traceHigh, '#c17a00')}
+    <text x="${x1 - 4}" y="20" font-size="10" fill="#7c2233" text-anchor="end">${factorLabel(CHART_TRACE)} ${LANG === 'th' ? 'ต่ำ' : 'low'}</text>
+    <text x="${x1 - 4}" y="34" font-size="10" fill="#c17a00" text-anchor="end">${factorLabel(CHART_TRACE)} ${LANG === 'th' ? 'สูง' : 'high'}</text>
+  `;
 }
- 
-function saveProject() {
-  try {
-    localStorage.setItem(PROJECT_STORAGE_KEY, JSON.stringify(collectProjectState()));
-    showToast(t('msg_saved'));
-  } catch (error) {
-    showToast(t('msg_save_failed'));
-  }
-}
- 
-function loadSavedProject() {
-  try {
-    const saved = localStorage.getItem(PROJECT_STORAGE_KEY);
- 
-    if (saved) {
-      applyProjectState(JSON.parse(saved));
-    }
-  } catch (error) {
-    // Ignore corrupted or unavailable storage and start with a fresh project.
-  }
-}
- 
-document.getElementById('menuNewProject').onclick = newProject;
-document.getElementById('menuSave').onclick = saveProject;
- 
-document.addEventListener('keydown', event => {
-  if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 's') {
-    event.preventDefault();
-    saveProject();
-  }
-});
- 
-/* ==================== TUTORIAL GUIDE ==================== */
- 
-const TUTORIAL_STEPS = [
-  { title: 'tut1_title', text: 'tut1_text', target: null },
-  { title: 'tut2_title', text: 'tut2_text', target: '#factorPanel' },
-  { title: 'tut3_title', text: 'tut3_text', target: '#simulatorStageFrame' },
-  { title: 'tut4_title', text: 'tut4_text', target: '#simulatorToolbar' },
-  { title: 'tut5_title', text: 'tut5_text', target: '#propertiesPanel' },
-  { title: 'tut6_title', text: 'tut6_text', target: '#projectMenu' },
-  { title: 'tut7_title', text: 'tut7_text', target: '#factorMenu' },
-  { title: 'tut8_title', text: 'tut8_text', target: '.result-card', scroll: 'start' }
-];
- 
-const tutorialLayer = document.getElementById('tutorialLayer');
-const tutorialSpotlight = document.getElementById('tutorialSpotlight');
-const tutorialPopover = document.getElementById('tutorialPopover');
-const tutorialPrev = document.getElementById('tutorialPrev');
-const tutorialNext = document.getElementById('tutorialNext');
- 
-let tutorialActive = false;
-let tutorialIndex = 0;
- 
-function startTutorial() {
-  tutorialActive = true;
-  tutorialLayer.classList.add('show');
-  tutorialLayer.setAttribute('aria-hidden', 'false');
-  showTutorialStep(0);
-  tutorialNext.focus();
-}
- 
-function endTutorial() {
-  tutorialActive = false;
-  tutorialLayer.classList.remove('show');
-  tutorialLayer.setAttribute('aria-hidden', 'true');
-}
- 
-function showTutorialStep(index) {
-  const step = TUTORIAL_STEPS[index];
-  const isLast = index === TUTORIAL_STEPS.length - 1;
- 
-  tutorialIndex = index;
- 
-  document.getElementById('tutorialCount').textContent =
-    `${index + 1} / ${TUTORIAL_STEPS.length}`;
-  document.getElementById('tutorialTitle').textContent = t(step.title);
-  document.getElementById('tutorialText').textContent = t(step.text);
- 
-  tutorialPrev.disabled = index === 0;
-  tutorialNext.textContent = t(isLast ? 'tut_finish' : 'tut_next');
- 
-  const target = step.target ? document.querySelector(step.target) : null;
- 
-  if (target) {
-    target.scrollIntoView({ block: step.scroll || 'nearest', behavior: 'smooth' });
-  }
- 
-  positionTutorial();
-}
- 
-function positionTutorial() {
-  if (!tutorialActive) {
-    return;
-  }
- 
-  const step = TUTORIAL_STEPS[tutorialIndex];
-  const target = step.target ? document.querySelector(step.target) : null;
- 
-  const vw = window.innerWidth;
-  const vh = window.innerHeight;
-  const gap = 12;
-  const margin = 8;
- 
-  tutorialLayer.classList.toggle('no-target', !target);
- 
-  const popW = tutorialPopover.offsetWidth;
-  const popH = tutorialPopover.offsetHeight;
- 
-  let x = (vw - popW) / 2;
-  let y = (vh - popH) / 2;
- 
-  if (target) {
-    const rect = target.getBoundingClientRect();
-    const pad = 6;
- 
-    const left = Math.max(rect.left - pad, 0);
-    const top = Math.max(rect.top - pad, 0);
-    const right = Math.min(rect.right + pad, vw);
-    const bottom = Math.min(rect.bottom + pad, vh);
- 
-    tutorialSpotlight.style.left = `${left}px`;
-    tutorialSpotlight.style.top = `${top}px`;
-    tutorialSpotlight.style.width = `${Math.max(0, right - left)}px`;
-    tutorialSpotlight.style.height = `${Math.max(0, bottom - top)}px`;
- 
-    const clampX = value => Math.min(Math.max(value, margin), vw - popW - margin);
-    const clampY = value => Math.min(Math.max(value, margin), vh - popH - margin);
- 
-    const order = vw >= 700
-      ? ['right', 'left', 'bottom', 'top']
-      : ['bottom', 'top', 'right', 'left'];
- 
-    let placed = false;
- 
-    for (const side of order) {
-      if (side === 'right' && right + gap + popW <= vw - margin) {
-        x = right + gap;
-        y = clampY(top);
-        placed = true;
-      } else if (side === 'left' && left - gap - popW >= margin) {
-        x = left - gap - popW;
-        y = clampY(top);
-        placed = true;
-      } else if (side === 'bottom' && bottom + gap + popH <= vh - margin) {
-        x = clampX(left);
-        y = bottom + gap;
-        placed = true;
-      } else if (side === 'top' && top - gap - popH >= margin) {
-        x = clampX(left);
-        y = top - gap - popH;
-        placed = true;
-      }
- 
-      if (placed) {
-        break;
-      }
-    }
- 
-    if (!placed) {
-      x = (vw - popW) / 2;
-      y = vh - popH - 16;
-    }
-  }
- 
-  tutorialPopover.style.left = `${x}px`;
-  tutorialPopover.style.top = `${y}px`;
-}
- 
-document.getElementById('menuTutorial').onclick = startTutorial;
-document.getElementById('tutorialSkip').onclick = endTutorial;
- 
-tutorialPrev.onclick = () => {
-  if (tutorialIndex > 0) {
-    showTutorialStep(tutorialIndex - 1);
-  }
-};
- 
-tutorialNext.onclick = () => {
-  if (tutorialIndex >= TUTORIAL_STEPS.length - 1) {
-    endTutorial();
-  } else {
-    showTutorialStep(tutorialIndex + 1);
-  }
-};
- 
-window.addEventListener('resize', positionTutorial);
-window.addEventListener('scroll', positionTutorial, true);
- 
-document.addEventListener('keydown', event => {
-  if (!tutorialActive) {
-    return;
-  }
- 
-  if (event.key === 'Escape') {
-    endTutorial();
-  } else if (event.key === 'ArrowRight') {
-    tutorialNext.click();
-  } else if (event.key === 'ArrowLeft') {
-    tutorialPrev.click();
-  }
-});
- 
-/* ==================== INIT ==================== */
- 
+
 applyI18n();
+renderFactorFields();
+renderModeNote();
+updateHeliPreview();
 renderLog();
-renderCharts();
-updateGridDisplay();
-resetHelicopterPosition();
-loadSavedProject();
+populateFactorSelects();
+renderChart();
