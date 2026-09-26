@@ -1,6 +1,4 @@
-/* ============================================================
-   I18N
-   ============================================================ */
+/* -------------------- I18N : Language TH/EN -------------------- */
 const I18N = {
   module_title: { th: 'เฮลิคอปเตอร์กระดาษ', en: 'Paper Helicopter' },
   module_subtitle: { th: 'การออกแบบการทดลอง', en: 'Design of Experiments' },
@@ -14,7 +12,7 @@ const I18N = {
   reset_label: { th: 'รีเซ็ต', en: 'Reset' },
   mode_label: { th: 'โหมดการทดลอง', en: 'Experiment mode' },
   mode_det: { th: 'ค่าคงที่', en: 'Deterministic' },
-  mode_sto: { th: 'มีความสุ่ม', en: 'Stochastic' },
+  mode_sto: { th: 'มีการสุ่ม', en: 'Stochastic' },
   mode_note_det: { th: 'ปัจจัยเดิมจะให้ผลลัพธ์เท่าเดิมเสมอ', en: 'Same factors always produce the same result.' },
   mode_note_sto: { th: 'ผลลัพธ์จะมีความคลาดเคลื่อนเล็กน้อยแบบสุ่มทุกครั้งที่ทดลอง', en: 'Results include small random noise on every run.' },
   run_label: { th: 'เริ่มทดลอง', en: 'Run experiment' },
@@ -100,9 +98,7 @@ document.getElementById('langToggle').addEventListener('click', () => {
   renderChart();
 });
 
-/* ============================================================
-   THEME
-   ============================================================ */
+/* -------------------- Theme -------------------- */
 function applyTheme(theme) {
   document.body.dataset.theme = theme;
   document.getElementById('themeToggle').textContent = theme === 'dark' ? '☀' : '☾';
@@ -147,9 +143,7 @@ try {
 }
 applyTheme(storedTheme);
 
-/* ============================================================
-   FACTORS
-   ============================================================ */
+/* -------------------- Factors -------------------- */
 const FACTORS = [
   { key: 'A', th: 'ความยาวปีก (A)', en: 'Wing length (A)', unit: 'cm', low: 8, high: 12 },
   { key: 'B', th: 'ความกว้างปีก (B)', en: 'Wing width (B)', unit: 'cm', low: 3, high: 5 },
@@ -266,9 +260,7 @@ document.getElementById('resetBtn').addEventListener('click', () => {
   updateHeliPreview();
 });
 
-/* ============================================================
-   LIVE HELICOPTER PREVIEW
-   ============================================================ */
+/* -------------------- Live Helicopter Preview -------------------- */
 function updateHeliPreview() {
   const wrap = document.getElementById('heliWrap');
   wrap.style.setProperty('--wingL', Math.round(24 + VAL.A * 5.2) + 'px');
@@ -286,9 +278,7 @@ function resetHeliPosition() {
 
 document.getElementById('tbReset').addEventListener('click', resetHeliPosition);
 
-/* ============================================================
-   MODE (deterministic / stochastic)
-   ============================================================ */
+/* -------------------- Mode (Deterministic / Stochastic) -------------------- */
 let MODE = 'det';
 
 function renderModeNote() {
@@ -303,18 +293,14 @@ document.querySelectorAll('#modeSegmented .seg-btn').forEach(button => {
   });
 });
 
-/* ============================================================
-   RESPONSE MODEL
-   ============================================================ */
+/* -------------------- Response Model -------------------- */
 function flightTime(a, b, c, d, mode) {
   let time = 3.0 + 0.5 * a + 0.3 * b - 0.20 * c - 0.15 * d + 0.10 * a * b;
   if (mode === 'sto') time += (Math.random() - 0.5) * 0.3;
   return Math.max(0.6, Math.round(time * 100) / 100);
 }
 
-/* ============================================================
-   RUN + ANIMATION
-   ============================================================ */
+/* -------------------- Run + Animation -------------------- */
 function animateDrop(time, callback) {
   const wrap = document.getElementById('heliWrap');
   const stage = document.getElementById('stageVisual');
@@ -364,9 +350,7 @@ function runExperiment() {
 document.getElementById('runBtn').addEventListener('click', runExperiment);
 document.getElementById('tbRun').addEventListener('click', runExperiment);
 
-/* ============================================================
-   LOG
-   ============================================================ */
+/* -------------------- Log -------------------- */
 let LOG = [];
 
 function addRun(aCm, bCm, cCm, dCm, time) {
@@ -426,9 +410,7 @@ document.getElementById('exportBtn').addEventListener('click', () => {
   URL.revokeObjectURL(url);
 });
 
-/* ============================================================
-   CHART CONTROLS
-   ============================================================ */
+/* -------------------- Chart Control -------------------- */
 let CHART_TYPE = 'main';
 let CHART_X = 'A';
 let CHART_TRACE = 'B';
@@ -470,9 +452,7 @@ document.querySelectorAll('#chartTypeSegmented .seg-btn').forEach(button => {
   });
 });
 
-/* ============================================================
-   CHART RENDERING
-   ============================================================ */
+/* -------------------- Chart Rendering -------------------- */
 function factorLabel(key) {
   const factor = FACTORS.find(f => f.key === key);
   return LANG === 'th' ? factor.th : factor.en;
@@ -603,9 +583,6 @@ function renderInteractionChart() {
   `;
 }
 
-/* ============================================================
-   INIT
-   ============================================================ */
 applyI18n();
 renderFactorFields();
 renderModeNote();
