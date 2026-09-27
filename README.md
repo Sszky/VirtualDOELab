@@ -1,0 +1,66 @@
+# Virtual DOE Lab
+
+ห้องปฏิบัติการเสมือนสำหรับฝึก **การออกแบบการทดลอง (Design of Experiments, DOE)** ในวิชาวิศวกรรมอุตสาหการ
+ผู้ใช้ปรับค่าปัจจัยของการทดลอง กดทดลองเพื่อดูแบบจำลองทางฟิสิกส์ทำงานแบบเคลื่อนไหว บันทึกผลลงตาราง
+แล้ววิเคราะห์ผลด้วยกราฟ Main Effects / Interaction Plot ได้ในเบราว์เซอร์ทันที
+
+ประกอบด้วยการทดลอง 4 ชุด: **Parachute**, **Paper Helicopter**, **Water Bottle Rocket** และ **Catapult**
+
+## ผู้จัดทำ
+
+| ชื่อ | ส่วนที่รับผิดชอบ |
+|---|---|
+| พัชรวัฒน์ | Water Bottle Rocket, Catapult, Home page |
+| ขนิษฐา | Parachute, External API (Google Drive) |
+| เบญญาภา | Paper Helicopter |
+
+## โครงสร้างโฟลเดอร์
+
+```
+VirtualDOELab/
+├─ sims-v2/                 เว็บเวอร์ชันล่าสุด (ดีไซน์ใหม่ ใช้ template เดียวกันทั้ง 4 การทดลอง)
+│  ├─ index.html            หน้าแรก (Home page)
+│  ├─ assets/               ไฟล์ที่ใช้ร่วมกัน: ธีม/ฟอนต์/navbar (site.css, nav.js),
+│  │                        โครงหน้าการทดลอง (sim.css), ชุดไอคอน, ตัววาดภาพ isometric (iso3d.js, home-art.js)
+│  ├─ parachute/
+│  ├─ paperHelicopter/
+│  ├─ waterBottleRocket/
+│  └─ catapult/
+│     (แต่ละการทดลองมี index.html, style.css, physics.js = แบบจำลองฟิสิกส์,
+│      i18n.js = ข้อความไทย/อังกฤษ, app.js = การทำงานของหน้า)
+├─ main/                    หน้าหลักเวอร์ชันแรก
+├─ parachute/               Parachute เวอร์ชันแรก
+├─ Helicopter/              Paper Helicopter เวอร์ชันแรก
+├─ waterBottleRocket/       Water Bottle Rocket เวอร์ชันแรก
+└─ js/drive.js              บันทึกไฟล์ผลการทดลอง (CSV) ลง Google Drive ผ่าน Google Drive API
+```
+
+## การทดลองและปัจจัย
+
+| การทดลอง | ปัจจัยที่ปรับได้ | ค่าคงที่ที่ปรับได้ | ผลตอบ (Response) |
+|---|---|---|---|
+| Parachute | A รูปทรงร่ม, B วัสดุ, C เส้นผ่านศูนย์กลางร่ม (30–90 cm), D ความยาวเชือก (20–80 cm) | ความสูงที่ปล่อย (10–50 m) | เวลาตก (s) |
+| Paper Helicopter | A ความยาวใบพัด (5–15 cm), B ความกว้างใบพัด (2–6 cm), C ความยาวลำตัว (3–10 cm), D ความกว้างลำตัว (1–4 cm) | ความสูงที่ปล่อย (1–4 m) | เวลาลอยตัว (s) |
+| Water Bottle Rocket | A มุมยิง (1–89°), B จำนวนครีบ (2–8), C ปริมาณน้ำ (50–1000 mL), D แรงดัน (10–100 psi) | – | ระยะทาง (m) |
+| Catapult | A มุมง้าง (120–185°), B มุมยิง (90–140°), C ตำแหน่งถ้วย (20–40 cm), D ตำแหน่งหมุด (8–24 cm), E ตำแหน่งหนังยาง (14–30 cm) | – | ระยะทาง (m) |
+
+## ความสามารถหลัก
+
+- แบบจำลองฟิสิกส์ของแต่ละการทดลอง แสดงผลเป็นแอนิเมชันตามเวลาจริง
+  - **Water Bottle Rocket:** แรงขับจากสมการ Bernoulli + การขยายตัวแบบ adiabatic ของอากาศในขวด แล้วต่อด้วยการบินอิสระที่มีแรงต้านอากาศ (อินทิเกรตด้วย RK4)
+  - **Parachute:** แรงโน้มถ่วง + แรงต้านอากาศแบบกำลังสอง ค่าสัมประสิทธิ์แรงต้านขึ้นกับรูปทรง วัสดุ และความยาวเชือก
+  - **Paper Helicopter:** การตกแบบหมุน (autorotation) มวลคำนวณจากพื้นที่กระดาษ (RK4)
+  - **Catapult:** พลังงานยืดหยุ่นของหนังยางระหว่างมุมง้างกับมุมยิง ได้เป็นความเร็วลูกบอล แล้วคำนวณวิถีโค้งที่มีแรงต้านอากาศ (RK4)
+- โหมด **Deterministic** (ผลเท่าเดิมทุกครั้ง) และ **Stochastic** (มีความคลาดเคลื่อนแบบสุ่มเหมือนการทดลองจริง)
+- ตารางบันทึกผล ขยายดูได้ทุกคอลัมน์ และส่งออกเป็น **CSV**
+- กราฟ **Main Effects Plot** และ **Interaction Plot** จากผลที่บันทึกไว้
+- ภาษาไทย / อังกฤษ และใช้งานได้ทั้ง desktop, tablet และมือถือ
+
+## วิธีเปิดในเครื่อง
+
+เว็บเป็น HTML / CSS / JavaScript ล้วน ไม่มี framework และไม่ต้อง build
+
+1. เปิดโฟลเดอร์ `VirtualDOELab` ใน VS Code
+2. คลิกขวาที่ `sims-v2/index.html` → **Open with Live Server**
+
+หรือใช้ Python: รัน `python -m http.server` ที่โฟลเดอร์ `VirtualDOELab` แล้วเปิด `http://localhost:8000/sims-v2/index.html`
