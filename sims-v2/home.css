@@ -1,0 +1,342 @@
+/* ==========================================================
+   home.css — หน้าแรก Virtual DOE Lab (ใช้คู่กับ assets/site.css)
+   hero เต็มจอ พื้นกรมท่า+กริดพิมพ์เขียว -> ขอบล่างเป็นเฟือง -> การ์ด 4 การทดลอง -> footer เงาโรงงาน
+   ========================================================== */
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* ---------------------------------------------------------- HERO */
+.hero {
+  position: relative;
+  z-index: 1;
+  height: calc(100dvh - var(--nav-h));
+  min-height: 520px;
+  display: grid;
+  place-items: center;
+  padding: 24px clamp(16px, 4vw, 48px);
+  background: var(--navy);
+  color: var(--white);
+  isolation: isolate;
+}
+
+/* กริดกระดาษเขียนแบบ ค่อยๆ จางก่อนถึงขอบล่าง */
+.hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background-image:
+    linear-gradient(rgba(147, 197, 253, 0.13) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(147, 197, 253, 0.13) 1px, transparent 1px),
+    linear-gradient(rgba(147, 197, 253, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(147, 197, 253, 0.05) 1px, transparent 1px);
+  background-size: 160px 160px, 160px 160px, 32px 32px, 32px 32px;
+  background-position: center center;
+  -webkit-mask-image: linear-gradient(to bottom, #000 55%, transparent 100%);
+  mask-image: linear-gradient(to bottom, #000 55%, transparent 100%);
+}
+
+.hero-content {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+}
+
+.hero-title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(3rem, 10.5vw, 9.5rem);
+  font-weight: 700;
+  line-height: 0.92;
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+}
+
+.hero-title span {
+  color: var(--sky-accent);
+}
+
+.hero-sub {
+  margin: 22px 0 0;
+  color: var(--sky-accent);
+  font-family: var(--font-display);
+  font-size: clamp(0.78rem, 1.5vw, 1.12rem);
+  font-weight: 600;
+  letter-spacing: 0.36em;
+  text-transform: uppercase;
+}
+
+/* เครื่องมือทดลองกระจายรอบหัวข้อ (นิ่ง ไม่ขยับ) */
+.hero-tools {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.tool {
+  position: absolute;
+  width: var(--s);
+  transform: rotate(var(--r, 0deg));
+  filter: drop-shadow(0 22px 22px rgba(0, 0, 0, 0.35));
+}
+
+.tool .iso-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.tool-scissors { --s: clamp(110px, 13vw, 210px); left: 3%; top: 3%; --r: -8deg; }
+.tool-bottle { --s: clamp(54px, 6vw, 100px); left: 20%; top: 63%; --r: 10deg; }
+.tool-tape-measure { --s: clamp(110px, 12vw, 200px); left: 2%; bottom: 5%; --r: 4deg; }
+.tool-pingpong { --s: clamp(56px, 6vw, 100px); left: 30%; top: 12%; --r: 0deg; }
+.tool-stopwatch { --s: clamp(80px, 9vw, 150px); right: 6%; top: 6%; --r: 12deg; }
+.tool-cutter { --s: clamp(110px, 12vw, 200px); right: 3%; top: 64%; --r: -14deg; }
+.tool-tape-roll { --s: clamp(76px, 8vw, 140px); right: 24%; bottom: 5%; --r: 6deg; }
+.tool-spool { --s: clamp(70px, 8vw, 130px); right: 29%; top: 6%; --r: -6deg; }
+.tool-paper { --s: clamp(120px, 14vw, 230px); left: 34%; bottom: 10%; --r: -4deg; }
+
+/* ลูกศรชวนเลื่อนลง */
+.hero-cue {
+  position: absolute;
+  left: 50%;
+  bottom: 22px;
+  z-index: 3;
+  transform: translateX(-50%);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border: 1px solid rgba(147, 197, 253, 0.4);
+  border-radius: 999px;
+  color: var(--sky-accent);
+  font-family: var(--font-display);
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.hero-cue:hover {
+  background: rgba(147, 197, 253, 0.12);
+  color: var(--white);
+}
+
+.hero-cue:hover .icon {
+  animation: cue-nudge 0.6s ease;
+}
+
+@keyframes cue-nudge {
+  50% {
+    transform: translateY(3px);
+  }
+}
+
+/* เฟืองขนาดใหญ่ห้อยใต้ขอบ hero — เห็นเมื่อเลื่อนจอลงมา */
+.hero-gear {
+  position: absolute;
+  left: 0;
+  top: calc(100% - 1px);
+  z-index: 1;
+  display: block;
+  width: 100%;
+  height: auto;
+  pointer-events: none;
+}
+
+/* ---------------------------------------------------------- 4 SIMULATORS */
+.sims {
+  position: relative;
+  padding: calc(16vw + 100px) clamp(16px, 4vw, 48px) clamp(150px, 18vw, 240px);
+  scroll-margin-top: var(--nav-h);
+}
+
+/* ปุ่ม "Choose an experiment" พามาหยุดที่หัวข้อนี้ เว้นใต้ navbar 32px */
+.sims-head {
+  scroll-margin-top: calc(var(--nav-h) + 32px);
+  max-width: 1280px;
+  margin: 0 auto 4px;
+  text-align: center;
+}
+
+.sims-eyebrow {
+  margin: 0 0 8px;
+  color: var(--blue);
+  font-family: var(--font-display);
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.sims-head h2 {
+  font-size: clamp(2rem, 4.4vw, 3.4rem);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+}
+
+.sim-grid {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: clamp(16px, 2.4vw, 36px);
+}
+
+/* การ์ดไม่มีกรอบ: มีแค่ก้อน isometric + ชื่อ + คำอธิบาย */
+.sim-card {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  color: var(--ink);
+  text-decoration: none;
+  border-radius: 12px;
+}
+
+.sim-card:focus-visible {
+  outline: 3px solid var(--blue);
+  outline-offset: 6px;
+}
+
+/* ภาพถูกวาดใหม่ทุกเฟรมตอน hover — ถ้าให้รับคลิกเอง polygon ที่กดจะหายก่อนปล่อยนิ้ว (ต้องกด 2 ครั้ง)
+   จึงให้คลิกทะลุไปที่ลิงก์ .sim-card แทน */
+.sim-art {
+  pointer-events: none;
+  width: 100%;
+  max-width: 300px;
+  aspect-ratio: 18.9 / 22;
+  margin-bottom: 8px;
+}
+
+.sim-art .iso-svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  filter: drop-shadow(0 18px 16px rgba(11, 28, 51, 0.16));
+  transition: transform 0.28s ease, filter 0.28s ease;
+}
+
+.sim-card:hover .sim-art .iso-svg,
+.sim-card:focus-visible .sim-art .iso-svg {
+  transform: translateY(-10px);
+  filter: drop-shadow(0 30px 22px rgba(11, 28, 51, 0.24));
+}
+
+.sim-card h3 {
+  font-size: clamp(1.15rem, 1.6vw, 1.4rem);
+  font-weight: 700;
+}
+
+.sim-card p {
+  max-width: 30ch;
+  margin: 8px 0 14px;
+  color: var(--muted);
+  font-size: 0.92rem;
+}
+
+.sim-cta {
+  margin-top: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--blue);
+  font-family: var(--font-display);
+  font-weight: 600;
+}
+
+.sim-cta .icon {
+  transition: transform 0.2s ease;
+}
+
+.sim-card:hover .sim-cta .icon {
+  transform: translateX(4px);
+}
+
+/* ---------------------------------------------------------- FOOTER */
+.site-footer {
+  position: relative;
+  padding: 26px clamp(16px, 4vw, 48px) 34px;
+  background: var(--navy);
+  color: var(--white);
+  text-align: center;
+}
+
+.footer-skyline {
+  position: absolute;
+  left: 0;
+  bottom: calc(100% - 1px);
+  display: block;
+  width: 100%;
+  height: clamp(90px, 13vw, 190px);
+  pointer-events: none;
+}
+
+.footer-copy {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.footer-note {
+  margin: 6px 0 0;
+  color: var(--sky-accent);
+  font-size: 0.8rem;
+  opacity: 0.8;
+}
+
+/* ---------------------------------------------------------- RESPONSIVE */
+@media (max-width: 1000px) {
+  .sim-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    row-gap: 48px;
+  }
+}
+
+@media (max-width: 760px) {
+  .tool-pingpong,
+  .tool-spool,
+  .tool-paper,
+  .tool-bottle {
+    display: none;
+  }
+  .tool-scissors { left: -4%; top: 6%; }
+  .tool-stopwatch { right: 2%; top: 8%; }
+  .tool-bottle { left: 6%; top: 60%; }
+  .tool-cutter { right: -4%; top: 60%; }
+  .tool-tape-measure { left: -2%; bottom: 6%; }
+  .tool-tape-roll { right: 6%; bottom: 7%; }
+}
+
+@media (max-width: 600px) {
+  /* ชื่อเว็บใหญ่อยู่บน hero แล้ว — navbar มือถือเหลือแค่โลโก้ ไม่ต้องตัดข้อความ */
+  .home-page .nav-brand-text {
+    display: none;
+  }
+}
+
+@media (max-width: 560px) {
+  .hero {
+    min-height: 460px;
+  }
+  .sim-grid {
+    grid-template-columns: 1fr;
+    row-gap: 44px;
+  }
+  .sim-art {
+    max-width: 260px;
+  }
+}

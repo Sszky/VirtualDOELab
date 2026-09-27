@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>Virtual DOE Lab</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=IBM+Plex+Sans+Thai:wght@400;500;600&display=swap" />
+<link rel="stylesheet" href="assets/site.css?v=3" />
+<link rel="stylesheet" href="home.css?v=7" />
+</head>
+<body class="home-page">
+<!-- ชุดไอคอน (ต้นฉบับ: assets/icons.svg) ฝังไว้ในหน้า เพราะการโหลดจากไฟล์แยกด้วย <use> ใช้ไม่ได้ในบางที่ เช่นตัวแสดง artifact บน iPhone -->
+<svg class="icon-sprite" width="0" height="0" style="position:absolute;overflow:hidden" aria-hidden="true" focusable="false">
+<symbol id="i-home" viewBox="0 0 24 24">
+    <path d="M3 11.5 12 4l9 7.5M5.5 9.5V20h5v-6h3v6h5V9.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  </symbol>
+<symbol id="i-chevron-down" viewBox="0 0 24 24">
+    <path d="m6 9 6 6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  </symbol>
+<symbol id="i-arrow-right" viewBox="0 0 24 24">
+    <path d="M5 12h14M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  </symbol>
+<symbol id="i-play" viewBox="0 0 24 24">
+    <path d="M7 4.5v15l12-7.5z" fill="currentColor" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+  </symbol>
+<symbol id="i-trash" viewBox="0 0 24 24">
+    <path d="M4 7h16M9 7V4.5h6V7M6.5 7l1 13h9l1-13M10 11v5M14 11v5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  </symbol>
+<symbol id="i-download" viewBox="0 0 24 24">
+    <path d="M12 4v11M7 10.5l5 5 5-5M5 20h14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  </symbol>
+<symbol id="i-expand" viewBox="0 0 24 24">
+    <path d="M14 4h6v6M10 20H4v-6M20 4l-7 7M4 20l7-7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  </symbol>
+<symbol id="i-close" viewBox="0 0 24 24">
+    <path d="M6 6l12 12M18 6 6 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+  </symbol>
+<symbol id="i-gear" viewBox="0 0 24 24">
+    <path d="M10.3 3h3.4l.5 2.4 1.6.9 2.3-.8 1.7 2.9-1.8 1.6v1.9l1.8 1.6-1.7 2.9-2.3-.8-1.6.9-.5 2.4h-3.4l-.5-2.4-1.6-.9-2.3.8-1.7-2.9 1.8-1.6v-1.9L4.2 8.4l1.7-2.9 2.3.8 1.6-.9z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+    <circle cx="12" cy="12" r="2.8" fill="none" stroke="currentColor" stroke-width="1.8"/>
+  </symbol>
+<symbol id="i-sim-parachute" viewBox="0 0 24 24">
+    <path d="M3 11a9 7.5 0 0 1 18 0M3 11c1.5-1.2 3-1.2 4.5 0 1.5-1.2 3-1.2 4.5 0 1.5-1.2 3-1.2 4.5 0 1.5-1.2 3-1.2 4.5 0M3.5 11.5l7 7M20.5 11.5l-7 7M9 11.8l1.8 6.5M15 11.8l-1.8 6.5" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+    <rect x="10" y="18" width="4" height="3.2" rx=".6" fill="none" stroke="currentColor" stroke-width="1.7"/>
+  </symbol>
+<symbol id="i-sim-helicopter" viewBox="0 0 24 24">
+    <path d="M12 8.5 3.5 5.5l.8 2.8L12 10.5M12 8.5l8.5-3-.8 2.8L12 10.5M10 9.5h4V19h-4zM10 15H8.2l1.8 2M14 15h1.8L14 17" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M10.8 19v2.2h2.4V19" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/>
+  </symbol>
+<symbol id="i-sim-rocket" viewBox="0 0 24 24">
+    <path d="M12 2.5c2.6 2.2 3.8 5.3 3.8 8.8V17H8.2v-5.7c0-3.5 1.2-6.6 3.8-8.8zM8.2 13l-3 3.8V19l3-1.2M15.8 13l3 3.8V19l-3-1.2M10.3 17l-.6 3.2M13.7 17l.6 3.2M12 17v4" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="12" cy="9.5" r="1.6" fill="none" stroke="currentColor" stroke-width="1.7"/>
+  </symbol>
+<symbol id="i-sim-catapult" viewBox="0 0 24 24">
+    <path d="M2.5 20.5h19M6 20.5l3.5-4 3.5 4M16.5 20.5V9.5M4.2 15.5 18.7 5.2" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M17 3.2c1.2-.8 2.8-.3 3.3 1" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+    <circle cx="20.2" cy="2.8" r="1.4" fill="currentColor"/>
+    <path d="M16.5 11.5 10 11" fill="none" stroke="currentColor" stroke-width="1.4" stroke-dasharray="1.6 1.6" stroke-linecap="round"/>
+  </symbol>
+</svg>
+  <header class="navbar" id="navbar">
+    <a class="nav-brand" href="index.html">
+      <span class="nav-brand-mark"><svg class="icon" aria-hidden="true"><use href="#i-gear"/></svg></span>
+      <span class="nav-brand-text">
+        <strong>Virtual DOE Lab</strong>
+        <small>For Industrial Engineering</small>
+      </span>
+    </a>
+    <nav class="nav-links" aria-label="Main">
+      <a class="nav-link nav-home" href="index.html" aria-current="page"><svg class="icon" aria-hidden="true"><use href="#i-home"/></svg><span data-i18n="navHome">Home</span></a>
+      <div class="nav-dropdown">
+        <button class="nav-link nav-dropdown-toggle" type="button" aria-expanded="false" aria-controls="simMenu"><span data-i18n="navSims">Simulators</span><svg class="icon" aria-hidden="true"><use href="#i-chevron-down"/></svg></button>
+        <ul class="nav-dropdown-menu" id="simMenu" hidden>
+          <li><a href="parachute/index.html" data-sim="parachute"><svg class="icon" aria-hidden="true"><use href="#i-sim-parachute"/></svg><span data-i18n="simParachute">Parachute</span></a></li>
+          <li><a href="paperHelicopter/index.html" data-sim="helicopter"><svg class="icon" aria-hidden="true"><use href="#i-sim-helicopter"/></svg><span data-i18n="simHelicopter">Paper Helicopter</span></a></li>
+          <li><a href="waterBottleRocket/index.html" data-sim="rocket"><svg class="icon" aria-hidden="true"><use href="#i-sim-rocket"/></svg><span data-i18n="simRocket">Water Bottle Rocket</span></a></li>
+          <li><a href="catapult/index.html" data-sim="catapult"><svg class="icon" aria-hidden="true"><use href="#i-sim-catapult"/></svg><span data-i18n="simCatapult">Catapult</span></a></li>
+        </ul>
+      </div>
+      <button id="languageButton" class="nav-lang" type="button" aria-label="Switch language">TH</button>
+    </nav>
+  </header>
+
+  <main>
+    <!-- ===================== HERO: เต็มจอ + เครื่องมือกระจายรอบหัวข้อ + ขอบล่างรูปเฟือง ===================== -->
+    <section class="hero" aria-labelledby="heroTitle">
+      <div class="hero-tools" aria-hidden="true">
+        <div class="tool tool-scissors" data-tool="scissors"></div>
+        <div class="tool tool-bottle" data-tool="bottle"></div>
+        <div class="tool tool-tape-measure" data-tool="tapeMeasure"></div>
+        <div class="tool tool-pingpong" data-tool="pingPong"></div>
+        <div class="tool tool-stopwatch" data-tool="stopwatch"></div>
+        <div class="tool tool-cutter" data-tool="cutter"></div>
+        <div class="tool tool-tape-roll" data-tool="tapeRoll"></div>
+        <div class="tool tool-spool" data-tool="spool"></div>
+        <div class="tool tool-paper" data-tool="paperRoll"></div>
+      </div>
+
+      <div class="hero-content">
+        <h1 class="hero-title" id="heroTitle">Virtual <span>DOE</span> Lab</h1>
+        <p class="hero-sub">For Industrial Engineering</p>
+      </div>
+
+      <a class="hero-cue" href="#simsHead"><span data-i18n="heroCue">Choose an experiment</span><svg class="icon" aria-hidden="true"><use href="#i-chevron-down"/></svg></a>
+
+      <svg class="hero-gear" viewBox="0 0 1440 230" preserveAspectRatio="xMidYMin meet" aria-hidden="true"><path d="M751.1 175.7L738.8 229.9L701.2 229.9L688.9 175.7L650.8 174.3L634.6 227.5L597.1 224.8L588.7 169.9L550.8 165.8L530.8 217.7L493.7 212.3L489.2 156.9L451.6 150.1L428 200.5L391.3 192.5L390.8 136.9L353.8 127.5L326.7 176L290.7 165.5L294.1 109.9L257.9 97.9L227.4 144.4L192.2 131.3L199.6 76.2L164.4 61.6L130.6 105.7L96.5 90.2L107.8 35.7L73.7 18.6L36.8 60.3L3.9 42.3L19 -11.2L-13.8 -30.7L-53.5 8.3L-85.1 -12L-66.1 -64.3L-97.5 -86.1L-139.9 -50.1L-169.9 -72.6L-147.3 -123.4L-177 -147.3L-221.8 -114.4L-250.2 -139L-224 -188.1L-251.9 -214L-299 -184.4L-325.6 -211L-296 -258.1L-321.9 -286L-371 -259.8L-395.6 -288.2L-362.7 -333L-386.6 -362.7L-437.4 -340.1L-459.9 -370.1L-423.9 -412.5L-445.7 -443.9L-498 -424.9L-518.3 -456.5L-479.3 -496.2L-498.8 -529L-552.3 -513.9L-570.3 -546.8L-528.6 -583.7L-545.7 -617.8L-600.2 -606.5L-615.7 -640.6L-571.6 -674.4L-586.2 -709.6L-641.3 -702.2L-654.4 -737.4L-607.9 -767.9L-619.9 -804.1L-675.5 -800.7L-686 -836.7L-637.5 -863.8L-646.9 -900.8L-702.5 -901.3L-710.5 -938L-660.1 -961.6L-666.9 -999.2L-722.3 -1003.7L-727.7 -1040.8L-675.8 -1060.8L-679.9 -1098.7L-734.8 -1107.1L-737.5 -1144.6L-684.3 -1160.8L-685.7 -1198.9L-739.9 -1211.2L-739.9 -1248.8L-685.7 -1261.1L-684.3 -1299.2L-737.5 -1315.4L-734.8 -1352.9L-679.9 -1361.3L-675.8 -1399.2L-727.7 -1419.2L-722.3 -1456.3L-666.9 -1460.8L-660.1 -1498.4L-710.5 -1522L-702.5 -1558.7L-646.9 -1559.2L-637.5 -1596.2L-686 -1623.3L-675.5 -1659.3L-619.9 -1655.9L-607.9 -1692.1L-654.4 -1722.6L-641.3 -1757.8L-586.2 -1750.4L-571.6 -1785.6L-615.7 -1819.4L-600.2 -1853.5L-545.7 -1842.2L-528.6 -1876.3L-570.3 -1913.2L-552.3 -1946.1L-498.8 -1931L-479.3 -1963.8L-518.3 -2003.5L-498 -2035.1L-445.7 -2016.1L-423.9 -2047.5L-459.9 -2089.9L-437.4 -2119.9L-386.6 -2097.3L-362.7 -2127L-395.6 -2171.8L-371 -2200.2L-321.9 -2174L-296 -2201.9L-325.6 -2249L-299 -2275.6L-251.9 -2246L-224 -2271.9L-250.2 -2321L-221.8 -2345.6L-177 -2312.7L-147.3 -2336.6L-169.9 -2387.4L-139.9 -2409.9L-97.5 -2373.9L-66.1 -2395.7L-85.1 -2448L-53.5 -2468.3L-13.8 -2429.3L19 -2448.8L3.9 -2502.3L36.8 -2520.3L73.7 -2478.6L107.8 -2495.7L96.5 -2550.2L130.6 -2565.7L164.4 -2521.6L199.6 -2536.2L192.2 -2591.3L227.4 -2604.4L257.9 -2557.9L294.1 -2569.9L290.7 -2625.5L326.7 -2636L353.8 -2587.5L390.8 -2596.9L391.3 -2652.5L428 -2660.5L451.6 -2610.1L489.2 -2616.9L493.7 -2672.3L530.8 -2677.7L550.8 -2625.8L588.7 -2629.9L597.1 -2684.8L634.6 -2687.5L650.8 -2634.3L688.9 -2635.7L701.2 -2689.9L738.8 -2689.9L751.1 -2635.7L789.2 -2634.3L805.4 -2687.5L842.9 -2684.8L851.3 -2629.9L889.2 -2625.8L909.2 -2677.7L946.3 -2672.3L950.8 -2616.9L988.4 -2610.1L1012 -2660.5L1048.7 -2652.5L1049.2 -2596.9L1086.2 -2587.5L1113.3 -2636L1149.3 -2625.5L1145.9 -2569.9L1182.1 -2557.9L1212.6 -2604.4L1247.8 -2591.3L1240.4 -2536.2L1275.6 -2521.6L1309.4 -2565.7L1343.5 -2550.2L1332.2 -2495.7L1366.3 -2478.6L1403.2 -2520.3L1436.1 -2502.3L1421 -2448.8L1453.8 -2429.3L1493.5 -2468.3L1525.1 -2448L1506.1 -2395.7L1537.5 -2373.9L1579.9 -2409.9L1609.9 -2387.4L1587.3 -2336.6L1617 -2312.7L1661.8 -2345.6L1690.2 -2321L1664 -2271.9L1691.9 -2246L1739 -2275.6L1765.6 -2249L1736 -2201.9L1761.9 -2174L1811 -2200.2L1835.6 -2171.8L1802.7 -2127L1826.6 -2097.3L1877.4 -2119.9L1899.9 -2089.9L1863.9 -2047.5L1885.7 -2016.1L1938 -2035.1L1958.3 -2003.5L1919.3 -1963.8L1938.8 -1931L1992.3 -1946.1L2010.3 -1913.2L1968.6 -1876.3L1985.7 -1842.2L2040.2 -1853.5L2055.7 -1819.4L2011.6 -1785.6L2026.2 -1750.4L2081.3 -1757.8L2094.4 -1722.6L2047.9 -1692.1L2059.9 -1655.9L2115.5 -1659.3L2126 -1623.3L2077.5 -1596.2L2086.9 -1559.2L2142.5 -1558.7L2150.5 -1522L2100.1 -1498.4L2106.9 -1460.8L2162.3 -1456.3L2167.7 -1419.2L2115.8 -1399.2L2119.9 -1361.3L2174.8 -1352.9L2177.5 -1315.4L2124.3 -1299.2L2125.7 -1261.1L2179.9 -1248.8L2179.9 -1211.2L2125.7 -1198.9L2124.3 -1160.8L2177.5 -1144.6L2174.8 -1107.1L2119.9 -1098.7L2115.8 -1060.8L2167.7 -1040.8L2162.3 -1003.7L2106.9 -999.2L2100.1 -961.6L2150.5 -938L2142.5 -901.3L2086.9 -900.8L2077.5 -863.8L2126 -836.7L2115.5 -800.7L2059.9 -804.1L2047.9 -767.9L2094.4 -737.4L2081.3 -702.2L2026.2 -709.6L2011.6 -674.4L2055.7 -640.6L2040.2 -606.5L1985.7 -617.8L1968.6 -583.7L2010.3 -546.8L1992.3 -513.9L1938.8 -529L1919.3 -496.2L1958.3 -456.5L1938 -424.9L1885.7 -443.9L1863.9 -412.5L1899.9 -370.1L1877.4 -340.1L1826.6 -362.7L1802.7 -333L1835.6 -288.2L1811 -259.8L1761.9 -286L1736 -258.1L1765.6 -211L1739 -184.4L1691.9 -214L1664 -188.1L1690.2 -139L1661.8 -114.4L1617 -147.3L1587.3 -123.4L1609.9 -72.6L1579.9 -50.1L1537.5 -86.1L1506.1 -64.3L1525.1 -12L1493.5 8.3L1453.8 -30.7L1421 -11.2L1436.1 42.3L1403.2 60.3L1366.3 18.6L1332.2 35.7L1343.5 90.2L1309.4 105.7L1275.6 61.6L1240.4 76.2L1247.8 131.3L1212.6 144.4L1182.1 97.9L1145.9 109.9L1149.3 165.5L1113.3 176L1086.2 127.5L1049.2 136.9L1048.7 192.5L1012 200.5L988.4 150.1L950.8 156.9L946.3 212.3L909.2 217.7L889.2 165.8L851.3 169.9L842.9 224.8L805.4 227.5L789.2 174.3Z" fill="#0b1c33"/><g fill="none" stroke="#16305a"><circle cx="720" cy="-1230" r="1330" fill="none" stroke-width="3"/></g><g fill="#16305a"><circle cx="1095.4" cy="79.2" r="7"/><circle cx="909.6" cy="118.7" r="7"/><circle cx="720" cy="132" r="7"/><circle cx="530.4" cy="118.7" r="7"/><circle cx="344.6" cy="79.2" r="7"/></g></svg>
+    </section>
+
+    <!-- ===================== FOUR SIMULATORS: ก้อน isometric ไม่มีกรอบ ===================== -->
+    <section class="sims" id="simulators" aria-labelledby="simsTitle">
+      <header class="sims-head" id="simsHead">
+        <p class="sims-eyebrow" data-i18n="simsEyebrow">Pick an experiment</p>
+        <h2 id="simsTitle">Four Simulators</h2>
+      </header>
+
+      <ul class="sim-grid">
+        <li>
+          <a class="sim-card" href="parachute/index.html">
+            <div class="sim-art" data-art="parachute"></div>
+            <h3 data-i18n="parachuteName">Parachute</h3>
+            <p data-i18n="parachuteDesc">Vary canopy shape, material, size and string length, then measure fall time.</p>
+            <span class="sim-cta"><span data-i18n="start">Start experiment</span><svg class="icon" aria-hidden="true"><use href="#i-arrow-right"/></svg></span>
+          </a>
+        </li>
+        <li>
+          <a class="sim-card" href="paperHelicopter/index.html">
+            <div class="sim-art" data-art="helicopter"></div>
+            <h3 data-i18n="heliName">Paper Helicopter</h3>
+            <p data-i18n="heliDesc">Vary wing and body dimensions, then time the spinning descent.</p>
+            <span class="sim-cta"><span data-i18n="start">Start experiment</span><svg class="icon" aria-hidden="true"><use href="#i-arrow-right"/></svg></span>
+          </a>
+        </li>
+        <li>
+          <a class="sim-card" href="waterBottleRocket/index.html">
+            <div class="sim-art" data-art="rocket"></div>
+            <h3 data-i18n="rocketName">Water Bottle Rocket</h3>
+            <p data-i18n="rocketDesc">Vary launch angle, fins, water volume and pressure, then measure distance.</p>
+            <span class="sim-cta"><span data-i18n="start">Start experiment</span><svg class="icon" aria-hidden="true"><use href="#i-arrow-right"/></svg></span>
+          </a>
+        </li>
+        <li>
+          <a class="sim-card" href="catapult/index.html">
+            <div class="sim-art" data-art="catapult"></div>
+            <h3 data-i18n="catapultName">Catapult</h3>
+            <p data-i18n="catapultDesc">Set release and firing angles, cup, pin and band positions, then measure distance.</p>
+            <span class="sim-cta"><span data-i18n="start">Start experiment</span><svg class="icon" aria-hidden="true"><use href="#i-arrow-right"/></svg></span>
+          </a>
+        </li>
+      </ul>
+    </section>
+  </main>
+
+  <!-- ===================== FOOTER: เงาโรงงาน ===================== -->
+  <footer class="site-footer">
+    <svg class="footer-skyline" viewBox="0 0 1440 190" preserveAspectRatio="xMidYMax slice" aria-hidden="true"><path d="M-10 190V127.9L-10 95.9L35.8 127.9L35.8 95.9L81.5 127.9L81.5 95.9L127.3 127.9L127.3 95.9L173 127.9V190ZM186.1 190V30.3H202.5V190ZM183.1 190V24.3H205.5V190ZM215 190V94H331.4V190ZM338.4 74.8Q365.4 52.8 392.4 74.8V106.8H338.4ZM346.4 190V106.8H351.4V190ZM379.4 190V106.8H384.4V190ZM348.4 122.8L382.4 162.8L382.4 168.8L348.4 128.8ZM406.7 190V122.2L406.7 93L458.6 122.2L458.6 93L510.4 122.2L510.4 93L562.3 122.2L562.3 93L614.2 122.2V190ZM618.8 190V133.2H735.5V190ZM642.1 190V91.1H706.3V190ZM750.5 190V35.3H770.7V190ZM747.5 190V29.3H773.7V190ZM781.2 190V33.1H801.2V190ZM778.2 190V27.1H804.2V190ZM823.2 190V99.9H942.8V190ZM953 190V121L953 89.9L998.2 121L998.2 89.9L1043.5 121L1043.5 89.9L1088.8 121L1088.8 89.9L1134 121V190ZM1140.3 68.9Q1167.3 46.9 1194.3 68.9V100.9H1140.3ZM1148.3 190V100.9H1153.3V190ZM1181.3 190V100.9H1186.3V190ZM1150.3 116.9L1184.3 156.9L1184.3 162.9L1150.3 122.9ZM1218.6 190V126.9H1329.8V190ZM1240.9 190V83.2H1302V190ZM1339.6 190V75.3H1435.5V190ZM1447.1 190V35.6H1466.2V190ZM1444.1 190V29.6H1469.2V190Z" fill="#0b1c33"/><path d="M1.4 141.9h22.9v9h-22.9ZM47.2 141.9h22.9v9h-22.9ZM93 141.9h22.9v9h-22.9ZM138.7 141.9h22.9v9h-22.9ZM186.1 78.2h16.4v3h-16.4ZM186.1 118.2h16.4v3h-16.4ZM261 108h8v10h-8ZM297 108h8v10h-8ZM243 128h8v10h-8ZM261 128h8v10h-8ZM279 128h8v10h-8ZM297 128h8v10h-8ZM315 128h8v10h-8ZM225 148h8v10h-8ZM243 148h8v10h-8ZM279 148h8v10h-8ZM297 148h8v10h-8ZM315 148h8v10h-8ZM225 168h8v10h-8ZM261 168h8v10h-8ZM279 168h8v10h-8ZM297 168h8v10h-8ZM315 168h8v10h-8ZM419.7 136.2h25.9v9h-25.9ZM471.6 136.2h25.9v9h-25.9ZM523.4 136.2h25.9v9h-25.9ZM575.3 136.2h25.9v9h-25.9ZM628.8 149.2h7v12h-7ZM644.8 149.2h7v12h-7ZM660.8 149.2h7v12h-7ZM676.8 149.2h7v12h-7ZM692.8 149.2h7v12h-7ZM708.8 149.2h7v12h-7ZM750.5 81.7h20.3v3h-20.3ZM750.5 120.4h20.3v3h-20.3ZM781.2 80.2h20v3h-20ZM781.2 119.4h20v3h-20ZM833.2 113.9h8v10h-8ZM851.2 113.9h8v10h-8ZM869.2 113.9h8v10h-8ZM905.2 113.9h8v10h-8ZM923.2 113.9h8v10h-8ZM833.2 133.9h8v10h-8ZM851.2 133.9h8v10h-8ZM869.2 133.9h8v10h-8ZM905.2 133.9h8v10h-8ZM923.2 133.9h8v10h-8ZM833.2 153.9h8v10h-8ZM869.2 153.9h8v10h-8ZM887.2 153.9h8v10h-8ZM964.3 135h22.6v9h-22.6ZM1009.6 135h22.6v9h-22.6ZM1054.8 135h22.6v9h-22.6ZM1100.1 135h22.6v9h-22.6ZM1228.6 142.9h7v12h-7ZM1244.6 142.9h7v12h-7ZM1260.6 142.9h7v12h-7ZM1276.6 142.9h7v12h-7ZM1292.6 142.9h7v12h-7ZM1308.6 142.9h7v12h-7ZM1367.6 89.3h8v10h-8ZM1385.6 89.3h8v10h-8ZM1403.6 89.3h8v10h-8ZM1349.6 109.3h8v10h-8ZM1367.6 109.3h8v10h-8ZM1385.6 109.3h8v10h-8ZM1403.6 109.3h8v10h-8ZM1385.6 129.3h8v10h-8ZM1367.6 149.3h8v10h-8ZM1385.6 149.3h8v10h-8ZM1403.6 149.3h8v10h-8ZM1385.6 169.3h8v10h-8ZM1403.6 169.3h8v10h-8ZM1447.1 81.9h19.1v3h-19.1ZM1447.1 120.5h19.1v3h-19.1Z" fill="#1e3a64"/></svg>
+    <p class="footer-copy">&copy; 2026 Virtual DOE Team</p>
+    <p class="footer-note" data-i18n="footerNote">Educational simulation. Results are model estimates.</p>
+  </footer>
+
+  <script>
+    window.I18N = {
+      en: {
+        heroCue: 'Choose an experiment',
+        simsEyebrow: 'Pick an experiment',
+        start: 'Start experiment',
+        parachuteName: 'Parachute',
+        parachuteDesc: 'Vary canopy shape, material, size and string length, then measure fall time.',
+        heliName: 'Paper Helicopter',
+        heliDesc: 'Vary wing and body dimensions, then time the spinning descent.',
+        rocketName: 'Water Bottle Rocket',
+        rocketDesc: 'Vary launch angle, fins, water volume and pressure, then measure distance.',
+        catapultName: 'Catapult',
+        catapultDesc: 'Set release and firing angles, cup, pin and band positions, then measure distance.',
+        footerNote: 'Educational simulation. Results are model estimates.',
+      },
+      th: {
+        heroCue: 'เลือกการทดลอง',
+        simsEyebrow: 'เลือกการทดลอง',
+        start: 'เริ่มทดลอง',
+        parachuteName: 'ร่มชูชีพ',
+        parachuteDesc: 'ปรับรูปทรง วัสดุ ขนาดร่ม และความยาวเชือก แล้ววัดเวลาตก',
+        heliName: 'เฮลิคอปเตอร์กระดาษ',
+        heliDesc: 'ปรับขนาดใบพัดและลำตัว แล้ววัดเวลาที่หมุนตกลงมา',
+        rocketName: 'จรวดขวดน้ำ',
+        rocketDesc: 'ปรับมุมยิง จำนวนครีบ ปริมาณน้ำ และแรงดัน แล้ววัดระยะทาง',
+        catapultName: 'เครื่องยิงหิน',
+        catapultDesc: 'ปรับมุมง้าง มุมยิง ตำแหน่งถ้วย หมุด และหนังยาง แล้ววัดระยะทาง',
+        footerNote: 'สื่อการเรียนรู้แบบจำลอง ผลลัพธ์เป็นค่าประมาณจากแบบจำลอง',
+      },
+    };
+  </script>
+  <script src="assets/nav.js?v=2"></script>
+  <script src="assets/iso3d.js?v=1"></script>
+  <script src="assets/home-art.js?v=4"></script>
+  <script>
+    (function () {
+      var lang = 'en';
+      var button = document.getElementById('languageButton');
+      function apply() {
+        var dict = window.I18N[lang];
+        document.documentElement.lang = lang;
+        document.querySelectorAll('[data-i18n]').forEach(function (el) {
+          if (el.dataset.i18n in dict) el.textContent = dict[el.dataset.i18n];
+        });
+        button.textContent = lang === 'th' ? 'EN' : 'TH';
+      }
+      button.addEventListener('click', function () {
+        lang = lang === 'th' ? 'en' : 'th';
+        apply();
+      });
+      apply();
+    })();
+  </script>
+</body>
+</html>

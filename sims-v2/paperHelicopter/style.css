@@ -1,0 +1,57 @@
+/* ==========================================================
+   style.css — ส่วนเฉพาะของการทดลองแบบ "ตกลงแนวดิ่ง"
+   โครงหน้า/ธีม/navbar อยู่ใน ../assets/site.css + ../assets/sim.css
+   ========================================================== */
+.segmented-3 {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+/* ความสูงที่ปล่อย = ค่าคงที่ ไม่ใช่ปัจจัย — แยกด้วยเส้นประให้เห็นว่าคนละกลุ่ม */
+.constant-group {
+  padding-top: 12px;
+  border-top: 1px dashed var(--line);
+}
+
+@media (max-width: 900px) {
+  .controls-panel .constant-group {
+    grid-column: 1 / -1;
+  }
+}
+
+/* เส้นประบอกจุดปล่อย (ตำแหน่ง top ตั้งจาก app.js) */
+.release-line {
+  position: absolute;
+  left: 0;
+  right: 0;
+  border-top: 2px dashed rgba(11, 28, 51, 0.3);
+  pointer-events: none;
+}
+
+/* ตัวที่ตก — SVG สร้างจาก app.js ตามค่าปัจจัย */
+.actor {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform-origin: 50% 0;
+  will-change: transform;
+  filter: drop-shadow(0 6px 6px rgba(11, 28, 51, 0.25));
+}
+
+.actor-svg {
+  display: block;
+  overflow: visible;
+}
+
+/* ความสูง 0 m = ขอบบนของแถบพื้นนี้ (app.js อ่าน offsetHeight) */
+.drop-scene .scene-ground {
+  height: 22px;
+}
+
+@media (max-width: 600px) {
+  .drop-scene .scene-ground {
+    height: 14px;
+  }
+  .constant-group {
+    padding-top: 8px;
+  }
+}

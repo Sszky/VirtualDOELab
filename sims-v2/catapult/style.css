@@ -1,0 +1,20 @@
+/* ==========================================================
+   style.css — ส่วนเฉพาะของเครื่องยิงหิน
+   โครงหน้า/ธีม/navbar อยู่ใน ../assets/site.css + ../assets/sim.css
+   ========================================================== */
+
+/* ตัวเครื่อง (SVG เต็มฉาก วาดจาก app.js ด้วยพิกัด px สเกลเดียวกับแกน) */
+.catapult-svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+  filter: drop-shadow(0 4px 4px rgba(11, 28, 51, 0.2));
+}
+
+/* แกน X วางจาก app.js ให้ตรงกับจุด 0 m (จุดหมุนแขน) */
+.axis-x {
+  right: auto;
+}
