@@ -51,6 +51,8 @@ const i18n = {
     results: "Run history",
     clear: "Clear",
     export: "Export CSV",
+    drive: "Save to Drive",
+    driveSaving: "Saving…",
     sizeShort: "Size",
     stringShort: "String",
     empty: "Run your first experiment to collect data.",
@@ -97,6 +99,8 @@ const i18n = {
     results: "ประวัติการทดลอง",
     clear: "ล้างข้อมูล",
     export: "ส่งออก CSV",
+    drive: "บันทึกลง Drive",
+    driveSaving: "กำลังบันทึก…",
     sizeShort: "ขนาดร่ม",
     stringShort: "ความยาวเชือก",
     empty: "เริ่มการทดลองครั้งแรกเพื่อบันทึกข้อมูล",
@@ -630,14 +634,10 @@ function drawChart() {
 }
 
 // ============================================================
-// 11. EXPORT RESULTS AS CSV
+// CREATE CSV DATA
 // ============================================================
 
-function exportCSV() {
-  if (runs.length === 0) {
-    return;
-  }
-
+function createCSVContent() {
   const columns = [
     "run",
     "shape",
@@ -664,14 +664,27 @@ function exportCSV() {
     experiment.cd,
   ]);
 
-  const csvContent = [columns, ...rows]
+  return [columns, ...rows]
     .map((row) => row.join(","))
     .join("\n");
+}
+
+// ============================================================
+// EXPORT CSV TO COMPUTER
+// ============================================================
+
+function exportCSV() {
+  if (runs.length === 0) {
+    alert("Please run an experiment first.");
+    return;
+  }
+
+  const csvContent = createCSVContent();
 
   const csvFile = new Blob(
     [csvContent],
     {
-      type: "text/csv",
+      type: "text/csv;charset=utf-8",
     },
   );
 
@@ -849,6 +862,41 @@ window.addEventListener(
   "resize",
   drawChart,
 );
+
+// Shared Google Drive service: capture the CSV at the time of the click.
+async function exportToDrive() {
+  const button = $("driveButton");
+  if (button.disabled) return;
+  if (runs.length === 0) {
+    alert(language === "th" ? "กรุณาทดลองอย่างน้อยหนึ่งครั้งก่อน" : "Please run an experiment first.");
+    return;
+  }
+  button.disabled = true;
+  button.dataset.i18n = "driveSaving";
+  button.textContent = i18n[language].driveSaving;
+  try {
+    await saveFileToGoogleDrive({
+      content: createCSVContent(),
+      filename: `parachute-experiments-${Date.now()}.csv`,
+      mimeType: "text/csv",
+    });
+    alert(language === "th" ? "บันทึกไฟล์ CSV ลง Google Drive แล้ว" : "CSV saved to Google Drive.");
+  } catch (error) {
+    const messages = {
+      configuration: ["Set GOOGLE_CLIENT_ID in google-drive.js first.", "กรุณาใส่ GOOGLE_CLIENT_ID ใน google-drive.js ก่อน"],
+      loading: ["Google services are still loading or unavailable. Please try again.", "บริการ Google ยังโหลดไม่เสร็จหรือไม่พร้อมใช้งาน กรุณาลองอีกครั้ง"],
+      authorization: ["Google authorization was cancelled or failed. Please try again.", "การอนุญาต Google ถูกยกเลิกหรือไม่สำเร็จ กรุณาลองอีกครั้ง"],
+      upload: ["Unable to save to Google Drive. Please try again.", "บันทึกลง Google Drive ไม่สำเร็จ กรุณาลองอีกครั้ง"],
+    };
+    alert((messages[error.code] || messages.upload)[language === "th" ? 1 : 0]);
+  } finally {
+    button.disabled = false;
+    button.dataset.i18n = "drive";
+    button.textContent = i18n[language].drive;
+  }
+}
+
+$("driveButton").addEventListener("click", exportToDrive);
 
 // ============================================================
 // 17. INITIAL PAGE SETUP
