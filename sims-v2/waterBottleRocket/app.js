@@ -28,7 +28,7 @@
     { key: 'pressurePSI', nameKey: 'factorNamePressure', unit: ' psi' },
   ];
   const RESPONSE_KEY = 'distance'; // ยืนยันกับผู้ใช้แล้วว่าคงที่ ไม่ต้องมีตัวเลือก response
-  const EFFECTS_PALETTE = ['#a61936', '#1b6ea6', '#2f8f46', '#d5a62e', '#6a4c93', '#c2571b', '#0f766e', '#b45309'];
+  const EFFECTS_PALETTE = ['#2563eb', '#0ea5e9', '#f59e0b', '#16a34a', '#7c3aed', '#dc2626', '#0f766e', '#b45309'];
 
   // ---------------------------------------------------------------------
   // อ้างอิง DOM
@@ -48,9 +48,8 @@
     warningBox: document.getElementById('warningBox'),
 
     languageButton: document.getElementById('languageButton'),
-    themeButton: document.getElementById('themeButton'),
 
-    topbar: document.querySelector('.topbar'),
+    topbar: document.querySelector('.navbar'),
     intro: document.querySelector('.intro'),
     controlsPanel: document.querySelector('.controls-panel'),
     simulationPanel: document.querySelector('.simulation-panel'),
@@ -85,7 +84,7 @@
   // ---------------------------------------------------------------------
   // สถานะของแอป
   // ---------------------------------------------------------------------
-  let language = 'th'; // ค่าเริ่มต้นยืนยันแล้วกับผู้ใช้
+  let language = 'en'; // ภาษาหลักเป็นอังกฤษ (ผู้ใช้ขอเปลี่ยน)
   // ธีมเริ่มต้น = สว่าง (ไม่ใส่คลาส 'dark' บน body ตอนโหลด) ยืนยันแล้วกับผู้ใช้
 
   // ผลการทดลองทั้งหมดในเซสชันนี้ — เก็บในหน่วยความจำเท่านั้น (ไม่มี localStorage)
@@ -187,6 +186,7 @@
     const scale = Math.min(usableW / sceneMaxX, usableH / sceneMaxY);
 
     const originPx = { x: sidePad, y: h - groundMarginPx };
+    syncHorizon(originPx.y);
 
     return {
       scale,
@@ -468,7 +468,7 @@
 
   function setLaunchEnabled(enabled) {
     els.launchBtn.disabled = !enabled;
-    els.launchBtn.textContent = enabled ? I18N[language].launch : I18N[language].launching;
+    els.launchBtn.querySelector('.btn-label').textContent = enabled ? I18N[language].launch : I18N[language].launching;
   }
 
   // ---------------------------------------------------------------------
@@ -776,17 +776,19 @@
     };
   }
 
+  /** ให้เส้นขอบฟ้าของพื้นหลังโซน A ตรงกับเส้นพื้น (0 m) ของฉากจำลองจริง */
+  function syncHorizon(groundYInScene) {
+    const zone = els.scene.closest('.zone-experiment');
+    if (!zone) return;
+    const z = zone.getBoundingClientRect();
+    const s = els.scene.getBoundingClientRect();
+    zone.style.setProperty('--horizon', `${Math.round(s.top - z.top + groundYInScene)}px`);
+  }
+
   function syncPanelHeights() {
-    if (!window.matchMedia('(min-width: 901px)').matches) {
-      // มือถือ/tablet: ปล่อยความสูงอิสระตามเนื้อหา (ยืนยันแล้วว่าคนละกรณีกับ desktop)
-      els.simulationPanel.style.height = '';
-      els.resultsSidebar.style.height = '';
-      return;
-    }
-    if (tableExpanded) return; // ตอนตารางเป็น modal ไม่ต้อง sync (จะ sync ใหม่ตอนปิด)
-    const h = `${els.controlsPanel.offsetHeight}px`;
-    els.simulationPanel.style.height = h;
-    els.resultsSidebar.style.height = h;
+    // ความสูงของ 3 ส่วนในโซน A คุมด้วย CSS แล้ว (โซนเต็มจอ) — แค่ล้างค่าเดิมที่อาจค้างอยู่
+    els.simulationPanel.style.height = '';
+    els.resultsSidebar.style.height = '';
   }
 
   // ---------------------------------------------------------------------
@@ -839,10 +841,28 @@
     new ResizeObserver(debouncedSyncPanelHeights).observe(document.body);
   }
   window.addEventListener('resize', debouncedSyncPanelHeights);
+  // ฉากเปลี่ยนขนาด (โซนเต็มจอ/หมุนจอ) — วาดใหม่ให้พิกัด px และเส้นขอบฟ้าตรงเสมอ
+  if (window.ResizeObserver) {
+    new ResizeObserver(() => {
+      if (animationHandle) return;
+      if (lastResult) redrawLastResultFinalFrame();
+      else redrawIdleScene();
+    }).observe(els.scene);
+  }
 
   // ---------------------------------------------------------------------
   // ตารางขยาย — modal ลอยกลางจอ (ทุกขนาดจอ)
   // ---------------------------------------------------------------------
+  /** ปุ่มขยาย/ปิดตาราง: สลับข้อความ + ไอคอน (ข้อความอยู่ใน .btn-label แยกจากไอคอน) */
+  function setExpandButton(expanded) {
+    const key = expanded ? 'collapseTable' : 'expandTable';
+    const label = els.expandTableBtn.querySelector('.btn-label');
+    label.dataset.i18n = key;
+    label.textContent = I18N[language][key];
+    els.expandTableBtn.querySelector('use').setAttribute('href', `#${expanded ? 'i-close' : 'i-expand'}`);
+    els.expandTableBtn.setAttribute('aria-label', expanded ? 'Collapse table' : 'Expand table');
+  }
+
   function openTableExpand() {
     tableExpanded = true;
     els.resultsSidebar.style.height = ''; // เคลียร์ความสูงที่ sync ไว้ ไม่ให้ชนกับ max-height ตอนเป็น modal
@@ -852,9 +872,7 @@
     [els.topbar, els.intro, els.controlsPanel, els.simulationPanel].forEach((el) => {
       if (el) el.setAttribute('inert', '');
     });
-    els.expandTableBtn.dataset.i18n = 'collapseTable';
-    els.expandTableBtn.setAttribute('aria-label', 'Collapse table');
-    els.expandTableBtn.textContent = I18N[language].collapseTable;
+    setExpandButton(true);
   }
 
   function closeTableExpand() {
@@ -865,9 +883,7 @@
     [els.topbar, els.intro, els.controlsPanel, els.simulationPanel].forEach((el) => {
       if (el) el.removeAttribute('inert');
     });
-    els.expandTableBtn.dataset.i18n = 'expandTable';
-    els.expandTableBtn.setAttribute('aria-label', 'Expand table');
-    els.expandTableBtn.textContent = I18N[language].expandTable;
+    setExpandButton(false);
     syncPanelHeights(); // คืนความสูงที่ sync กับกล่องปัจจัยไว้
   }
 
@@ -928,16 +944,8 @@
     renderEffectsChart(); // title/empty-state/legend เป็นข้อความที่ JS สร้างเอง ต้องสั่งแปลใหม่ตรง ๆ
   }
 
-  function changeTheme() {
-    document.body.classList.toggle('dark');
-    const isDark = document.body.classList.contains('dark');
-    els.themeButton.textContent = isDark ? '☀' : '☾';
-    if (!animationHandle) redrawLastResultFinalFrame();
-    renderEffectsChart(); // ไม่ผูกกับแอนิเมชัน วาดใหม่ได้เสมอเพื่อรีเฟรชสีกริด/จุดตามธีม
-  }
 
   els.languageButton.addEventListener('click', changeLanguage);
-  els.themeButton.addEventListener('click', changeTheme);
 
   // ---------------------------------------------------------------------
   // ปุ่มยิง

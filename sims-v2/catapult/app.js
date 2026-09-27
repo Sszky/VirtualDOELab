@@ -29,7 +29,7 @@
     { key: 'bungeeCm', id: 'bungee', nameKey: 'factorNameBungee', unit: ' cm' },
   ];
   const RESPONSE_KEY = 'distance';
-  const EFFECTS_PALETTE = ['#a61936', '#1b6ea6', '#2f8f46', '#d5a62e', '#6a4c93', '#c2571b', '#0f766e', '#b45309'];
+  const EFFECTS_PALETTE = ['#2563eb', '#0ea5e9', '#f59e0b', '#16a34a', '#7c3aed', '#dc2626', '#0f766e', '#b45309'];
   const SWING_WALL_S = 0.3; // เวลาแอนิเมชันแขนเหวี่ยง (วินาทีจริงบนจอ)
   const TABLE_COLS = 11;
 
@@ -43,9 +43,8 @@
     warningBox: document.getElementById('warningBox'),
 
     languageButton: document.getElementById('languageButton'),
-    themeButton: document.getElementById('themeButton'),
 
-    topbar: document.querySelector('.topbar'),
+    topbar: document.querySelector('.navbar'),
     intro: document.querySelector('.intro'),
     controlsPanel: document.querySelector('.controls-panel'),
     simulationPanel: document.querySelector('.simulation-panel'),
@@ -79,7 +78,7 @@
   // ---------------------------------------------------------------------
   // สถานะของแอป
   // ---------------------------------------------------------------------
-  let language = 'th';
+  let language = 'en';
   const results = []; // เก็บในหน่วยความจำเท่านั้น (ไม่มี localStorage)
   let animationHandle = null;
   let tableExpanded = false;
@@ -165,6 +164,7 @@
     const scale = Math.max(1, Math.min((w - 24 - rightPad) / (sceneMaxX + behindM), usableH / sceneMaxY));
     const S = scale;
     const originPx = { x: 24 + behindM * scale, y: h - groundMarginPx };
+    syncHorizon(originPx.y);
     return {
       scale,
       S,
@@ -504,7 +504,7 @@
 
   function setLaunchEnabled(enabled) {
     els.launchBtn.disabled = !enabled;
-    els.launchBtn.textContent = enabled ? I18N[language].launch : I18N[language].launching;
+    els.launchBtn.querySelector('.btn-label').textContent = enabled ? I18N[language].launch : I18N[language].launching;
   }
 
   // ---------------------------------------------------------------------
@@ -786,16 +786,19 @@
     };
   }
 
+  /** ให้เส้นขอบฟ้าของพื้นหลังโซน A ตรงกับเส้นพื้น (0 m) ของฉากจำลองจริง */
+  function syncHorizon(groundYInScene) {
+    const zone = els.scene.closest('.zone-experiment');
+    if (!zone) return;
+    const z = zone.getBoundingClientRect();
+    const s = els.scene.getBoundingClientRect();
+    zone.style.setProperty('--horizon', `${Math.round(s.top - z.top + groundYInScene)}px`);
+  }
+
   function syncPanelHeights() {
-    if (!window.matchMedia('(min-width: 901px)').matches) {
-      els.simulationPanel.style.height = '';
-      els.resultsSidebar.style.height = '';
-      return;
-    }
-    if (tableExpanded) return;
-    const h = `${els.controlsPanel.offsetHeight}px`;
-    els.simulationPanel.style.height = h;
-    els.resultsSidebar.style.height = h;
+    // ความสูงของ 3 ส่วนในโซน A คุมด้วย CSS แล้ว (โซนเต็มจอ) — แค่ล้างค่าเดิมที่อาจค้างอยู่
+    els.simulationPanel.style.height = '';
+    els.resultsSidebar.style.height = '';
   }
 
   let lastScrollY = window.scrollY;
@@ -840,6 +843,16 @@
   // ---------------------------------------------------------------------
   // ตารางขยาย — modal กลางจอ
   // ---------------------------------------------------------------------
+  /** ปุ่มขยาย/ปิดตาราง: สลับข้อความ + ไอคอน (ข้อความอยู่ใน .btn-label แยกจากไอคอน) */
+  function setExpandButton(expanded) {
+    const key = expanded ? 'collapseTable' : 'expandTable';
+    const label = els.expandTableBtn.querySelector('.btn-label');
+    label.dataset.i18n = key;
+    label.textContent = I18N[language][key];
+    els.expandTableBtn.querySelector('use').setAttribute('href', `#${expanded ? 'i-close' : 'i-expand'}`);
+    els.expandTableBtn.setAttribute('aria-label', expanded ? 'Collapse table' : 'Expand table');
+  }
+
   function openTableExpand() {
     tableExpanded = true;
     els.resultsSidebar.style.height = '';
@@ -847,9 +860,7 @@
     els.tableBackdrop.classList.add('visible');
     document.body.classList.add('table-modal-open');
     [els.topbar, els.intro, els.controlsPanel, els.simulationPanel].forEach((n) => n && n.setAttribute('inert', ''));
-    els.expandTableBtn.dataset.i18n = 'collapseTable';
-    els.expandTableBtn.setAttribute('aria-label', 'Collapse table');
-    els.expandTableBtn.textContent = I18N[language].collapseTable;
+    setExpandButton(true);
   }
 
   function closeTableExpand() {
@@ -858,9 +869,7 @@
     els.tableBackdrop.classList.remove('visible');
     document.body.classList.remove('table-modal-open');
     [els.topbar, els.intro, els.controlsPanel, els.simulationPanel].forEach((n) => n && n.removeAttribute('inert'));
-    els.expandTableBtn.dataset.i18n = 'expandTable';
-    els.expandTableBtn.setAttribute('aria-label', 'Expand table');
-    els.expandTableBtn.textContent = I18N[language].expandTable;
+    setExpandButton(false);
     syncPanelHeights();
   }
 
@@ -907,15 +916,8 @@
     renderEffectsChart();
   }
 
-  function changeTheme() {
-    document.body.classList.toggle('dark');
-    els.themeButton.textContent = document.body.classList.contains('dark') ? '☀' : '☾';
-    redrawCurrentFrame();
-    renderEffectsChart();
-  }
 
   els.languageButton.addEventListener('click', changeLanguage);
-  els.themeButton.addEventListener('click', changeTheme);
 
   // ---------------------------------------------------------------------
   // ปุ่มยิง + เครื่องขยับตาม slider แบบ real-time

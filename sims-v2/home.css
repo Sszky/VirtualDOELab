@@ -1,312 +1,342 @@
 /* ==========================================================
-   Virtual DOE Lab — home page
-   ใช้ token สีชุดเดียวกับ parachute / water rocket
+   home.css — หน้าแรก Virtual DOE Lab (ใช้คู่กับ assets/site.css)
+   hero เต็มจอ พื้นกรมท่า+กริดพิมพ์เขียว -> ขอบล่างเป็นเฟือง -> การ์ด 4 การทดลอง -> footer เงาโรงงาน
    ========================================================== */
 
-:root {
-  --bg: #f7f3f4;
-  --panel: #ffffff;
-  --ink: #2d171c;
-  --muted: #79656a;
-  --line: #e7dadd;
-
-  --burgundy: #7a0019;
-  --burgundy-light: #a61936;
-  --burgundy-dark: #590013;
-  --gold: #d5a62e;
-  --tint: #f6e9ec;
-  --topbar-bg: rgba(247, 243, 244, 0.85);
-
-  --shadow: 0 16px 50px rgba(87, 0, 22, 0.1);
-  --shadow-hover: 0 22px 56px rgba(87, 0, 22, 0.18);
-  --radius: 18px;
+html {
+  scroll-behavior: smooth;
 }
 
-body.dark {
-  --bg: #1c0d11;
-  --panel: #2b141a;
-  --ink: #f8edef;
-  --muted: #c7aeb4;
-  --line: #59303a;
-  --tint: #3a1a22;
-  --burgundy: #d9546e;
-  --topbar-bg: rgba(28, 13, 17, 0.8);
-  --shadow: 0 16px 50px rgba(0, 0, 0, 0.25);
-  --shadow-hover: 0 22px 56px rgba(0, 0, 0, 0.4);
-  color-scheme: dark;
+/* ---------------------------------------------------------- HERO */
+.hero {
+  position: relative;
+  z-index: 1;
+  height: calc(100dvh - var(--nav-h));
+  min-height: 520px;
+  display: grid;
+  place-items: center;
+  padding: 24px clamp(16px, 4vw, 48px);
+  background: var(--navy);
+  color: var(--white);
+  isolation: isolate;
 }
 
-* {
-  box-sizing: border-box;
+/* กริดกระดาษเขียนแบบ ค่อยๆ จางก่อนถึงขอบล่าง */
+.hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background-image:
+    linear-gradient(rgba(147, 197, 253, 0.13) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(147, 197, 253, 0.13) 1px, transparent 1px),
+    linear-gradient(rgba(147, 197, 253, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(147, 197, 253, 0.05) 1px, transparent 1px);
+  background-size: 160px 160px, 160px 160px, 32px 32px, 32px 32px;
+  background-position: center center;
+  -webkit-mask-image: linear-gradient(to bottom, #000 55%, transparent 100%);
+  mask-image: linear-gradient(to bottom, #000 55%, transparent 100%);
 }
 
-body {
+.hero-content {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+}
+
+.hero-title {
   margin: 0;
-  background: var(--bg);
-  color: var(--ink);
-  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans Thai", sans-serif;
-  font-size: 16px;
-  line-height: 1.5;
-  transition: background 0.2s ease, color 0.2s ease;
+  font-family: var(--font-display);
+  font-size: clamp(3rem, 10.5vw, 9.5rem);
+  font-weight: 700;
+  line-height: 0.92;
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
 }
 
-button {
-  font: inherit;
-  cursor: pointer;
+.hero-title span {
+  color: var(--sky-accent);
 }
 
-/* ---------------- Topbar ---------------- */
-.topbar {
-  position: sticky;
-  top: env(safe-area-inset-top, 0px);
-  z-index: 20;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  padding: 14px max(16px, calc((100vw - 1180px) / 2));
-  border-bottom: 1px solid var(--line);
-  background: var(--topbar-bg);
-  backdrop-filter: blur(16px);
+.hero-sub {
+  margin: 22px 0 0;
+  color: var(--sky-accent);
+  font-family: var(--font-display);
+  font-size: clamp(0.78rem, 1.5vw, 1.12rem);
+  font-weight: 600;
+  letter-spacing: 0.36em;
+  text-transform: uppercase;
 }
 
-.brand {
-  display: flex;
-  align-items: center;
-  gap: 12px;
+/* เครื่องมือทดลองกระจายรอบหัวข้อ (นิ่ง ไม่ขยับ) */
+.hero-tools {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  overflow: hidden;
+  pointer-events: none;
 }
 
-.brand-mark {
-  width: 38px;
-  height: 38px;
-  display: grid;
-  place-items: center;
-  border-radius: 11px;
-  background: var(--burgundy-dark);
-  color: #fff;
-  font-weight: 800;
+.tool {
+  position: absolute;
+  width: var(--s);
+  transform: rotate(var(--r, 0deg));
+  filter: drop-shadow(0 22px 22px rgba(0, 0, 0, 0.35));
 }
 
-.brand strong {
+.tool .iso-svg {
   display: block;
-  font-size: 0.95rem;
-  line-height: 1.2;
+  width: 100%;
+  height: auto;
 }
 
-.brand small {
-  display: block;
-  margin-top: 2px;
-  color: var(--muted);
-  font-size: 0.75rem;
-}
+.tool-scissors { --s: clamp(110px, 13vw, 210px); left: 3%; top: 3%; --r: -8deg; }
+.tool-bottle { --s: clamp(54px, 6vw, 100px); left: 20%; top: 63%; --r: 10deg; }
+.tool-tape-measure { --s: clamp(110px, 12vw, 200px); left: 2%; bottom: 5%; --r: 4deg; }
+.tool-pingpong { --s: clamp(56px, 6vw, 100px); left: 30%; top: 12%; --r: 0deg; }
+.tool-stopwatch { --s: clamp(80px, 9vw, 150px); right: 6%; top: 6%; --r: 12deg; }
+.tool-cutter { --s: clamp(110px, 12vw, 200px); right: 3%; top: 64%; --r: -14deg; }
+.tool-tape-roll { --s: clamp(76px, 8vw, 140px); right: 24%; bottom: 5%; --r: 6deg; }
+.tool-spool { --s: clamp(70px, 8vw, 130px); right: 29%; top: 6%; --r: -6deg; }
+.tool-paper { --s: clamp(120px, 14vw, 230px); left: 34%; bottom: 10%; --r: -4deg; }
 
-.header-actions {
-  display: flex;
-  gap: 8px;
-}
-
-.icon-button {
-  width: 42px;
-  height: 42px;
-  display: grid;
-  place-items: center;
-  border: 1px solid var(--line);
-  border-radius: 10px;
-  background: var(--panel);
-  color: var(--ink);
+/* ลูกศรชวนเลื่อนลง */
+.hero-cue {
+  position: absolute;
+  left: 50%;
+  bottom: 22px;
+  z-index: 3;
+  transform: translateX(-50%);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border: 1px solid rgba(147, 197, 253, 0.4);
+  border-radius: 999px;
+  color: var(--sky-accent);
+  font-family: var(--font-display);
   font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.hero-cue:hover {
+  background: rgba(147, 197, 253, 0.12);
+  color: var(--white);
+}
+
+.hero-cue:hover .icon {
+  animation: cue-nudge 0.6s ease;
+}
+
+@keyframes cue-nudge {
+  50% {
+    transform: translateY(3px);
+  }
+}
+
+/* เฟืองขนาดใหญ่ห้อยใต้ขอบ hero — เห็นเมื่อเลื่อนจอลงมา */
+.hero-gear {
+  position: absolute;
+  left: 0;
+  top: calc(100% - 1px);
+  z-index: 1;
+  display: block;
+  width: 100%;
+  height: auto;
+  pointer-events: none;
+}
+
+/* ---------------------------------------------------------- 4 SIMULATORS */
+.sims {
+  position: relative;
+  padding: calc(16vw + 100px) clamp(16px, 4vw, 48px) clamp(150px, 18vw, 240px);
+  scroll-margin-top: var(--nav-h);
+}
+
+/* ปุ่ม "Choose an experiment" พามาหยุดที่หัวข้อนี้ เว้นใต้ navbar 32px */
+.sims-head {
+  scroll-margin-top: calc(var(--nav-h) + 32px);
+  max-width: 1280px;
+  margin: 0 auto 4px;
+  text-align: center;
+}
+
+.sims-eyebrow {
+  margin: 0 0 8px;
+  color: var(--blue);
+  font-family: var(--font-display);
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.sims-head h2 {
+  font-size: clamp(2rem, 4.4vw, 3.4rem);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+}
+
+.sim-grid {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: clamp(16px, 2.4vw, 36px);
+}
+
+/* การ์ดไม่มีกรอบ: มีแค่ก้อน isometric + ชื่อ + คำอธิบาย */
+.sim-card {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  color: var(--ink);
+  text-decoration: none;
+  border-radius: 12px;
+}
+
+.sim-card:focus-visible {
+  outline: 3px solid var(--blue);
+  outline-offset: 6px;
+}
+
+/* ภาพถูกวาดใหม่ทุกเฟรมตอน hover — ถ้าให้รับคลิกเอง polygon ที่กดจะหายก่อนปล่อยนิ้ว (ต้องกด 2 ครั้ง)
+   จึงให้คลิกทะลุไปที่ลิงก์ .sim-card แทน */
+.sim-art {
+  pointer-events: none;
+  width: 100%;
+  max-width: 300px;
+  aspect-ratio: 18.9 / 22;
+  margin-bottom: 8px;
+}
+
+.sim-art .iso-svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  filter: drop-shadow(0 18px 16px rgba(11, 28, 51, 0.16));
+  transition: transform 0.28s ease, filter 0.28s ease;
+}
+
+.sim-card:hover .sim-art .iso-svg,
+.sim-card:focus-visible .sim-art .iso-svg {
+  transform: translateY(-10px);
+  filter: drop-shadow(0 30px 22px rgba(11, 28, 51, 0.24));
+}
+
+.sim-card h3 {
+  font-size: clamp(1.15rem, 1.6vw, 1.4rem);
   font-weight: 700;
 }
 
-.icon-button:hover {
-  border-color: var(--burgundy);
-}
-
-/* ---------------- Main ---------------- */
-main {
-  max-width: 1180px;
-  margin: 0 auto;
-  padding: 48px 16px 64px;
-}
-
-.intro {
-  max-width: 640px;
-  margin-bottom: 32px;
-}
-
-.eyebrow {
-  margin: 0 0 8px;
-  color: var(--burgundy);
-  font-size: 0.75rem;
-  font-weight: 800;
-  letter-spacing: 0.16em;
-}
-
-.intro h1 {
-  margin: 0;
-  font-size: clamp(2.2rem, 5vw, 3.7rem);
-  line-height: 1.05;
-  letter-spacing: -0.045em;
-  text-wrap: balance;
-}
-
-.intro p:not(.eyebrow) {
-  margin: 14px 0 0;
+.sim-card p {
+  max-width: 30ch;
+  margin: 8px 0 14px;
   color: var(--muted);
+  font-size: 0.92rem;
 }
 
-/* ---------------- Lab cards ---------------- */
-.lab-grid {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 20px;
+.sim-cta {
+  margin-top: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--blue);
+  font-family: var(--font-display);
+  font-weight: 600;
 }
 
+.sim-cta .icon {
+  transition: transform 0.2s ease;
+}
+
+.sim-card:hover .sim-cta .icon {
+  transform: translateX(4px);
+}
+
+/* ---------------------------------------------------------- FOOTER */
+.site-footer {
+  position: relative;
+  padding: 26px clamp(16px, 4vw, 48px) 34px;
+  background: var(--navy);
+  color: var(--white);
+  text-align: center;
+}
+
+.footer-skyline {
+  position: absolute;
+  left: 0;
+  bottom: calc(100% - 1px);
+  display: block;
+  width: 100%;
+  height: clamp(90px, 13vw, 190px);
+  pointer-events: none;
+}
+
+.footer-copy {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.footer-note {
+  margin: 6px 0 0;
+  color: var(--sky-accent);
+  font-size: 0.8rem;
+  opacity: 0.8;
+}
+
+/* ---------------------------------------------------------- RESPONSIVE */
 @media (max-width: 1000px) {
-  .lab-grid {
+  .sim-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+    row-gap: 48px;
+  }
+}
+
+@media (max-width: 760px) {
+  .tool-pingpong,
+  .tool-spool,
+  .tool-paper,
+  .tool-bottle {
+    display: none;
+  }
+  .tool-scissors { left: -4%; top: 6%; }
+  .tool-stopwatch { right: 2%; top: 8%; }
+  .tool-bottle { left: 6%; top: 60%; }
+  .tool-cutter { right: -4%; top: 60%; }
+  .tool-tape-measure { left: -2%; bottom: 6%; }
+  .tool-tape-roll { right: 6%; bottom: 7%; }
+}
+
+@media (max-width: 600px) {
+  /* ชื่อเว็บใหญ่อยู่บน hero แล้ว — navbar มือถือเหลือแค่โลโก้ ไม่ต้องตัดข้อความ */
+  .home-page .nav-brand-text {
+    display: none;
   }
 }
 
 @media (max-width: 560px) {
-  .lab-grid {
+  .hero {
+    min-height: 460px;
+  }
+  .sim-grid {
     grid-template-columns: 1fr;
-    gap: 14px;
+    row-gap: 44px;
   }
-  .lab-icon {
-    aspect-ratio: 16 / 7;
-  }
-  .lab-icon svg {
-    width: 26%;
-  }
-}
-
-.lab-card {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-  padding: 22px;
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-  background: var(--panel);
-  box-shadow: var(--shadow);
-  color: var(--ink);
-  text-decoration: none;
-  transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
-}
-
-.lab-card[href]:hover {
-  transform: translateY(-4px);
-  border-color: var(--burgundy);
-  box-shadow: var(--shadow-hover);
-}
-
-.lab-card[href]:focus-visible {
-  outline: 3px solid var(--gold);
-  outline-offset: 3px;
-}
-
-.lab-card-top {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-}
-
-.lab-module {
-  color: var(--gold);
-  font-size: 0.72rem;
-  font-weight: 800;
-  letter-spacing: 0.14em;
-}
-
-.lab-icon {
-  width: 100%;
-  aspect-ratio: 16 / 10;
-  max-width: 100%;
-  display: grid;
-  place-items: center;
-  border-radius: 14px;
-  background: var(--tint);
-  color: var(--burgundy);
-}
-
-.lab-icon svg {
-  width: 46%;
-  height: auto;
-}
-
-.lab-card h2 {
-  margin: 0;
-  font-size: 1.2rem;
-  line-height: 1.25;
-}
-
-.lab-card p {
-  margin: 0;
-  color: var(--muted);
-  font-size: 0.9rem;
-}
-
-.lab-cta {
-  margin-top: auto;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  color: var(--burgundy);
-  font-size: 0.9rem;
-  font-weight: 700;
-}
-
-.lab-card[href]:hover .lab-cta span[aria-hidden] {
-  transform: translateX(3px);
-}
-
-.lab-cta span[aria-hidden] {
-  transition: transform 0.18s ease;
-}
-
-/* การ์ดที่ยังไม่มีลิงก์ (ยังไม่มี href) */
-.lab-card.is-soon {
-  cursor: default;
-  box-shadow: none;
-}
-
-.lab-card.is-soon .lab-icon,
-.lab-card.is-soon h2 {
-  opacity: 0.55;
-}
-
-.lab-card.is-soon .lab-cta {
-  color: var(--muted);
-}
-
-.soon-badge {
-  padding: 3px 10px;
-  border: 1px solid var(--line);
-  border-radius: 999px;
-  color: var(--muted);
-  font-size: 0.72rem;
-  font-weight: 700;
-  white-space: nowrap;
-}
-
-footer {
-  max-width: 1180px;
-  margin: 0 auto;
-  padding: 20px 16px 32px;
-  border-top: 1px solid var(--line);
-  color: var(--muted);
-  font-size: 0.8rem;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .lab-card,
-  .lab-cta span[aria-hidden] {
-    transition: none;
-  }
-  .lab-card[href]:hover {
-    transform: none;
+  .sim-art {
+    max-width: 260px;
   }
 }
