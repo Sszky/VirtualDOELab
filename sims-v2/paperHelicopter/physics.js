@@ -7,7 +7,7 @@
  *   Cd       = CD_ROTOR × (WW / 4 cm)^WIDTH_EXPONENT  (ใบกว้าง = solidity สูง รับลมได้มากขึ้น)
  *   ช่วงแรกหลังปล่อยใบพัดยังหมุนไม่เต็มที่ → Cd ค่อย ๆ เพิ่มจาก SPINUP_START×Cd ถึง Cd ภายใน SPINUP_TIME_S
  *   สมการ: m·dv/dt = −m·g + ½·ρ·Cd·A·v²  (v เป็นลบตอนตก) อินทิเกรตด้วย RK4 จนถึงพื้น แล้ว interpolate จุดแตะพื้น
- * โหมด stochastic: ใส่ Gaussian noise 3% ให้ Cd และมวล (แทนความคลาดเคลื่อนของการตัด/พับกระดาษจริง)
+ * โหมด stochastic: ใส่ Gaussian noise 8% ให้ Cd และมวล (แทนความคลาดเคลื่อนของการตัด/พับกระดาษจริง)
  *
  * ข้อจำกัดที่ยอมรับ: ไม่จำลองการเอียง/ส่าย ไม่คิดแรงต้านของลำตัวแยก และถือว่าใบพัดหมุนคงที่หลังช่วง spin-up
  */
@@ -27,7 +27,7 @@
     DT: 0.001,
     RECORD_EVERY_N_STEPS: 10, // เก็บจุด trajectory ทุก ~0.01 s
     MAX_SIM_TIME_S: 30,
-    NOISE_STD: 0.03,
+    NOISE_STD: 0.08,
   };
 
   function normalNoise() {

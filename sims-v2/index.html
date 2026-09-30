@@ -73,10 +73,10 @@
       <div class="nav-dropdown">
         <button class="nav-link nav-dropdown-toggle" type="button" aria-expanded="false" aria-controls="simMenu"><span data-i18n="navSims">Simulators</span><svg class="icon" aria-hidden="true"><use href="#i-chevron-down"/></svg></button>
         <ul class="nav-dropdown-menu" id="simMenu" hidden>
-          <li><a href="parachute/index.html" data-sim="parachute"><svg class="icon" aria-hidden="true"><use href="#i-sim-parachute"/></svg><span data-i18n="simParachute">Parachute</span></a></li>
-          <li><a href="paperHelicopter/index.html" data-sim="helicopter"><svg class="icon" aria-hidden="true"><use href="#i-sim-helicopter"/></svg><span data-i18n="simHelicopter">Paper Helicopter</span></a></li>
           <li><a href="waterBottleRocket/index.html" data-sim="rocket"><svg class="icon" aria-hidden="true"><use href="#i-sim-rocket"/></svg><span data-i18n="simRocket">Water Bottle Rocket</span></a></li>
           <li><a href="catapult/index.html" data-sim="catapult"><svg class="icon" aria-hidden="true"><use href="#i-sim-catapult"/></svg><span data-i18n="simCatapult">Catapult</span></a></li>
+          <li><a href="paperHelicopter/index.html" data-sim="helicopter"><svg class="icon" aria-hidden="true"><use href="#i-sim-helicopter"/></svg><span data-i18n="simHelicopter">Paper Helicopter</span></a></li>
+          <li><a href="parachute/index.html" data-sim="parachute"><svg class="icon" aria-hidden="true"><use href="#i-sim-parachute"/></svg><span data-i18n="simParachute">Parachute</span></a></li>
         </ul>
       </div>
       <button id="languageButton" class="nav-lang" type="button" aria-label="Switch language">TH</button>
@@ -117,22 +117,6 @@
 
       <ul class="sim-grid">
         <li>
-          <a class="sim-card" href="parachute/index.html">
-            <div class="sim-art" data-art="parachute"></div>
-            <h3 data-i18n="parachuteName">Parachute</h3>
-            <p data-i18n="parachuteDesc">Vary canopy shape, material, size and string length, then measure fall time.</p>
-            <span class="sim-cta"><span data-i18n="start">Start experiment</span><svg class="icon" aria-hidden="true"><use href="#i-arrow-right"/></svg></span>
-          </a>
-        </li>
-        <li>
-          <a class="sim-card" href="paperHelicopter/index.html">
-            <div class="sim-art" data-art="helicopter"></div>
-            <h3 data-i18n="heliName">Paper Helicopter</h3>
-            <p data-i18n="heliDesc">Vary wing and body dimensions, then time the spinning descent.</p>
-            <span class="sim-cta"><span data-i18n="start">Start experiment</span><svg class="icon" aria-hidden="true"><use href="#i-arrow-right"/></svg></span>
-          </a>
-        </li>
-        <li>
           <a class="sim-card" href="waterBottleRocket/index.html">
             <div class="sim-art" data-art="rocket"></div>
             <h3 data-i18n="rocketName">Water Bottle Rocket</h3>
@@ -145,6 +129,22 @@
             <div class="sim-art" data-art="catapult"></div>
             <h3 data-i18n="catapultName">Catapult</h3>
             <p data-i18n="catapultDesc">Set release and firing angles, cup, pin and band positions, then measure distance.</p>
+            <span class="sim-cta"><span data-i18n="start">Start experiment</span><svg class="icon" aria-hidden="true"><use href="#i-arrow-right"/></svg></span>
+          </a>
+        </li>
+        <li>
+          <a class="sim-card" href="paperHelicopter/index.html">
+            <div class="sim-art" data-art="helicopter"></div>
+            <h3 data-i18n="heliName">Paper Helicopter</h3>
+            <p data-i18n="heliDesc">Vary wing and body dimensions, then time the spinning descent.</p>
+            <span class="sim-cta"><span data-i18n="start">Start experiment</span><svg class="icon" aria-hidden="true"><use href="#i-arrow-right"/></svg></span>
+          </a>
+        </li>
+        <li>
+          <a class="sim-card" href="parachute/index.html">
+            <div class="sim-art" data-art="parachute"></div>
+            <h3 data-i18n="parachuteName">Parachute</h3>
+            <p data-i18n="parachuteDesc">Vary canopy shape, material, size and string length, then measure fall time.</p>
             <span class="sim-cta"><span data-i18n="start">Start experiment</span><svg class="icon" aria-hidden="true"><use href="#i-arrow-right"/></svg></span>
           </a>
         </li>
@@ -191,12 +191,12 @@
       },
     };
   </script>
-  <script src="assets/nav.js?v=2"></script>
+  <script src="assets/nav.js?v=3"></script>
   <script src="assets/iso3d.js?v=1"></script>
   <script src="assets/home-art.js?v=4"></script>
   <script>
     (function () {
-      var lang = 'en';
+      var lang = window.getSiteLang ? window.getSiteLang() : 'en'; // ภาษาที่เลือกไว้จากหน้าอื่น
       var button = document.getElementById('languageButton');
       function apply() {
         var dict = window.I18N[lang];
@@ -208,6 +208,7 @@
       }
       button.addEventListener('click', function () {
         lang = lang === 'th' ? 'en' : 'th';
+        if (window.setSiteLang) window.setSiteLang(lang);
         apply();
       });
       apply();

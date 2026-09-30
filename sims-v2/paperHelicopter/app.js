@@ -120,7 +120,7 @@
     effectsLegend: document.getElementById('effectsLegend'),
   };
 
-  let language = 'en';
+  let language = window.getSiteLang ? window.getSiteLang() : 'en'; // ภาษาที่เลือกไว้จากหน้าก่อน (ค่าเริ่มต้นอังกฤษ) ดู nav.js
   const results = []; // เก็บในหน่วยความจำเท่านั้น (ไม่มี localStorage)
   let animationHandle = null;
   let tableExpanded = false;
@@ -768,6 +768,7 @@
     language = language === 'th' ? 'en' : 'th';
     els.languageButton.textContent = language === 'en' ? 'TH' : 'EN';
     document.documentElement.lang = language;
+    if (window.setSiteLang) window.setSiteLang(language); // จำไว้ให้หน้าอื่นใช้ภาษาเดียวกัน
     applyTranslations(language);
     updateModeHint();
     renderTable();
@@ -797,6 +798,8 @@
   // ---------------------------------------------------------------------
   // เริ่มต้น
   // ---------------------------------------------------------------------
+  els.languageButton.textContent = language === 'en' ? 'TH' : 'EN';
+  document.documentElement.lang = language;
   applyTranslations(language);
   updateModeHint();
   setLaunchEnabled(true);

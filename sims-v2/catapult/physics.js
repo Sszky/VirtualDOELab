@@ -35,8 +35,8 @@
     DT: 0.001,
     RECORD_EVERY_N_STEPS: 5,
     MAX_SIM_TIME_S: 10,
-    NOISE_ENERGY: 0.03,
-    NOISE_FIRING_DEG: 0.5,
+    NOISE_ENERGY: 0.08,
+    NOISE_FIRING_DEG: 1.3,
   };
 
   const RANGES = {

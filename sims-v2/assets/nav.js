@@ -3,6 +3,7 @@
  *  - รวมคำแปลของ navbar เข้าไปใน window.I18N ของหน้านั้น (applyTranslations ของแต่ละหน้าจะแปลให้เอง)
  *  - dropdown เลือกการทดลอง (เปิด/ปิด, คลิกข้างนอก/กด Esc เพื่อปิด)
  *  - ไฮไลต์การทดลองที่เปิดอยู่ (อ่านจาก <body data-sim="...">)
+ *  - จำภาษาที่เลือกให้ทุกหน้าใช้ร่วมกัน (getSiteLang / setSiteLang)
  * โหลดหลัง i18n.js และก่อน app.js
  */
 (function (global) {
@@ -44,6 +45,60 @@
 
   mergeNavI18N(global.I18N);
   global.mergeNavI18N = mergeNavI18N;
+
+  /**
+   * ภาษาเดียวกันทั้งเว็บ: กดเปลี่ยนที่หน้าไหนก็ติดไปหน้าอื่นด้วย
+   *  - จำไว้ใน localStorage
+   *  - แนบ ?lang=th ไปกับลิงก์ภายในด้วย เผื่อบางที่ใช้ localStorage ไม่ได้ (เช่นโหมดส่วนตัว)
+   * หน้าแต่ละหน้าอ่านค่าด้วย getSiteLang() และแจ้งเมื่อผู้ใช้เปลี่ยนด้วย setSiteLang(lang)
+   */
+  const LANG_KEY = 'vdoe-lang';
+  const isLang = (v) => v === 'en' || v === 'th';
+
+  function readSiteLang() {
+    try {
+      const fromUrl = new URLSearchParams(location.search).get('lang');
+      if (isLang(fromUrl)) return fromUrl;
+    } catch (e) { /* ไม่มี URLSearchParams */ }
+    try {
+      const saved = localStorage.getItem(LANG_KEY);
+      if (isLang(saved)) return saved;
+    } catch (e) { /* storage ถูกปิด */ }
+    return 'en';
+  }
+
+  let siteLang = readSiteLang();
+
+  /** ใส่/ลบ ?lang= ใน href แบบ relative (คง #anchor ไว้) */
+  function withLang(href, lang) {
+    const hashAt = href.indexOf('#');
+    const hash = hashAt >= 0 ? href.slice(hashAt) : '';
+    let path = hashAt >= 0 ? href.slice(0, hashAt) : href;
+    path = path.replace(/[?&]lang=\w+/, '').replace(/\?$/, '');
+    if (lang !== 'en') path += (path.includes('?') ? '&' : '?') + 'lang=' + lang;
+    return path + hash;
+  }
+
+  function tagInternalLinks() {
+    document.querySelectorAll('a[href]').forEach((a) => {
+      const href = a.getAttribute('href');
+      if (!/\.html([?#]|$)/.test(href) || /^[a-z]+:/i.test(href)) return; // เฉพาะหน้าในเว็บนี้
+      a.setAttribute('href', withLang(href, siteLang));
+    });
+  }
+
+  function setSiteLang(lang) {
+    if (!isLang(lang)) return;
+    siteLang = lang;
+    try { localStorage.setItem(LANG_KEY, lang); } catch (e) { /* storage ถูกปิด */ }
+    tagInternalLinks();
+    try { // แก้ URL ของหน้านี้ด้วย ไม่งั้นกดรีเฟรชแล้ว ?lang= เก่าจะชนะ
+      history.replaceState(history.state, '', withLang(location.pathname + location.search, lang) + location.hash);
+    } catch (e) { /* บางที่ห้ามแก้ URL */ }
+  }
+
+  global.getSiteLang = () => siteLang;
+  global.setSiteLang = setSiteLang;
 
   function initDropdown() {
     const toggle = document.querySelector('.nav-dropdown-toggle');
@@ -99,9 +154,14 @@
 
   resetScrollOnNewPage();
 
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initDropdown);
-  } else {
+  function init() {
     initDropdown();
+    tagInternalLinks();
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
   }
 })(window);

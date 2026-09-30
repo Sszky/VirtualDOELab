@@ -84,7 +84,7 @@
   // ---------------------------------------------------------------------
   // สถานะของแอป
   // ---------------------------------------------------------------------
-  let language = 'en'; // ภาษาหลักเป็นอังกฤษ (ผู้ใช้ขอเปลี่ยน)
+  let language = window.getSiteLang ? window.getSiteLang() : 'en'; // ภาษาที่เลือกไว้จากหน้าก่อน (ค่าเริ่มต้นอังกฤษ) ดู nav.js
   // ธีมเริ่มต้น = สว่าง (ไม่ใส่คลาส 'dark' บน body ตอนโหลด) ยืนยันแล้วกับผู้ใช้
 
   // ผลการทดลองทั้งหมดในเซสชันนี้ — เก็บในหน่วยความจำเท่านั้น (ไม่มี localStorage)
@@ -101,9 +101,9 @@
   let previousTrajectory = null;
 
   // สเกลแกน X/Y คงที่ (ไม่ auto-fit ใหม่ทุกครั้งที่ยิง) — ขยายได้เฉพาะตอนเที่ยวบินเกินขอบเขตเดิมเท่านั้น ไม่มีวันหด
-  // ค่าเริ่มต้นกว้างพอสำหรับพารามิเตอร์ default (ระยะ ~62m, ความสูง ~23m)
-  let sceneMaxX = 90;
-  let sceneMaxY = 55;
+  // ค่าเริ่มต้นกว้างพอสำหรับพารามิเตอร์ default (ระยะ ~31m, ความสูง ~10m)
+  let sceneMaxX = 45;
+  let sceneMaxY = 20;
 
   // ---------------------------------------------------------------------
   // ผูก slider <-> numeric input แบบสองทางสำหรับแต่ละพารามิเตอร์
@@ -935,6 +935,7 @@
     language = language === 'th' ? 'en' : 'th';
     els.languageButton.textContent = language === 'en' ? 'TH' : 'EN';
     document.documentElement.lang = language;
+    if (window.setSiteLang) window.setSiteLang(language); // จำไว้ให้หน้าอื่นใช้ภาษาเดียวกัน
 
     applyTranslations(language); // ครอบคลุม #expandTableBtn ด้วยเพราะมี data-i18n ที่ถูกสลับใน open/closeTableExpand
     updateModeHint();
@@ -971,6 +972,8 @@
   // ---------------------------------------------------------------------
   // เริ่มต้น
   // ---------------------------------------------------------------------
+  els.languageButton.textContent = language === 'en' ? 'TH' : 'EN';
+  document.documentElement.lang = language;
   applyTranslations(language);
   updateModeHint();
   setLaunchEnabled(true);
