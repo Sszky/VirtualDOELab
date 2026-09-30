@@ -18,7 +18,7 @@
 
 ```
 VirtualDOELab/
-├─ sims-v2/                 เว็บเวอร์ชันล่าสุด (ดีไซน์ใหม่ ใช้ template เดียวกันทั้ง 4 การทดลอง)
+├─ sims-v2/                 ตัวเว็บทั้งหมด (ใช้ template เดียวกันทั้ง 4 การทดลอง)
 │  ├─ index.html            หน้าแรก (Home page)
 │  ├─ assets/               ไฟล์ที่ใช้ร่วมกัน: ธีม/ฟอนต์/navbar (site.css, nav.js),
 │  │                        โครงหน้าการทดลอง (sim.css), ชุดไอคอน, ตัววาดภาพ isometric (iso3d.js, home-art.js)
@@ -28,12 +28,10 @@ VirtualDOELab/
 │  └─ catapult/
 │     (แต่ละการทดลองมี index.html, style.css, physics.js = แบบจำลองฟิสิกส์,
 │      i18n.js = ข้อความไทย/อังกฤษ, app.js = การทำงานของหน้า)
-├─ main/                    หน้าหลักเวอร์ชันแรก
-├─ parachute/               Parachute เวอร์ชันแรก
-├─ Helicopter/              Paper Helicopter เวอร์ชันแรก
-├─ waterBottleRocket/       Water Bottle Rocket เวอร์ชันแรก
 └─ js/drive.js              บันทึกไฟล์ผลการทดลอง (CSV) ลง Google Drive ผ่าน Google Drive API
 ```
+
+เวอร์ชันแรกของแต่ละการทดลองและหน้าหลักเดิมถูกลบออกจาก repo แล้ว ยังเปิดดูได้ในประวัติ commit ก่อน `d19e163`
 
 ## การทดลองและปัจจัย
 
@@ -55,12 +53,3 @@ VirtualDOELab/
 - ตารางบันทึกผล ขยายดูได้ทุกคอลัมน์ และส่งออกเป็น **CSV**
 - กราฟ **Main Effects Plot** และ **Interaction Plot** จากผลที่บันทึกไว้
 - ภาษาไทย / อังกฤษ และใช้งานได้ทั้ง desktop, tablet และมือถือ
-
-## วิธีเปิดในเครื่อง
-
-เว็บเป็น HTML / CSS / JavaScript ล้วน ไม่มี framework และไม่ต้อง build
-
-1. เปิดโฟลเดอร์ `VirtualDOELab` ใน VS Code
-2. คลิกขวาที่ `sims-v2/index.html` → **Open with Live Server**
-
-หรือใช้ Python: รัน `python -m http.server` ที่โฟลเดอร์ `VirtualDOELab` แล้วเปิด `http://localhost:8000/sims-v2/index.html`

@@ -7,7 +7,9 @@
  * โมเดลฟิสิกส์ (สองเฟส):
  *  1) เฟสแรงขับ: ขณะยังมีน้ำในขวด ใช้สมการ Bernoulli หาความเร็วน้ำที่พุ่งออกจากหัวฉีด
  *     และสมการ adiabatic expansion หาความดันอากาศในขวดที่ลดลงเรื่อย ๆ ตามปริมาตรอากาศที่เพิ่มขึ้น
- *     แรงขับ = แรงจากโมเมนตัมของน้ำที่พุ่งออก + แรงจากผลต่างความดัน (thrust เชิงโมเมนตัม+ความดัน)
+ *     แรงขับ = อัตราโมเมนตัมของน้ำที่พุ่งออก  F = ṁ·v_e = 2·Cd·(P − P_atm)·A_nozzle
+ *     (ไม่บวกพจน์ (P − P_atm)·A อีก: น้ำออกเป็นลำอิสระ ความดันที่ปากขวดเท่าบรรยากาศ
+ *      และความดันในขวดถูกนับไปแล้วผ่าน v_e จากสมการ Bernoulli — เวอร์ชันก่อนบวกซ้ำ แรงขับจึงเกินจริง)
  *  2) เฟสบินอิสระ: หลังน้ำหมด ไม่มีแรงขับอีก เหลือแรงโน้มถ่วง + แรงต้านอากาศ จนกว่าจะตกพื้น
  *
  * ข้อจำกัดที่ยอมรับเป็นการลดความซับซ้อน (ระบุไว้ชัดเจน):
@@ -108,7 +110,7 @@
         ve = Math.sqrt((2 * dP) / CONSTANTS.RHO_WATER);
         dVw = -ctx.Cd_nozzle * CONSTANTS.A_NOZZLE_M2 * ve;
         mdot = CONSTANTS.RHO_WATER * ctx.Cd_nozzle * CONSTANTS.A_NOZZLE_M2 * ve;
-        Fthrust = mdot * ve + dP * CONSTANTS.A_NOZZLE_M2;
+        Fthrust = mdot * ve; // = 2·Cd·ΔP·A (ความดันที่ปากขวด = บรรยากาศ จึงไม่มีพจน์ความดันเพิ่ม)
       }
     }
 
@@ -197,10 +199,10 @@
     const Cd_drag = CONSTANTS.CD_DRAG_BASE + CONSTANTS.CD_DRAG_PER_FIN * fins;
     const P0_abs = CONSTANTS.P_ATM + pressurePSI * CONSTANTS.PSI_TO_PA;
 
-    // โหมด stochastic: ใส่สัญญาณรบกวนแบบ Gaussian อิสระกันเล็กน้อย (~3% SD) ให้ค่าคงที่ทางฟิสิกส์
+    // โหมด stochastic: ใส่สัญญาณรบกวนแบบ Gaussian อิสระกัน (SD 8%) ให้ค่าคงที่ทางฟิสิกส์
     // 3 ตัว เพื่อจำลองความคลาดเคลื่อนจากการผลิต/ประกอบจรวดจริง — โหมด deterministic ไม่แตะค่าพวกนี้เลย
     // จึงยังคงให้ผลลัพธ์เป๊ะเหมือนเดิมทุกประการสำหรับ input เดียวกัน (ไม่กระทบ regression เดิม)
-    const NOISE_STD = 0.03;
+    const NOISE_STD = 0.08;
     let Cd_nozzle = CONSTANTS.CD_NOZZLE;
     let m_dry_eff = m_dry;
     let Cd_drag_eff = Cd_drag;
