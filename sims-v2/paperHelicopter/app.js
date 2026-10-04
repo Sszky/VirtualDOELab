@@ -21,7 +21,7 @@
   // =====================================================================
   // 1) MODULE — ส่วนเฉพาะของเฮลิคอปเตอร์กระดาษ
   // =====================================================================
-  let actorGeom = null; // ขนาด px ของใบพัดล่าสุด ใช้หมุนใบพัดใน applyPose
+  let actorGeom = null; // ขนาด px ของตัวล่าสุด ใช้หมุนทั้งตัวใน applyPose
 
   const MODULE = {
     simulate: window.HelicopterPhysics.simulateDrop,
@@ -34,6 +34,12 @@
       { key: 'BW', type: 'range', id: 'bw', unit: ' cm', thKey: 'thBW' },
     ],
     constant: { key: 'heightM', id: 'height' },
+    // ผลตอบที่เลือกเป็นแกน Y ของกราฟได้ (ตัวแรก = ค่าเริ่มต้น)
+    responses: [
+      { key: 'time', labelKey: 'yTime', unit: 's', digits: 2 },
+      { key: 'impactSpeed', labelKey: 'yImpactSpeed', unit: 'm/s', digits: 2 },
+      { key: 'massG', labelKey: 'yMass', unit: 'g', digits: 2 },
+    ],
     // คอลัมน์เสริม (แสดงตอนขยายตาราง)
     extras: [
       { key: 'impactSpeed', thKey: 'thImpactSpeed', digits: 2 },
@@ -52,9 +58,11 @@
       const cx = W / 2;
       actorGeom = { cx, WL: p.WL, heightM: p.heightM };
       const svg = `<svg class="actor-svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-        <rect x="${cx - bodyW / 2}" y="${bladeT - 1}" width="${bodyW}" height="${bodyL}" rx="1.5" fill="#fffaf0" stroke="#9c6b3c" stroke-width="1" />
-        <line x1="${cx}" y1="${bladeT + 3}" x2="${cx}" y2="${bladeT + bodyL - 9}" stroke="#d9b98f" stroke-width="1" stroke-dasharray="3 2" />
-        <rect x="${cx - bodyW / 2 - 1}" y="${bladeT + bodyL - 7}" width="${bodyW + 2}" height="9" rx="2" fill="#94a3b8" stroke="#64748b" stroke-width="1" />
+        <g class="heli-body">
+          <rect class="heli-body-face" x="${cx - bodyW / 2}" y="${bladeT - 1}" width="${bodyW}" height="${bodyL}" rx="1.5" fill="#fffaf0" stroke="#9c6b3c" stroke-width="1" />
+          <line x1="${cx}" y1="${bladeT + 3}" x2="${cx}" y2="${bladeT + bodyL - 9}" stroke="#d9b98f" stroke-width="1" stroke-dasharray="3 2" />
+          <rect x="${cx - bodyW / 2 - 1}" y="${bladeT + bodyL - 7}" width="${bodyW + 2}" height="9" rx="2" fill="#94a3b8" stroke="#64748b" stroke-width="1" />
+        </g>
         <g class="rotor">
           <rect x="${cx - blade}" y="0" width="${blade}" height="${bladeT}" rx="1.5" fill="#fffaf0" stroke="#9c6b3c" stroke-width="1" />
           <rect x="${cx}" y="0" width="${blade}" height="${bladeT}" rx="1.5" fill="#f1d3a6" stroke="#9c6b3c" stroke-width="1" />
@@ -64,15 +72,28 @@
       return { svg, w: W, h: H };
     },
 
-    /** ใบพัดหมุนตามระยะที่ตกลงมา (ความเร็วปลายใบ ≈ ความเร็วตก → มุม = ระยะตก / ความยาวใบ) */
-    applyPose(actorEl, sample) {
+    /**
+     * หมุนทั้งตัวรอบแกนตั้ง + ส่าย
+     * - มุมหมุนตามระยะที่ตกลงมา (ความเร็วปลายใบ ≈ ความเร็วตก → มุม = ระยะตก / ความยาวใบ)
+     * - มองจากด้านข้าง ของที่หมุนรอบแกนตั้งจะแคบลงตาม cos(มุม): ใบพัดบีบเต็มที่ ลำตัวบีบน้อยกว่า (ลำตัวแคบ บีบเต็มจะหายวูบ)
+     *   ตอน cos < 0 = เห็นอีกด้าน → ใบซ้าย/ขวาสลับกัน และลำตัวเป็นสีด้านหลังของกระดาษ
+     * - ส่าย (คืนเป็นองศาให้ updateActorFrame หมุนรอบจุดบนสุด): ช่วงใบพัดยังหมุนไม่เต็มที่ (spin-up) ส่ายแรง ~8° แล้วลดเหลือ ~3°
+     */
+    applyPose(actorEl, sample, simT, falling) {
       const rotor = actorEl.querySelector('.rotor');
-      if (!rotor || !actorGeom) return 0;
+      const body = actorEl.querySelector('.heli-body');
+      if (!rotor || !body || !actorGeom) return 0;
       const angle = ((actorGeom.heightM - sample.y) / (actorGeom.WL / 100)) * 1.5;
       const c = Math.cos(angle);
-      const s = Math.sign(c || 1) * Math.max(0.08, Math.abs(c));
-      rotor.setAttribute('transform', `translate(${actorGeom.cx} 0) scale(${s.toFixed(3)} 1) translate(${-actorGeom.cx} 0)`);
-      return 0;
+      const side = c < 0 ? -1 : 1;
+      const squeeze = (s) => `translate(${actorGeom.cx} 0) scale(${s.toFixed(3)} 1) translate(${-actorGeom.cx} 0)`;
+      rotor.setAttribute('transform', squeeze(side * Math.max(0.08, Math.abs(c))));
+      body.setAttribute('transform', squeeze(side * (0.45 + 0.55 * Math.abs(c))));
+      body.querySelector('.heli-body-face').setAttribute('fill', side > 0 ? '#fffaf0' : '#f1d3a6');
+      if (!falling) return 0;
+      const spinup = window.HelicopterPhysics.CONSTANTS.SPINUP_TIME_S;
+      const amplitude = 3 + 5 * Math.exp(-simT / spinup);
+      return amplitude * Math.sin(simT * 7 + angle * 0.35);
     },
   };
 
@@ -80,7 +101,6 @@
   // 2) ส่วนร่วม — ฉากตกแนวดิ่ง / ตาราง / กราฟ / ภาษา / ธีม / responsive
   // =====================================================================
   const RESPONSE_KEY = 'time';
-  const EFFECTS_PALETTE = ['#2563eb', '#0ea5e9', '#f59e0b', '#16a34a', '#7c3aed', '#dc2626', '#0f766e', '#b45309'];
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 
   const els = {
@@ -110,14 +130,6 @@
     clearTableBtn: document.getElementById('clearTableBtn'),
     exportCsvBtn: document.getElementById('exportCsvBtn'),
 
-    effectsModeRadios: document.querySelectorAll('input[name="effectsMode"]'),
-    effectsFactorX: document.getElementById('effectsFactorX'),
-    effectsFactorGroup: document.getElementById('effectsFactorGroup'),
-    effectsFactorGroupWrap: document.getElementById('effectsFactorGroupWrap'),
-    effectsChartTitle: document.getElementById('effectsChartTitle'),
-    effectsChart: document.getElementById('effectsChart'),
-    effectsChartEmpty: document.getElementById('effectsChartEmpty'),
-    effectsLegend: document.getElementById('effectsLegend'),
   };
 
   let language = window.getSiteLang ? window.getSiteLang() : 'en'; // ภาษาที่เลือกไว้จากหน้าก่อน (ค่าเริ่มต้นอังกฤษ) ดู nav.js
@@ -396,202 +408,33 @@
   });
 
   // ---------------------------------------------------------------------
-  // Main Effects / Interaction Plot — ปัจจัยแบบเลือกเรียงตามลำดับ levels, แบบตัวเลขเรียงน้อย→มาก
+  // กราฟ Main Effects / Interaction — ตัววาด/error bar/tooltip/PNG อยู่ใน ../assets/effects-chart.js (ใช้ร่วมกันทั้ง 4 การทดลอง)
   // ---------------------------------------------------------------------
-  function cssVar(name) {
-    return getComputedStyle(document.body).getPropertyValue(name).trim();
-  }
-
-  function mean(arr) {
-    return arr.reduce((a, b) => a + b, 0) / arr.length;
-  }
-
-  function factorLabel(key) {
-    return I18N[language][`factorName_${key}`] || key;
-  }
-
-  function orderedValues(key, values) {
-    const f = factorDef(key);
-    const unique = [...new Set(values.map(String))];
-    if (f && f.type === 'choice') return f.levels.filter((l) => unique.includes(l));
-    return unique.map(Number).sort((a, b) => a - b).map(String);
-  }
-
-  function computeEffectsSeries(xKey, groupKey) {
-    const xValues = orderedValues(xKey, results.map((r) => r[xKey]));
-    if (!groupKey) {
-      const groups = {};
-      results.forEach((r) => {
-        (groups[String(r[xKey])] = groups[String(r[xKey])] || []).push(r[RESPONSE_KEY]);
-      });
-      const points = xValues.map((x) => ({ x, y: mean(groups[x]) }));
-      return { series: [{ key: '__single__', label: null, points }], xValues };
-    }
-    const byGroup = {};
-    results.forEach((r) => {
-      const gv = String(r[groupKey]);
-      const xv = String(r[xKey]);
-      byGroup[gv] = byGroup[gv] || {};
-      (byGroup[gv][xv] = byGroup[gv][xv] || []).push(r[RESPONSE_KEY]);
-    });
-    const groupValues = orderedValues(groupKey, results.map((r) => r[groupKey]));
-    const series = groupValues.map((gv) => ({
-      key: gv,
-      label: formatFactorValue(groupKey, factorDef(groupKey).type === 'choice' ? gv : Number(gv), true),
-      points: xValues.filter((xv) => byGroup[gv][xv]).map((xv) => ({ x: xv, y: mean(byGroup[gv][xv]) })),
-    }));
-    return { series, xValues };
-  }
-
-  function updateEffectsTitle(mode, xKey, groupKey) {
-    els.effectsChartTitle.textContent =
-      mode === 'interaction' && groupKey && groupKey !== xKey
-        ? `${factorLabel(xKey)} × ${factorLabel(groupKey)}`
-        : factorLabel(xKey);
-  }
-
-  function drawEffectsSeries(context, width, height, series, xValues, xKey) {
-    const padding = { left: 46, right: 24, top: 18, bottom: 34 };
-    const allY = series.flatMap((s) => s.points.map((p) => p.y));
-    const minimumY = Math.min(...allY) * 0.95;
-    const maximumY = Math.max(...allY) * 1.05 || 1;
-    const xStep = (width - padding.left - padding.right) / Math.max(1, xValues.length - 1);
-    const xIndex = new Map(xValues.map((v, i) => [v, i]));
-    const toY = (value) =>
-      padding.top + ((maximumY - value) / (maximumY - minimumY || 1)) * (height - padding.top - padding.bottom);
-
-    context.strokeStyle = cssVar('--line') || '#e7dadd';
-    context.fillStyle = cssVar('--muted') || '#79656a';
-    context.lineWidth = 1;
-    context.font = '11px system-ui';
-
-    for (let i = 0; i < 4; i++) {
-      const y = padding.top + (i * (height - padding.top - padding.bottom)) / 3;
-      const labelValue = maximumY - (i * (maximumY - minimumY)) / 3;
-      context.beginPath();
-      context.moveTo(padding.left, y);
-      context.lineTo(width - padding.right, y);
-      context.stroke();
-      context.fillText(labelValue.toFixed(2), 4, y + 4);
-    }
-
-    const stride = Math.ceil(xValues.length / 10);
-    const f = factorDef(xKey);
-    xValues.forEach((x, i) => {
-      if (i % stride !== 0 && i !== xValues.length - 1) return;
-      const px = padding.left + i * xStep;
-      const text = formatFactorValue(xKey, f.type === 'choice' ? x : Number(x), true);
-      const tw = context.measureText(text).width;
-      context.fillText(text, Math.min(width - tw - 2, Math.max(2, px - tw / 2)), height - 10);
-    });
-
-    series.forEach((s, si) => {
-      const color = EFFECTS_PALETTE[si % EFFECTS_PALETTE.length];
-      context.strokeStyle = color;
-      context.lineWidth = 3;
-      context.beginPath();
-      s.points.forEach((p, pi) => {
-        const px = padding.left + xIndex.get(p.x) * xStep;
-        const py = toY(p.y);
-        if (pi === 0) context.moveTo(px, py);
-        else context.lineTo(px, py);
-      });
-      context.stroke();
-
-      s.points.forEach((p) => {
-        const px = padding.left + xIndex.get(p.x) * xStep;
-        const py = toY(p.y);
-        context.fillStyle = cssVar('--panel') || '#ffffff';
-        context.beginPath();
-        context.arc(px, py, 5, 0, Math.PI * 2);
-        context.fill();
-        context.strokeStyle = color;
-        context.lineWidth = 3;
-        context.stroke();
-      });
-    });
-  }
-
-  function renderEffectsLegend(mode, series) {
-    if (mode !== 'interaction') {
-      els.effectsLegend.hidden = true;
-      els.effectsLegend.innerHTML = '';
-      return;
-    }
-    els.effectsLegend.hidden = false;
-    els.effectsLegend.innerHTML = series
-      .map((s, i) => {
-        const color = EFFECTS_PALETTE[i % EFFECTS_PALETTE.length];
-        return `<span class="effects-legend-item"><span class="effects-legend-swatch" style="background:${color}"></span>${s.label}</span>`;
-      })
-      .join('');
-  }
-
-  function syncFactorSelectOptions() {
-    const xVal = els.effectsFactorX.value;
-    Array.from(els.effectsFactorGroup.options).forEach((opt) => {
-      opt.disabled = opt.value === xVal;
-    });
-    if (els.effectsFactorGroup.value === xVal) {
-      const next = Array.from(els.effectsFactorGroup.options).find((o) => !o.disabled);
-      if (next) els.effectsFactorGroup.value = next.value;
-    }
-  }
-
-  function currentEffectsMode() {
-    return document.querySelector('input[name="effectsMode"]:checked')?.value || 'main';
-  }
-
-  function updateEffectsModeVisibility() {
-    els.effectsFactorGroupWrap.hidden = currentEffectsMode() !== 'interaction';
-  }
+  const effectsChart = window.EffectsChart.create({
+    factors: MODULE.factors.map((f) => ({
+      key: f.key,
+      levels: f.type === 'choice' ? f.levels : undefined,
+      label: () => I18N[language][`factorName_${f.key}`] || f.key,
+      format: (v) => formatFactorValue(f.key, f.type === 'choice' ? v : Number(v), true),
+    })),
+    responses: MODULE.responses,
+    replicateKeys: [...MODULE.factors.map((f) => f.key), MODULE.constant.key],
+    getResults: () => results,
+    lang: () => language,
+    filePrefix: MODULE.csvPrefix.replace(/_results$/, ''),
+  });
 
   function renderEffectsChart() {
-    const mode = currentEffectsMode();
-    const xKey = els.effectsFactorX.value;
-    const groupKey = mode === 'interaction' ? els.effectsFactorGroup.value : null;
-    updateEffectsTitle(mode, xKey, groupKey);
-
-    const canvas = els.effectsChart;
-    const context = canvas.getContext('2d');
-    const pixelRatio = window.devicePixelRatio || 1;
-    const width = canvas.clientWidth || 700;
-    const height = canvas.clientHeight || 260;
-    canvas.width = width * pixelRatio;
-    canvas.height = height * pixelRatio;
-    context.setTransform(1, 0, 0, 1, 0, 0);
-    context.scale(pixelRatio, pixelRatio);
-    context.clearRect(0, 0, width, height);
-
-    const sameFactor = mode === 'interaction' && groupKey === xKey;
-    const distinctXCount = new Set(results.map((r) => String(r[xKey]))).size;
-    if (sameFactor || results.length === 0 || distinctXCount < 2) {
-      els.effectsChartEmpty.textContent = sameFactor
-        ? I18N[language].effectsEmptySameFactor
-        : formatTemplate(I18N[language].effectsEmptyDefault, { factor: factorLabel(xKey) });
-      els.effectsChartEmpty.hidden = false;
-      els.effectsLegend.hidden = true;
-      els.effectsLegend.innerHTML = '';
-      return;
-    }
-    els.effectsChartEmpty.hidden = true;
-
-    const { series, xValues } = computeEffectsSeries(xKey, groupKey);
-    drawEffectsSeries(context, width, height, series, xValues, xKey);
-    renderEffectsLegend(mode, series);
+    effectsChart.render();
   }
 
-  els.effectsModeRadios.forEach((r) =>
-    r.addEventListener('change', () => {
-      updateEffectsModeVisibility();
-      renderEffectsChart();
-    })
-  );
-  els.effectsFactorX.addEventListener('change', () => {
-    syncFactorSelectOptions();
-    renderEffectsChart();
+  // ปุ่มเฟืองเลือกคอลัมน์ของตารางย่อ (../assets/table-settings.js)
+  const tableSettings = window.TableSettings.init({
+    sim: MODULE.csvPrefix.replace(/_results$/, ''),
+    factorCount: MODULE.factors.length,
+    factorLabel: (i) => I18N[language][`factorName_${MODULE.factors[i].key}`],
+    lang: () => language,
   });
-  els.effectsFactorGroup.addEventListener('change', renderEffectsChart);
 
   // ---------------------------------------------------------------------
   // Export CSV
@@ -770,6 +613,7 @@
     document.documentElement.lang = language;
     if (window.setSiteLang) window.setSiteLang(language); // จำไว้ให้หน้าอื่นใช้ภาษาเดียวกัน
     applyTranslations(language);
+    tableSettings.refresh();
     updateModeHint();
     renderTable();
     setLaunchEnabled(!els.launchBtn.disabled);
@@ -801,14 +645,13 @@
   els.languageButton.textContent = language === 'en' ? 'TH' : 'EN';
   document.documentElement.lang = language;
   applyTranslations(language);
+  tableSettings.refresh();
   updateModeHint();
   setLaunchEnabled(true);
   renderTable();
   renderLiveStats(null);
   syncPanelHeights();
   redrawIdleScene();
-  updateEffectsModeVisibility();
-  syncFactorSelectOptions();
   renderEffectsChart();
   } // ปิด init()
 })();

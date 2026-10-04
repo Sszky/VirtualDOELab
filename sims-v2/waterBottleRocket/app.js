@@ -27,8 +27,6 @@
     { key: 'waterVolumeML', nameKey: 'factorNameWater', unit: ' mL' },
     { key: 'pressurePSI', nameKey: 'factorNamePressure', unit: ' psi' },
   ];
-  const RESPONSE_KEY = 'distance'; // ยืนยันกับผู้ใช้แล้วว่าคงที่ ไม่ต้องมีตัวเลือก response
-  const EFFECTS_PALETTE = ['#2563eb', '#0ea5e9', '#f59e0b', '#16a34a', '#7c3aed', '#dc2626', '#0f766e', '#b45309'];
 
   // ---------------------------------------------------------------------
   // อ้างอิง DOM
@@ -69,14 +67,6 @@
     clearTableBtn: document.getElementById('clearTableBtn'),
     exportCsvBtn: document.getElementById('exportCsvBtn'),
 
-    effectsModeRadios: document.querySelectorAll('input[name="effectsMode"]'),
-    effectsFactorX: document.getElementById('effectsFactorX'),
-    effectsFactorGroup: document.getElementById('effectsFactorGroup'),
-    effectsFactorGroupWrap: document.getElementById('effectsFactorGroupWrap'),
-    effectsChartTitle: document.getElementById('effectsChartTitle'),
-    effectsChart: document.getElementById('effectsChart'),
-    effectsChartEmpty: document.getElementById('effectsChartEmpty'),
-    effectsLegend: document.getElementById('effectsLegend'),
   };
 
   const ctx2d = els.canvas.getContext('2d');
@@ -512,214 +502,36 @@
   });
 
   // ---------------------------------------------------------------------
-  // Main Effects / Interaction Plot — วิเคราะห์ผลจากข้อมูลใน results array
-  // (ไม่แตะ physics.js เลย เป็นแค่การรวม/เฉลี่ยข้อมูลที่มีอยู่แล้ว)
+  // กราฟ Main Effects / Interaction — ตัววาด/error bar/tooltip/PNG อยู่ใน ../assets/effects-chart.js (ใช้ร่วมกันทั้ง 4 การทดลอง)
   // ---------------------------------------------------------------------
-  function mean(arr) {
-    return arr.reduce((a, b) => a + b, 0) / arr.length;
-  }
-
-  function factorLabel(key) {
-    const f = FACTORS.find((f) => f.key === key);
-    return f ? I18N[language][f.nameKey] : key;
-  }
-
-  function factorUnit(key) {
-    const f = FACTORS.find((f) => f.key === key);
-    return f ? f.unit : '';
-  }
-
-  /**
-   * รวมกลุ่ม results ตาม factor ที่เลือก หาค่าเฉลี่ย RESPONSE_KEY ต่อค่า
-   * ไม่มี factorGroupKey (main effects) -> series เดียว
-   * มี factorGroupKey (interaction) -> 1 series ต่อค่าที่ต่างกันของ grouping factor
-   */
-  function computeEffectsSeries(factorXKey, factorGroupKey) {
-    if (!factorGroupKey) {
-      const groups = {};
-      results.forEach((r) => {
-        (groups[r[factorXKey]] = groups[r[factorXKey]] || []).push(r[RESPONSE_KEY]);
-      });
-      const xValues = Object.keys(groups)
-        .map(Number)
-        .sort((a, b) => a - b);
-      const points = xValues.map((x) => ({ x, y: mean(groups[x]) }));
-      return { series: [{ key: '__single__', label: null, points }], xValues };
-    }
-
-    const byGroup = {};
-    results.forEach((r) => {
-      const gv = r[factorGroupKey];
-      byGroup[gv] = byGroup[gv] || {};
-      byGroup[gv][r[factorXKey]] = byGroup[gv][r[factorXKey]] || [];
-      byGroup[gv][r[factorXKey]].push(r[RESPONSE_KEY]);
-    });
-    const xValues = [...new Set(results.map((r) => r[factorXKey]))].map(Number).sort((a, b) => a - b);
-    const groupValues = Object.keys(byGroup)
-      .map(Number)
-      .sort((a, b) => a - b);
-    const series = groupValues.map((gv) => ({
-      key: gv,
-      label: gv,
-      points: xValues.filter((xv) => byGroup[gv][xv]).map((xv) => ({ x: xv, y: mean(byGroup[gv][xv]) })),
-    }));
-    return { series, xValues };
-  }
-
-  function updateEffectsTitle(mode, xKey, groupKey) {
-    els.effectsChartTitle.textContent =
-      mode === 'interaction' && groupKey && groupKey !== xKey
-        ? `${factorLabel(xKey)} × ${factorLabel(groupKey)}`
-        : factorLabel(xKey);
-  }
-
-  /** วาดกราฟเส้น+จุด (เทคนิคเดียวกับ parachute.js drawChart) รองรับหลาย series พร้อมกัน */
-  function drawEffectsSeries(context, width, height, series, xValues, xKey) {
-    const padding = { left: 46, right: 16, top: 18, bottom: 34 };
-    const allY = series.flatMap((s) => s.points.map((p) => p.y));
-    const minimumY = Math.min(...allY) * 0.95;
-    const maximumY = Math.max(...allY) * 1.05 || 1;
-    const xStep = (width - padding.left - padding.right) / Math.max(1, xValues.length - 1);
-    const xIndex = new Map(xValues.map((v, i) => [v, i]));
-
-    function toY(value) {
-      const graphHeight = height - padding.top - padding.bottom;
-      return padding.top + ((maximumY - value) / (maximumY - minimumY || 1)) * graphHeight;
-    }
-
-    context.strokeStyle = cssVar('--line') || '#e7dadd';
-    context.fillStyle = cssVar('--muted') || '#79656a';
-    context.lineWidth = 1;
-    context.font = '11px system-ui';
-
-    // เส้นกริดแนวนอน + label แกน Y
-    for (let i = 0; i < 4; i++) {
-      const y = padding.top + (i * (height - padding.top - padding.bottom)) / 3;
-      const labelValue = maximumY - (i * (maximumY - minimumY)) / 3;
-      context.beginPath();
-      context.moveTo(padding.left, y);
-      context.lineTo(width - padding.right, y);
-      context.stroke();
-      context.fillText(labelValue.toFixed(1), 4, y + 4);
-    }
-
-    // label แกน X — ถ้าค่าเยอะเกิน ~10 ค่า ให้เว้นบางจุดกันตัวเลขทับกัน
-    const stride = Math.ceil(xValues.length / 10);
-    context.fillStyle = cssVar('--muted') || '#79656a';
-    xValues.forEach((x, i) => {
-      if (i % stride !== 0 && i !== xValues.length - 1) return;
-      const px = padding.left + i * xStep;
-      context.fillText(`${x}${factorUnit(xKey)}`, px - 14, height - 10);
-    });
-
-    // เส้น + จุดของแต่ละ series
-    series.forEach((s, si) => {
-      const color = EFFECTS_PALETTE[si % EFFECTS_PALETTE.length];
-      context.strokeStyle = color;
-      context.lineWidth = 3;
-      context.beginPath();
-      s.points.forEach((p, pi) => {
-        const px = padding.left + xIndex.get(p.x) * xStep;
-        const py = toY(p.y);
-        if (pi === 0) context.moveTo(px, py);
-        else context.lineTo(px, py);
-      });
-      context.stroke();
-
-      s.points.forEach((p) => {
-        const px = padding.left + xIndex.get(p.x) * xStep;
-        const py = toY(p.y);
-        context.fillStyle = cssVar('--panel') || '#ffffff';
-        context.beginPath();
-        context.arc(px, py, 5, 0, Math.PI * 2);
-        context.fill();
-        context.strokeStyle = color;
-        context.lineWidth = 3;
-        context.stroke();
-      });
-    });
-  }
-
-  function renderEffectsLegend(mode, series, groupKey) {
-    if (mode !== 'interaction') {
-      els.effectsLegend.hidden = true;
-      els.effectsLegend.innerHTML = '';
-      return;
-    }
-    els.effectsLegend.hidden = false;
-    els.effectsLegend.innerHTML = series
-      .map((s, i) => {
-        const color = EFFECTS_PALETTE[i % EFFECTS_PALETTE.length];
-        return `<span class="effects-legend-item"><span class="effects-legend-swatch" style="background:${color}"></span>${s.label}${factorUnit(groupKey)}</span>`;
-      })
-      .join('');
-  }
-
-  /** กันเลือก factor ซ้ำกันระหว่าง X กับ grouping */
-  function syncFactorSelectOptions() {
-    const xVal = els.effectsFactorX.value;
-    Array.from(els.effectsFactorGroup.options).forEach((opt) => {
-      opt.disabled = opt.value === xVal;
-    });
-    if (els.effectsFactorGroup.value === xVal) {
-      const next = Array.from(els.effectsFactorGroup.options).find((o) => !o.disabled);
-      if (next) els.effectsFactorGroup.value = next.value;
-    }
-  }
-
-  function updateEffectsModeVisibility() {
-    const mode = document.querySelector('input[name="effectsMode"]:checked')?.value || 'main';
-    els.effectsFactorGroupWrap.hidden = mode !== 'interaction';
-  }
+  const effectsChart = window.EffectsChart.create({
+    factors: FACTORS.map((f) => ({
+      key: f.key,
+      label: () => I18N[language][f.nameKey],
+      format: (v) => `${v}${f.unit}`,
+    })),
+    responses: [
+      { key: 'distance', labelKey: 'yDistance', unit: 'm', digits: 2 },
+      { key: 'flightTime', labelKey: 'yFlightTime', unit: 's', digits: 2 },
+      { key: 'maxAltitude', labelKey: 'yMaxAltitude', unit: 'm', digits: 2 },
+    ],
+    replicateKeys: FACTORS.map((f) => f.key),
+    getResults: () => results,
+    lang: () => language,
+    filePrefix: 'water_bottle_rocket',
+  });
 
   function renderEffectsChart() {
-    const mode = document.querySelector('input[name="effectsMode"]:checked')?.value || 'main';
-    const xKey = els.effectsFactorX.value;
-    const groupKey = mode === 'interaction' ? els.effectsFactorGroup.value : null;
-
-    updateEffectsTitle(mode, xKey, groupKey);
-
-    const canvas = els.effectsChart;
-    const context = canvas.getContext('2d');
-    const pixelRatio = window.devicePixelRatio || 1;
-    const width = canvas.clientWidth || 700;
-    const height = canvas.clientHeight || 260;
-    canvas.width = width * pixelRatio;
-    canvas.height = height * pixelRatio;
-    context.setTransform(1, 0, 0, 1, 0, 0);
-    context.scale(pixelRatio, pixelRatio);
-    context.clearRect(0, 0, width, height);
-
-    const sameFactor = mode === 'interaction' && groupKey === xKey;
-    const distinctXCount = new Set(results.map((r) => r[xKey])).size;
-
-    if (sameFactor || results.length === 0 || distinctXCount < 2) {
-      els.effectsChartEmpty.textContent = sameFactor
-        ? I18N[language].effectsEmptySameFactor
-        : formatTemplate(I18N[language].effectsEmptyDefault, { factor: factorLabel(xKey) });
-      els.effectsChartEmpty.hidden = false;
-      els.effectsLegend.hidden = true;
-      els.effectsLegend.innerHTML = '';
-      return;
-    }
-    els.effectsChartEmpty.hidden = true;
-
-    const { series, xValues } = computeEffectsSeries(xKey, groupKey);
-    drawEffectsSeries(context, width, height, series, xValues, xKey);
-    renderEffectsLegend(mode, series, groupKey);
+    effectsChart.render();
   }
 
-  els.effectsModeRadios.forEach((r) =>
-    r.addEventListener('change', () => {
-      updateEffectsModeVisibility();
-      renderEffectsChart();
-    })
-  );
-  els.effectsFactorX.addEventListener('change', () => {
-    syncFactorSelectOptions();
-    renderEffectsChart();
+  // ปุ่มเฟืองเลือกคอลัมน์ของตารางย่อ (../assets/table-settings.js)
+  const tableSettings = window.TableSettings.init({
+    sim: 'water_bottle_rocket',
+    factorCount: FACTORS.length,
+    factorLabel: (i) => I18N[language][FACTORS[i].nameKey],
+    lang: () => language,
   });
-  els.effectsFactorGroup.addEventListener('change', renderEffectsChart);
 
   els.exportCsvBtn.addEventListener('click', () => {
     if (results.length === 0) {
@@ -938,6 +750,7 @@
     if (window.setSiteLang) window.setSiteLang(language); // จำไว้ให้หน้าอื่นใช้ภาษาเดียวกัน
 
     applyTranslations(language); // ครอบคลุม #expandTableBtn ด้วยเพราะมี data-i18n ที่ถูกสลับใน open/closeTableExpand
+    tableSettings.refresh();
     updateModeHint();
     renderTable();
     setLaunchEnabled(!els.launchBtn.disabled);
@@ -975,14 +788,13 @@
   els.languageButton.textContent = language === 'en' ? 'TH' : 'EN';
   document.documentElement.lang = language;
   applyTranslations(language);
+  tableSettings.refresh();
   updateModeHint();
   setLaunchEnabled(true);
   renderTable();
   renderLiveStats(null); // จองพื้นที่แถบ live-stats ตั้งแต่แรก (ต้องมาก่อนวัดขนาด scene)
   syncPanelHeights(); // ต้องเรียกก่อน redrawIdleScene() เพื่อให้ .scene มีขนาดจริงตั้งแต่เฟรมแรก
   redrawIdleScene();
-  updateEffectsModeVisibility();
-  syncFactorSelectOptions();
   renderEffectsChart();
   } // ปิดฟังก์ชัน init()
 })();

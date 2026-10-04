@@ -66,7 +66,7 @@
 
       // Main effects / interaction plot section
       effectsHeading: 'Main Effects / Interaction Plot',
-      effectsSubheading: 'See how each factor affects landing distance across your logged runs.',
+      effectsSubheading: 'See how each factor affects the results across your logged runs. Choose the response for the Y-axis.',
       effectsModeLabel: 'Plot type',
       effectsModeMain: 'Main Effects Plot',
       effectsModeInteraction: 'Interaction Plot',
@@ -76,6 +76,9 @@
       effectsChartHint: 'Mean distance per value, from logged runs',
       effectsEmptyDefault: 'Log at least 2 runs with different {factor} values to see this chart.',
       effectsEmptySameFactor: 'Choose two different factors to compare.',
+      yDistance: 'Distance (m)',
+      yFlightTime: 'Flight time (s)',
+      yMaxAltitude: 'Max altitude (m)',
       factorNameAngle: 'Launch Angle (A)',
       factorNameFins: 'Number of Fins (B)',
       factorNameWater: 'Water Volume (C)',
@@ -149,7 +152,7 @@
 
       // ส่วนกราฟ Main effects / Interaction plot
       effectsHeading: 'กราฟผลกระทบหลัก / กราฟปฏิสัมพันธ์',
-      effectsSubheading: 'ดูว่าแต่ละปัจจัยส่งผลต่อระยะทางตกอย่างไร จากผลการทดลองที่บันทึกไว้',
+      effectsSubheading: 'ดูว่าแต่ละปัจจัยส่งผลต่อผลการทดลองอย่างไร จากผลที่บันทึกไว้ เลือกผลตอบที่จะดูเป็นแกน Y ได้',
       effectsModeLabel: 'ชนิดกราฟ',
       effectsModeMain: 'ผลกระทบหลัก (Main Effects)',
       effectsModeInteraction: 'ปฏิสัมพันธ์ (Interaction)',
@@ -159,6 +162,9 @@
       effectsChartHint: 'ค่าเฉลี่ยระยะทางต่อค่าที่บันทึกไว้',
       effectsEmptyDefault: 'บันทึกผลอย่างน้อย 2 ครั้งที่มีค่า {factor} ต่างกัน เพื่อดูกราฟนี้',
       effectsEmptySameFactor: 'เลือกปัจจัยสองตัวที่ต่างกันเพื่อเปรียบเทียบ',
+      yDistance: 'ระยะทาง (m)',
+      yFlightTime: 'เวลาบิน (s)',
+      yMaxAltitude: 'ความสูงสูงสุด (m)',
       factorNameAngle: 'องศาการยิง (A)',
       factorNameFins: 'จำนวนปีก (B)',
       factorNameWater: 'ปริมาณน้ำ (C)',

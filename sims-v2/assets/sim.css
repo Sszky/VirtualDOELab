@@ -16,6 +16,7 @@
   --exhaust: #f97316;
   --exhaust-dark: #ea580c;
 
+  --col-alt: #f1f5f9; /* คอลัมน์คู่ของตารางผล */
   --danger: #dc2626;
   --danger-bg: rgba(220, 38, 38, 0.08);
 
@@ -551,6 +552,150 @@ fieldset legend {
   font-weight: 700;
 }
 
+/* หัวข้อ + ปุ่มเฟืองตั้งค่าคอลัมน์ (ตั้งค่าได้เฉพาะตารางย่อ จึงซ่อนตอนขยาย) */
+.table-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+
+#tableSettingsBtn {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  flex: none;
+}
+
+.results-sidebar.expanded #tableSettingsBtn {
+  display: none;
+}
+
+/* ---------------- หน้าตั้งค่าคอลัมน์: การ์ดลอยกลางจอ หลังเป็นฝ้าแบบตารางขยาย ---------------- */
+.ts-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  background: rgba(11, 28, 51, 0.5);
+  backdrop-filter: blur(6px);
+}
+
+.ts-dialog {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  z-index: 81;
+  width: min(92vw, 380px);
+  max-height: 85vh;
+  overflow: auto;
+  padding: 20px;
+  transform: translate(-50%, -50%);
+  background: var(--white);
+  border-radius: var(--card-radius);
+  box-shadow: var(--card-shadow);
+}
+
+.ts-backdrop[hidden],
+.ts-dialog[hidden] {
+  display: none;
+}
+
+body.ts-open {
+  overflow: hidden;
+}
+
+.ts-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.ts-head h2 {
+  font-size: 1.15rem;
+  font-weight: 700;
+}
+
+.ts-close {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  flex: none;
+}
+
+.ts-intro {
+  margin: 6px 0 14px;
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
+.ts-group {
+  margin: 0 0 12px;
+  padding: 0;
+  border: 0;
+}
+
+.ts-group legend {
+  margin-bottom: 4px;
+  padding: 0;
+  color: var(--blue);
+  font-family: var(--font-display);
+  font-size: 0.74rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.ts-option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 8px;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.ts-option:hover {
+  background: var(--blue-50);
+}
+
+.ts-option input {
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  flex: none;
+  accent-color: var(--blue);
+  cursor: pointer;
+}
+
+.ts-option input:disabled,
+.ts-option input:disabled + span {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.ts-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 6px;
+  padding-top: 14px;
+  border-top: 1px solid var(--line);
+}
+
+.ts-actions .primary-button {
+  width: auto;
+  padding: 8px 18px;
+  font-size: 0.9rem;
+}
+
+.ts-actions .secondary-button {
+  padding: 8px 14px;
+  font-size: 0.85rem;
+}
+
 /* การ์ดตารางย่อ: ปุ่มขยายเหลือแค่ไอคอน (ใน modal โชว์ข้อความ "ปิด" เต็ม) */
 .results-sidebar:not(.expanded) #expandTableBtn {
   width: 36px;
@@ -590,17 +735,25 @@ thead th {
   color: var(--navy);
   font-family: var(--font-display);
   font-weight: 700;
-  text-align: left;
+  text-align: center;
   white-space: nowrap;
 }
 
 tbody td {
   padding: 6px 6px;
   border-bottom: 1px solid var(--line);
+  text-align: center;
   white-space: nowrap;
 }
 
-tbody tr:hover td {
+/* สีสลับคอลัมน์ให้อ่านง่าย: คอลัมน์คี่ขาว คอลัมน์คู่เทาอ่อน
+   ตารางขยายแสดงครบทุกคอลัมน์จึงใช้ :nth-child ได้ตรงๆ — ตารางย่อนับเฉพาะคอลัมน์ที่แสดง (table-settings.js) */
+#resultsSidebar.expanded #resultsTable tr > :nth-child(even) {
+  background: var(--col-alt);
+}
+
+/* แถวที่ชี้อยู่ทับสีสลับคอลัมน์ (selector ต้องแรงกว่ากฎสีคอลัมน์) */
+#resultsSidebar #resultsTable tbody tr:hover > td:nth-child(n) {
   background: var(--blue-50);
 }
 
@@ -790,6 +943,53 @@ body.table-modal-open .workspace {
   height: 10px;
   flex: none;
   border-radius: 50%;
+}
+
+/* คำอธิบาย error bar ใต้กราฟ */
+.effects-note {
+  margin: 10px 0 0;
+  color: var(--muted);
+  font-size: 0.76rem;
+}
+
+/* ปุ่มดาวน์โหลด PNG อยู่ล่างสุดของกล่องตัวเลือกกราฟ */
+.effects-png {
+  margin-top: auto;
+  align-self: flex-start;
+}
+
+.effects-png:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.effects-png:disabled:hover {
+  border-color: var(--line);
+  color: var(--ink);
+}
+
+/* กล่องบอกค่าตอนชี้/แตะจุดในกราฟ */
+.effects-chart-card canvas {
+  touch-action: pan-y;
+}
+
+.chart-tooltip {
+  position: absolute;
+  z-index: 3;
+  max-width: 240px;
+  padding: 7px 10px;
+  border-radius: 8px;
+  background: var(--navy);
+  color: var(--white);
+  font-size: 0.76rem;
+  line-height: 1.45;
+  font-variant-numeric: tabular-nums;
+  pointer-events: none;
+  box-shadow: 0 8px 20px rgba(11, 28, 51, 0.22);
+}
+
+.chart-tooltip strong {
+  font-weight: 600;
 }
 
 /* ==========================================================
