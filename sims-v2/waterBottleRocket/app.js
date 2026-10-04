@@ -533,50 +533,153 @@
     lang: () => language,
   });
 
-  els.exportCsvBtn.addEventListener('click', () => {
+  // ---------------------------------------------------------------------
+// Export CSV + Google Drive CSV data
+// ---------------------------------------------------------------------
+
+function escapeCSVValue(value) {
+  const stringValue = String(value ?? "");
+
+  if (
+    stringValue.includes(",") ||
+    stringValue.includes('"') ||
+    stringValue.includes("\n")
+  ) {
+    return `"${stringValue.replace(/"/g, '""')}"`;
+  }
+
+  return stringValue;
+}
+
+/**
+ * สร้างข้อมูล CSV จากผลการทดลอง
+ * ใช้ร่วมกันทั้ง Export CSV และ Save to Drive
+ */
+// ---------------------------------------------------------------------
+// Create CSV content for Water Bottle Rocket
+// ---------------------------------------------------------------------
+
+function escapeCSVValue(value) {
+  const stringValue = String(value ?? "");
+
+  if (
+    stringValue.includes(",") ||
+    stringValue.includes('"') ||
+    stringValue.includes("\n")
+  ) {
+    return `"${stringValue.replace(/"/g, '""')}"`;
+  }
+
+  return stringValue;
+}
+
+function createCSVContent() {
+  const dict = I18N[language];
+
+  const header = [
+    dict.thRun,
+    dict.thAngle,
+    dict.thFins,
+    dict.thWater,
+    dict.thPressure,
+    dict.thDistance,
+    dict.thFlightTime,
+    dict.thMaxAltitude,
+    dict.thMode,
+  ];
+
+  const rows = results.map(
+    (result, index) => [
+      index + 1,
+      result.angleDeg,
+      result.fins,
+      result.waterVolumeML,
+      result.pressurePSI,
+      result.distance.toFixed(2),
+      result.flightTime.toFixed(2),
+      result.maxAltitude.toFixed(2),
+      dict[result.mode] || result.mode,
+    ],
+  );
+
+  const csvContent = [
+    header,
+    ...rows,
+  ]
+    .map((row) =>
+      row
+        .map(escapeCSVValue)
+        .join(","),
+    )
+    .join("\r\n");
+
+  return "\uFEFF" + csvContent;
+}
+
+window.DRIVE_EXPORT_CONFIG = {
+  hasData: () =>
+    results.length > 0,
+
+  createCSVContent:
+    createCSVContent,
+
+  createFilename: () =>
+    `water-rocket-experiments-${Date.now()}.csv`,
+};
+
+// ---------------------------------------------------------------------
+// EXPORT CSV TO COMPUTER
+// ---------------------------------------------------------------------
+
+els.exportCsvBtn.addEventListener(
+  "click",
+  () => {
     if (results.length === 0) {
-      showWarning(translateWarnings([{ key: 'exportEmpty' }]));
+      showWarning(
+        translateWarnings([
+          { key: "exportEmpty" },
+        ]),
+      );
+
       return;
     }
-    const dict = I18N[language];
-    const header = [
-      dict.thRun,
-      dict.thAngle,
-      dict.thFins,
-      dict.thWater,
-      dict.thPressure,
-      dict.thDistance,
-      dict.thFlightTime,
-      dict.thMaxAltitude,
-      dict.thMode,
-    ].join(',');
-    const rows = results.map((r, i) => {
-      const modeLabel = dict[r.mode] || r.mode;
-      return [
-        i + 1,
-        r.angleDeg,
-        r.fins,
-        r.waterVolumeML,
-        r.pressurePSI,
-        r.distance.toFixed(2),
-        r.flightTime.toFixed(2),
-        r.maxAltitude.toFixed(2),
-        modeLabel,
-      ].join(',');
-    });
-    const csv = [header, ...rows].join('\n');
-    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    const stamp = new Date().toISOString().replace(/[:T]/g, '-').replace(/\..+/, '');
-    a.href = url;
-    a.download = `water_rocket_results_${stamp}.csv`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-  });
 
+    const csvContent =
+      createCSVContent();
+
+    const csvFile = new Blob(
+      [csvContent],
+      {
+        type: "text/csv;charset=utf-8;",
+      },
+    );
+
+    const fileURL =
+      URL.createObjectURL(csvFile);
+
+    const downloadLink =
+      document.createElement("a");
+
+    const timestamp = new Date()
+      .toISOString()
+      .replace(/[:T]/g, "-")
+      .replace(/\..+/, "");
+
+    downloadLink.href = fileURL;
+
+    downloadLink.download =
+      `${MODULE.csvPrefix}_${timestamp}.csv`;
+
+    document.body.appendChild(
+      downloadLink,
+    );
+
+    downloadLink.click();
+    downloadLink.remove();
+
+    URL.revokeObjectURL(fileURL);
+  },
+);
   // ---------------------------------------------------------------------
   // ความสูงเท่ากัน 3 กล่อง (desktop เท่านั้น) — อ้างอิงจากกล่องตั้งค่าปัจจัย
   // ---------------------------------------------------------------------

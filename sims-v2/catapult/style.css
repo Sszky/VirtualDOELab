@@ -18,3 +18,29 @@
 .axis-x {
   right: auto;
 }
+
+.drive-button:disabled {
+  cursor: wait;
+  opacity: 0.68;
+}
+
+.drive-status {
+  min-height: 1.35em;
+  margin: 8px 0 0;
+  color: var(--muted);
+  font-size: 0.82rem;
+  line-height: 1.35;
+}
+
+.drive-status.is-success {
+  color: #16704a;
+}
+
+.drive-status.is-error {
+  color: #b42318;
+}
+
+.drive-status a {
+  color: inherit;
+  font-weight: 600;
+}

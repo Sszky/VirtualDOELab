@@ -61,6 +61,16 @@
     <circle cx="20.2" cy="2.8" r="1.4" fill="currentColor"/>
     <path d="M16.5 11.5 10 11" fill="none" stroke="currentColor" stroke-width="1.4" stroke-dasharray="1.6 1.6" stroke-linecap="round"/>
   </symbol>
+<symbol id="i-cloud-upload" viewBox="0 0 24 24">
+  <path
+    d="M7 18.5H5.8A3.8 3.8 0 0 1 5.3 11a6.8 6.8 0 0 1 13.1 1.7A3 3 0 0 1 18 18.5h-1M12 19V10M8.5 13.5 12 10l3.5 3.5"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="1.9"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  />
+</symbol>
 </svg>
   <header class="navbar" id="navbar">
     <a class="nav-brand" href="../index.html">
@@ -188,9 +198,41 @@
           <button id="expandTableBtn" class="secondary-button" type="button" aria-label="Expand table"><svg class="icon" aria-hidden="true"><use href="#i-expand"/></svg><span class="btn-label" data-i18n="expandTable">Expand</span></button>
         </div>
         <div class="table-buttons">
-          <button id="clearTableBtn" class="secondary-button" type="button"><svg class="icon" aria-hidden="true"><use href="#i-trash"/></svg><span class="btn-label" data-i18n="clearTable">Clear</span></button>
-          <button id="exportCsvBtn" class="secondary-button" type="button"><svg class="icon" aria-hidden="true"><use href="#i-download"/></svg><span class="btn-label" data-i18n="exportCsv">Export CSV</span></button>
-        </div>
+  <button id="clearTableBtn" class="secondary-button" type="button">
+    <svg class="icon" aria-hidden="true">
+      <use href="#i-trash" />
+    </svg>
+    <span class="btn-label" data-i18n="clearTable">Clear</span>
+  </button>
+
+  <button id="exportCsvBtn" class="secondary-button" type="button">
+    <svg class="icon" aria-hidden="true">
+      <use href="#i-download" />
+    </svg>
+    <span class="btn-label" data-i18n="exportCsv">Export CSV</span>
+  </button>
+
+  <button
+    id="driveButton"
+    class="secondary-button drive-button"
+    type="button"
+  >
+    <svg class="icon" aria-hidden="true">
+      <use href="#i-cloud-upload" />
+    </svg>
+
+    <span class="btn-label drive-label">
+      Save to Drive
+    </span>
+  </button>
+</div>
+
+<p
+  id="driveStatus"
+  class="drive-status"
+  role="status"
+  aria-live="polite"
+></p>
         <div class="table-scroll">
           <table id="resultsTable">
             <thead>
@@ -277,13 +319,32 @@
     </section>
   </main>
 
+   <script src="physics.js?v=4"></script>
+  <script src="i18n.js?v=4"></script>
 
-  <script src="physics.js?v=5"></script>
-  <script src="i18n.js?v=10"></script>
   <script src="../assets/nav.js?v=3"></script>
   <script src="../assets/effects-chart.js?v=1"></script>
   <script src="../assets/table-settings.js?v=2"></script>
   <script src="../assets/zone-snap.js?v=1"></script>
-  <script src="app.js?v=8"></script>
+
+  <!-- app.js ต้องมาก่อน drive.js เพื่อสร้าง CSV config -->
+  <script src="app.js?v=9"></script>
+
+  <!-- Google OAuth -->
+  <script
+    src="https://accounts.google.com/gsi/client"
+    async
+    defer
+  ></script>
+
+  <!-- Google Picker -->
+  <script
+    src="https://apis.google.com/js/api.js"
+    async
+    defer
+  ></script>
+
+  <!-- drive.js เป็นไฟล์กลาง -->
+  <script src="../assets/drive.js?v=2"></script>
 </body>
 </html>

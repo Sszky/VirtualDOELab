@@ -567,47 +567,139 @@
   });
 
   // ---------------------------------------------------------------------
-  // Export CSV
-  // ---------------------------------------------------------------------
-  els.exportCsvBtn.addEventListener('click', () => {
+// Create CSV content for Catapult
+// ---------------------------------------------------------------------
+
+function escapeCSVValue(value) {
+  const stringValue = String(value ?? "");
+
+  if (
+    stringValue.includes(",") ||
+    stringValue.includes('"') ||
+    stringValue.includes("\n")
+  ) {
+    return `"${stringValue.replace(/"/g, '""')}"`;
+  }
+
+  return stringValue;
+}
+
+function createCSVContent() {
+  const dict = I18N[language];
+
+  const header = [
+    dict.thRun,
+
+    ...FACTORS.map(
+      (factor) =>
+        I18N[language][factor.nameKey],
+    ),
+
+    dict.thDistance,
+    dict.thFlightTime,
+    dict.thMaxAltitude,
+    dict.thLaunchSpeed,
+    dict.thMode,
+  ];
+
+  const rows = results.map(
+    (result, index) => [
+      index + 1,
+
+      ...FACTORS.map(
+        (factor) =>
+          result[factor.key],
+      ),
+
+      result.distance.toFixed(2),
+      result.flightTime.toFixed(2),
+      result.maxHeight.toFixed(2),
+      result.launchSpeed.toFixed(2),
+
+      dict[result.mode] ||
+        result.mode,
+    ],
+  );
+
+  const csvContent = [
+    header,
+    ...rows,
+  ]
+    .map((row) =>
+      row
+        .map(escapeCSVValue)
+        .join(","),
+    )
+    .join("\r\n");
+
+  // BOM ช่วยป้องกันภาษาไทยเพี้ยนใน Excel
+  return "\uFEFF" + csvContent;
+}
+
+window.DRIVE_EXPORT_CONFIG = {
+  hasData: () =>
+    results.length > 0,
+
+  createCSVContent:
+    createCSVContent,
+
+  createFilename: () =>
+    `catapult-experiments-${Date.now()}.csv`,
+};
+
+// ---------------------------------------------------------------------
+// Export CSV to computer
+// ---------------------------------------------------------------------
+
+els.exportCsvBtn.addEventListener(
+  "click",
+  () => {
     if (results.length === 0) {
-      showWarning(translateWarnings([{ key: 'exportEmpty' }]));
+      showWarning(
+        translateWarnings([
+          { key: "exportEmpty" },
+        ]),
+      );
+
       return;
     }
-    const dict = I18N[language];
-    const header = [
-      dict.thRun,
-      ...FACTORS.map((f) => I18N[language][f.nameKey]),
-      dict.thDistance,
-      dict.thFlightTime,
-      dict.thMaxAltitude,
-      dict.thLaunchSpeed,
-      dict.thMode,
-    ].join(',');
-    const rows = results.map((r, i) =>
-      [
-        i + 1,
-        ...FACTORS.map((f) => r[f.key]),
-        r.distance.toFixed(2),
-        r.flightTime.toFixed(2),
-        r.maxHeight.toFixed(2),
-        r.launchSpeed.toFixed(2),
-        dict[r.mode] || r.mode,
-      ].join(',')
-    );
-    const csv = [header, ...rows].join('\n');
-    const blob = new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    const stamp = new Date().toISOString().replace(/[:T]/g, '-').replace(/\..+/, '');
-    a.href = url;
-    a.download = `catapult_results_${stamp}.csv`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-  });
 
+    const csvContent =
+      createCSVContent();
+
+    const csvFile = new Blob(
+      [csvContent],
+      {
+        type: "text/csv;charset=utf-8;",
+      },
+    );
+
+    const fileURL =
+      URL.createObjectURL(csvFile);
+
+    const downloadLink =
+      document.createElement("a");
+
+    const timestamp = new Date()
+      .toISOString()
+      .replace(/[:T]/g, "-")
+      .replace(/\..+/, "");
+
+    downloadLink.href = fileURL;
+
+    downloadLink.download =
+      `catapult_results_${timestamp}.csv`;
+
+    document.body.appendChild(
+      downloadLink,
+    );
+
+    downloadLink.click();
+    downloadLink.remove();
+
+    URL.revokeObjectURL(fileURL);
+  },
+);
   // ---------------------------------------------------------------------
   // ความสูงเท่ากัน 3 กล่อง (desktop) + header มือถือ + resize
   // ---------------------------------------------------------------------

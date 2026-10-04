@@ -429,42 +429,139 @@
   });
 
   // ---------------------------------------------------------------------
-  // Export CSV
-  // ---------------------------------------------------------------------
-  els.exportCsvBtn.addEventListener('click', () => {
+// Export CSV + Google Drive CSV data
+// ---------------------------------------------------------------------
+
+function escapeCSVValue(value) {
+  const stringValue = String(value ?? "");
+
+  if (
+    stringValue.includes(",") ||
+    stringValue.includes('"') ||
+    stringValue.includes("\n")
+  ) {
+    return `"${stringValue.replace(/"/g, '""')}"`;
+  }
+
+  return stringValue;
+}
+
+/**
+ * สร้างข้อมูล CSV จากผลการทดลอง
+ * ใช้ร่วมกันทั้ง Export CSV และ Save to Drive
+ */
+function createCSVContent() {
+  const dict = I18N[language];
+
+  const header = [
+    dict.thRun,
+    ...MODULE.factors.map(
+      (factor) => dict[factor.thKey],
+    ),
+    dict.thTime,
+    ...MODULE.extras.map(
+      (extra) => dict[extra.thKey],
+    ),
+    dict.thMode,
+  ];
+
+  const rows = results.map((result, index) => [
+    index + 1,
+
+    ...MODULE.factors.map((factor) =>
+      formatFactorValue(
+        factor.key,
+        result[factor.key],
+        false,
+      ),
+    ),
+
+    result[RESPONSE_KEY].toFixed(2),
+
+    ...MODULE.extras.map((extra) =>
+      Number(result[extra.key]).toFixed(
+        extra.digits,
+      ),
+    ),
+
+    dict[result.mode] || result.mode,
+  ]);
+
+  const csvRows = [header, ...rows]
+    .map((row) =>
+      row
+        .map(escapeCSVValue)
+        .join(","),
+    )
+    .join("\r\n");
+
+  // BOM ช่วยให้ภาษาไทยไม่เพี้ยนเมื่อเปิดใน Excel
+  return "\uFEFF" + csvRows;
+}
+
+window.DRIVE_EXPORT_CONFIG = {
+  hasData: () =>
+    results.length > 0,
+
+  createCSVContent:
+    createCSVContent,
+
+  createFilename: () =>
+    `parachute-experiments-${Date.now()}.csv`,
+};
+// ---------------------------------------------------------------------
+// EXPORT CSV TO COMPUTER
+// ---------------------------------------------------------------------
+
+els.exportCsvBtn.addEventListener(
+  "click",
+  () => {
     if (results.length === 0) {
-      showWarning(translateWarnings([{ key: 'exportEmpty' }]));
+      showWarning(
+        translateWarnings([
+          { key: "exportEmpty" },
+        ]),
+      );
+
       return;
     }
-    const dict = I18N[language];
-    const header = [
-      dict.thRun,
-      ...MODULE.factors.map((f) => dict[f.thKey]),
-      dict.thTime,
-      ...MODULE.extras.map((x) => dict[x.thKey]),
-      dict.thMode,
-    ].join(',');
-    const rows = results.map((r, i) =>
-      [
-        i + 1,
-        ...MODULE.factors.map((f) => formatFactorValue(f.key, r[f.key], false)),
-        r[RESPONSE_KEY].toFixed(2),
-        ...MODULE.extras.map((x) => Number(r[x.key]).toFixed(x.digits)),
-        dict[r.mode] || r.mode,
-      ].join(',')
+
+    const csvContent =
+      createCSVContent();
+
+    const csvFile = new Blob(
+      [csvContent],
+      {
+        type: "text/csv;charset=utf-8;",
+      },
     );
-    const csv = [header, ...rows].join('\n');
-    const blob = new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    const stamp = new Date().toISOString().replace(/[:T]/g, '-').replace(/\..+/, '');
-    a.href = url;
-    a.download = `${MODULE.csvPrefix}_${stamp}.csv`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-  });
+
+    const fileURL =
+      URL.createObjectURL(csvFile);
+
+    const downloadLink =
+      document.createElement("a");
+
+    const timestamp = new Date()
+      .toISOString()
+      .replace(/[:T]/g, "-")
+      .replace(/\..+/, "");
+
+    downloadLink.href = fileURL;
+
+    downloadLink.download =
+      `${MODULE.csvPrefix}_${timestamp}.csv`;
+
+    document.body.appendChild(
+      downloadLink,
+    );
+
+    downloadLink.click();
+    downloadLink.remove();
+
+    URL.revokeObjectURL(fileURL);
+  },
+);
 
   // ---------------------------------------------------------------------
   // ความสูงเท่ากัน 3 กล่อง (desktop) + header มือถือ + resize
@@ -647,3 +744,4 @@
   renderEffectsChart();
   } // ปิด init()
 })();
+
