@@ -253,7 +253,7 @@ button {
 .nav-lang {
   height: 40px;
   min-width: 48px;
-  margin-left: 4px;
+  margin: 0 4px; /* ปุ่มภาษาอยู่กลาง ระหว่าง Simulators กับ Home */
   padding: 0 12px;
   border: 1.5px solid var(--navy);
   border-radius: 8px;
