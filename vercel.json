@@ -1,0 +1,5 @@
+{
+  "buildCommand": "",
+  "outputDirectory": "sims-v2",
+  "rewrites": [{ "source": "/api/(.*)", "destination": "/api" }]
+}

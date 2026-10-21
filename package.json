@@ -1,0 +1,16 @@
+{
+  "name": "virtual-doe-lab",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Virtual DOE Lab — frontend (sims-v2/) + Express backend (server/, api/) for Vercel",
+  "scripts": {
+    "dev": "node server/dev.js",
+    "start": "node server/dev.js"
+  },
+  "engines": {
+    "node": ">=20.12"
+  },
+  "dependencies": {
+    "express": "^4.21.2"
+  }
+}

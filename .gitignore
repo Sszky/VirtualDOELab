@@ -1,2 +1,7 @@
 # Claude Code local config (not part of the project)
 .claude/
+
+# Node / Vercel
+node_modules/
+.env
+.vercel/
