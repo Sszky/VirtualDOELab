@@ -51,7 +51,7 @@
       expandTable: 'Expand',
       collapseTable: 'Close',
       tableEmpty: 'No results yet — press Fire to start',
-      tableNote: '* Results are kept in this page\'s memory only; refreshing clears them — use "Export CSV" to save a file.',
+      tableNote: '* Results are kept only while this page is open (reloading, closing, or switching to another experiment clears them) — use "Export CSV" or "Save to Drive" to keep a file.',
       thRun: '#',
       thRelease: 'A',
       thFiring: 'B',
@@ -90,6 +90,7 @@
         noLaunch: 'The band is too weak for this setup — the ball barely leaves the cup.',
         maxSimTimeExceeded: 'Maximum simulation time exceeded before landing — results may be incomplete.',
         exportEmpty: 'No results to export yet.',
+        serverError: 'Could not run the experiment on the server ({detail}). Please try again.',
       },
     },
 
@@ -138,7 +139,7 @@
       expandTable: 'ขยายตาราง',
       collapseTable: 'ปิด',
       tableEmpty: 'ยังไม่มีผลการทดลอง — กด "ยิง" เพื่อเริ่มต้น',
-      tableNote: '* ผลการทดลองเก็บไว้ในหน่วยความจำของหน้านี้เท่านั้น รีเฟรชหน้าเว็บแล้วข้อมูลจะหายไป — ใช้ปุ่ม "ส่งออก CSV" เพื่อบันทึกเป็นไฟล์',
+      tableNote: '* ผลการทดลองเก็บไว้เฉพาะตอนที่เปิดหน้านี้อยู่ (รีโหลด ปิดหน้า หรือไปการทดลองอื่น ข้อมูลจะหายไป) — ใช้ปุ่ม "ส่งออก CSV" หรือ "บันทึกลง Drive" เพื่อเก็บเป็นไฟล์',
       thRun: '#',
       thRelease: 'A',
       thFiring: 'B',
@@ -177,6 +178,7 @@
         noLaunch: 'หนังยางแรงไม่พอสำหรับการตั้งค่านี้ — ลูกบอลแทบไม่หลุดจากถ้วย',
         maxSimTimeExceeded: 'เกินเวลาจำลองสูงสุดก่อนตกพื้น — ผลลัพธ์อาจไม่สมบูรณ์',
         exportEmpty: 'ยังไม่มีผลการทดลองให้ส่งออก',
+        serverError: 'ไม่สามารถคำนวณผลการทดลองที่ server ได้ ({detail}) กรุณาลองใหม่',
       },
     },
   };

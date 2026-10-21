@@ -1,7 +1,7 @@
 /**
  * app.js — ผูก UI, วาดฉากแอนิเมชัน (canvas เส้นทาง + จรวดการ์ตูนแบบ DOM/CSS), จัดการตารางผล,
  * ระบบสองภาษา/ธีม, โหมด deterministic/stochastic, และ export CSV
- * อาศัย window.RocketPhysics จาก physics.js และ window.I18N/applyTranslations จาก i18n.js
+ * ฟิสิกส์คำนวณที่ backend (server/physics/waterBottleRocket.js) ผ่าน window.VDL_API จาก ../assets/api.js และ window.I18N/applyTranslations จาก i18n.js
  */
 (function () {
   'use strict';
@@ -15,7 +15,8 @@
   }
 
   function init() {
-  const { simulateFlight } = window.RocketPhysics;
+  const SIM_KEY = 'waterBottleRocket';
+  const simulateFlight = (params) => window.VDL_API.simulate(SIM_KEY, params);
   const { I18N, formatTemplate, applyTranslations } = window;
 
   // ---------------------------------------------------------------------
@@ -77,7 +78,7 @@
   let language = window.getSiteLang ? window.getSiteLang() : 'en'; // ภาษาที่เลือกไว้จากหน้าก่อน (ค่าเริ่มต้นอังกฤษ) ดู nav.js
   // ธีมเริ่มต้น = สว่าง (ไม่ใส่คลาส 'dark' บน body ตอนโหลด) ยืนยันแล้วกับผู้ใช้
 
-  // ผลการทดลองทั้งหมดในเซสชันนี้ — เก็บในหน่วยความจำเท่านั้น (ไม่มี localStorage)
+  // ผลการทดลองทั้งหมดในเซสชันนี้ — เก็บในหน่วยความจำของหน้านี้เท่านั้น (รีโหลด/ปิดหน้า/ไปการทดลองอื่น = เริ่มใหม่)
   // รีเฟรชหน้าเว็บแล้วข้อมูลชุดนี้จะหายไปทั้งหมด
   const results = [];
 
@@ -467,6 +468,7 @@
   function appendResultRow(result) {
     const { params, summary } = result;
     results.push({ ...params, ...summary });
+    window.VDL_API.setUnsavedResults(true); // มีผลใหม่ที่ยังไม่ได้บันทึก
     renderTable();
     renderEffectsChart();
   }
@@ -497,6 +499,7 @@
 
   els.clearTableBtn.addEventListener('click', () => {
     results.length = 0;
+    window.VDL_API.setUnsavedResults(false); // ตารางว่าง ไม่มีอะไรให้เสีย
     renderTable();
     renderEffectsChart();
   });
@@ -558,20 +561,6 @@ function escapeCSVValue(value) {
 // ---------------------------------------------------------------------
 // Create CSV content for Water Bottle Rocket
 // ---------------------------------------------------------------------
-
-function escapeCSVValue(value) {
-  const stringValue = String(value ?? "");
-
-  if (
-    stringValue.includes(",") ||
-    stringValue.includes('"') ||
-    stringValue.includes("\n")
-  ) {
-    return `"${stringValue.replace(/"/g, '""')}"`;
-  }
-
-  return stringValue;
-}
 
 function createCSVContent() {
   const dict = I18N[language];
@@ -668,13 +657,14 @@ els.exportCsvBtn.addEventListener(
     downloadLink.href = fileURL;
 
     downloadLink.download =
-      `${MODULE.csvPrefix}_${timestamp}.csv`;
+      `water_bottle_rocket_results_${timestamp}.csv`;
 
     document.body.appendChild(
       downloadLink,
     );
 
     downloadLink.click();
+    window.VDL_API.setUnsavedResults(false); // ส่งออกเป็นไฟล์แล้ว
     downloadLink.remove();
 
     URL.revokeObjectURL(fileURL);
@@ -867,10 +857,19 @@ els.exportCsvBtn.addEventListener(
   // ---------------------------------------------------------------------
   // ปุ่มยิง
   // ---------------------------------------------------------------------
-  els.launchBtn.addEventListener('click', () => {
+  els.launchBtn.addEventListener('click', async () => {
     clearWarning();
     const params = readParams();
-    const result = simulateFlight(params);
+    setLaunchEnabled(false);
+    let result;
+    try {
+      result = await simulateFlight(params);
+    } catch (error) {
+      // server ไม่ตอบ / ไม่มีเน็ต → เปิดปุ่มคืนและแจ้งผู้ใช้
+      setLaunchEnabled(true);
+      showWarning([formatTemplate(I18N[language].warnings.serverError, { detail: error.message })]);
+      return;
+    }
     if (result.warnings.length > 0) {
       showWarning(translateWarnings(result.warnings));
     }
