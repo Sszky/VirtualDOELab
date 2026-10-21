@@ -16,7 +16,7 @@
 
   // ตอนเว็บอยู่บน Vercel หรือรัน `npm run dev` → frontend กับ API อยู่โดเมนเดียวกัน ไม่ต้องตั้งค่า
   // ตอนเว็บยังอยู่บน GitHub Pages → ใส่ URL ของ backend บน Vercel ตรงนี้
-  const VERCEL_API_URL = ''; // เช่น 'https://virtual-doe-lab.vercel.app'
+  const VERCEL_API_URL = 'https://virtual-doe-lab.vercel.app/'; // เช่น 'https://virtual-doe-lab.vercel.app'
 
   const API_BASE = global.location.hostname.endsWith('github.io') ? VERCEL_API_URL.replace(/\/$/, '') : '';
   const REQUEST_TIMEOUT_MS = 20000;
