@@ -11,31 +11,26 @@
   // ============================================================
   // 1. GOOGLE CLOUD SETTINGS
   // ============================================================
+  // Client ID / API Key / Project Number ไม่ได้เขียนไว้ในไฟล์นี้แล้ว
+  // backend ส่งมาให้จาก environment variables (GET /api/auth/config)
+  // ส่วน Client Secret อยู่ที่ server เท่านั้น — ใช้แลก token และต่ออายุ session
 
-  const GOOGLE_CLIENT_ID =
-    "727908987568-u75jn6bubub7f67jfqr3fvpntkf08jbc.apps.googleusercontent.com";
-
-  // นำ API Key จาก Google Cloud Console มาใส่ตรงนี้
-  const GOOGLE_API_KEY =
-    "AIzaSyD6NFay3ZdNL_My8lHheqBknoryOMM64Fo";
-
-  // Google Cloud Project Number
-  const GOOGLE_APP_ID = "727908987568";
-
-  const GOOGLE_DRIVE_SCOPE =
-    "https://www.googleapis.com/auth/drive.file";
+  let GOOGLE_CLIENT_ID = "";
+  let GOOGLE_API_KEY = "";
+  let GOOGLE_APP_ID = "";
+  let GOOGLE_DRIVE_SCOPE = "";
 
   const GOOGLE_LOAD_TIMEOUT_MS = 10000;
-  const UPLOAD_TIMEOUT_MS = 60000;
 
   // ============================================================
   // 2. STATE
   // ============================================================
 
   let driveOperationInProgress = false;
-  let tokenClient = null;
+  let codeClient = null;
   let accessToken = "";
   let accessTokenExpiresAt = 0;
+  let settingsPromise = null;
   let pickerLoadPromise = null;
   let languageObserver = null;
 
@@ -59,6 +54,26 @@
         "Choose a folder for the CSV file",
       genericError:
         "Unable to save the CSV file to Google Drive.",
+      dialogTitle: "Save results to Google Drive",
+      fileLabel: "File name",
+      fileNameEmpty: "Type a file name.",
+      fileNameInvalid: "A file name can't contain / or \\ and must be 120 characters or less.",
+      whereLabel: "Where do you want to save it?",
+      optRoot: "My Drive",
+      optRootHint: "Save straight into My Drive, no folder",
+      optPick: "An existing folder",
+      optPickHint: "Pick a folder from your Drive in the next step",
+      optNew: "A new folder",
+      optNewHint: "Create a folder in My Drive and save into it",
+      newFolderPlaceholder: "Folder name",
+      newFolderDefault: "Virtual DOE Lab",
+      newFolderEmpty: "Type a name for the new folder.",
+      creatingFolder: "Creating folder...",
+      myDrive: "My Drive",
+      save: "Save",
+      cancel: "Cancel",
+      close: "Close",
+      busyCancelHint: "Please wait until saving finishes.",
     },
 
     th: {
@@ -76,6 +91,26 @@
         "เลือกโฟลเดอร์สำหรับบันทึกไฟล์ CSV",
       genericError:
         "ไม่สามารถบันทึกไฟล์ CSV ลง Google Drive ได้",
+      dialogTitle: "บันทึกผลการทดลองลง Google Drive",
+      fileLabel: "ชื่อไฟล์",
+      fileNameEmpty: "กรุณาพิมพ์ชื่อไฟล์",
+      fileNameInvalid: "ชื่อไฟล์ห้ามมี / หรือ \\ และยาวไม่เกิน 120 ตัวอักษร",
+      whereLabel: "ต้องการบันทึกไว้ที่ไหน?",
+      optRoot: "ไดรฟ์ของฉัน (My Drive)",
+      optRootHint: "บันทึกลง My Drive โดยตรง ไม่ต้องเลือกโฟลเดอร์",
+      optPick: "โฟลเดอร์ที่มีอยู่แล้ว",
+      optPickHint: "เลือกโฟลเดอร์ใน Drive ในขั้นตอนถัดไป",
+      optNew: "สร้างโฟลเดอร์ใหม่",
+      optNewHint: "สร้างโฟลเดอร์ใน My Drive แล้วบันทึกไฟล์ไว้ในนั้น",
+      newFolderPlaceholder: "ชื่อโฟลเดอร์",
+      newFolderDefault: "Virtual DOE Lab",
+      newFolderEmpty: "กรุณาพิมพ์ชื่อโฟลเดอร์ใหม่",
+      creatingFolder: "กำลังสร้างโฟลเดอร์...",
+      myDrive: "ไดรฟ์ของฉัน",
+      save: "บันทึก",
+      cancel: "ยกเลิก",
+      close: "ปิด",
+      busyCancelHint: "กรุณารอให้บันทึกเสร็จก่อน",
     },
   };
 
@@ -295,35 +330,34 @@
   }
 
   // ============================================================
-  // 7. VALIDATE GOOGLE SETTINGS
+  // 7. LOAD GOOGLE SETTINGS FROM THE SERVER
   // ============================================================
 
-  function validateGoogleSettings() {
-    if (
-      !GOOGLE_CLIENT_ID.endsWith(
-        ".apps.googleusercontent.com"
-      )
-    ) {
+  function api() {
+    if (!global.VDL_API) {
       throw new Error(
-        "Set a valid Google OAuth Client ID in drive.js."
+        "assets/api.js must be loaded before drive.js."
       );
     }
+    return global.VDL_API;
+  }
 
-    if (
-      !GOOGLE_API_KEY ||
-      GOOGLE_API_KEY ===
-        "PUT_YOUR_GOOGLE_API_KEY_HERE"
-    ) {
-      throw new Error(
-        "Add your Google API Key to GOOGLE_API_KEY in drive.js."
-      );
+  async function loadGoogleSettings() {
+    if (!settingsPromise) {
+      settingsPromise = api()
+        .request("/auth/config")
+        .then((config) => {
+          GOOGLE_CLIENT_ID = config.clientId;
+          GOOGLE_API_KEY = config.apiKey;
+          GOOGLE_APP_ID = config.appId;
+          GOOGLE_DRIVE_SCOPE = config.scope;
+        })
+        .catch((error) => {
+          settingsPromise = null; // ลองใหม่ได้ในการกดครั้งถัดไป
+          throw error;
+        });
     }
-
-    if (!/^\d+$/.test(GOOGLE_APP_ID)) {
-      throw new Error(
-        "Set GOOGLE_APP_ID to your Google Cloud Project Number."
-      );
-    }
+    return settingsPromise;
   }
 
   // ============================================================
@@ -364,39 +398,42 @@
   }
 
   // ============================================================
-  // 9. GOOGLE OAUTH
+  // 9. GOOGLE OAUTH (session อยู่ที่ server)
   // ============================================================
+  // 1) ถาม server ก่อนว่ายังมี Google session อยู่ไหม (cookie แบบ httpOnly)
+  //    → ถ้ามี ได้ access token ทันทีโดยไม่ต้องเปิด popup (ต่ออายุให้อัตโนมัติ)
+  // 2) ถ้าไม่มี → เปิด popup ของ Google ได้ "code" ครั้งเดียว
+  //    → ส่งให้ server แลกเป็น token ด้วย Client Secret แล้วเก็บเป็น session
 
-  async function requestDriveAccessToken() {
-    if (
-      accessToken &&
-      Date.now() < accessTokenExpiresAt
-    ) {
-      return accessToken;
-    }
+  function rememberToken(data) {
+    accessToken = data.accessToken;
+    accessTokenExpiresAt = Number(data.expiresAt) || 0;
+    api().setSignedIn(true);
+    return accessToken;
+  }
 
-    const oauth =
-      await waitForGoogleIdentityServices();
+  // api.js ออกจากระบบให้ (ไม่ได้ใช้งาน 1 ชม.) → ลืม token ที่จำไว้ในหน้านี้
+  global.addEventListener("vdl:signed-out", () => {
+    accessToken = "";
+    accessTokenExpiresAt = 0;
+  });
 
+  function requestAuthorizationCode(oauth) {
     return new Promise((resolve, reject) => {
-      if (!tokenClient) {
-        tokenClient =
-          oauth.initTokenClient({
-            client_id: GOOGLE_CLIENT_ID,
-            scope: GOOGLE_DRIVE_SCOPE,
-
-            include_granted_scopes: true,
-
-            callback: () => {},
-            error_callback: () => {},
-          });
+      if (!codeClient) {
+        codeClient = oauth.initCodeClient({
+          client_id: GOOGLE_CLIENT_ID,
+          scope: GOOGLE_DRIVE_SCOPE,
+          ux_mode: "popup",
+          // ทุกครั้งที่ login ใหม่ ให้เลือกบัญชี Google เอง (เครื่องในห้องแล็บอาจใช้ร่วมกัน)
+          select_account: true,
+          callback: () => {},
+          error_callback: () => {},
+        });
       }
 
-      tokenClient.callback = (response) => {
-        if (
-          response.error ||
-          !response.access_token
-        ) {
+      codeClient.callback = (response) => {
+        if (response.error || !response.code) {
           reject(
             new Error(
               response.error_description ||
@@ -404,37 +441,18 @@
                 "Google Drive permission was not granted."
             )
           );
-
           return;
         }
-
-        accessToken =
-          response.access_token;
-
-        const expiresIn =
-          Number(response.expires_in) ||
-          3600;
-
-        accessTokenExpiresAt =
-          Date.now() +
-          Math.max(0, expiresIn - 60) *
-            1000;
-
-        resolve(accessToken);
+        resolve(response.code);
       };
 
-      tokenClient.error_callback = (
-        error
-      ) => {
+      codeClient.error_callback = (error) => {
         const errorMessages = {
-          popup_closed:
-            "Google sign-in was cancelled.",
-
+          popup_closed: "Google sign-in was cancelled.",
           popup_failed_to_open:
             "Google sign-in popup was blocked. " +
             "Allow popups and try again.",
         };
-
         reject(
           new Error(
             errorMessages[error.type] ||
@@ -443,12 +461,41 @@
         );
       };
 
-      tokenClient.requestAccessToken({
-        prompt: accessToken
-          ? ""
-          : "consent",
-      });
+      codeClient.requestCode();
     });
+  }
+
+  async function requestDriveAccessToken() {
+    // ถ้าเพิ่งเปิดเว็บใหม่/รีโหลด api.js กำลังล้าง session เก่าอยู่ — รอให้เสร็จก่อน
+    await api().sessionReady;
+
+    if (accessToken && Date.now() < accessTokenExpiresAt) {
+      return accessToken;
+    }
+
+    // มี session เดิมอยู่แล้ว?
+    try {
+      return rememberToken(await api().request("/auth/token"));
+    } catch (error) {
+      if (error.status !== 401) {
+        throw error;
+      }
+    }
+
+    // ยังไม่ได้ login → เปิด popup ของ Google
+    const oauth = await waitForGoogleIdentityServices();
+    const code = await requestAuthorizationCode(oauth);
+
+    return rememberToken(
+      await api().request("/auth/google", {
+        method: "POST",
+        body: { code },
+      })
+    );
+  }
+
+  async function signOutOfGoogleDrive() {
+    await api().signOut();
   }
 
   // ============================================================
@@ -630,145 +677,29 @@
   }
 
   // ============================================================
-  // 12. CREATE MULTIPART REQUEST
-  // ============================================================
-
-  function createMultipartBoundary(
-    content
-  ) {
-    let boundary;
-
-    do {
-      const id =
-        global.crypto?.randomUUID?.() ||
-        `${Date.now()}_${Math.random()
-          .toString(16)
-          .slice(2)}`;
-
-      boundary =
-        `virtual_doe_lab_${id}`;
-    } while (content.includes(boundary));
-
-    return boundary;
-  }
-
-  // ============================================================
-  // 13. UPLOAD FILE TO SELECTED FOLDER
+  // 12. UPLOAD FILE TO SELECTED FOLDER (ผ่าน server)
   // ============================================================
 
   async function uploadFileToGoogleDrive(
-    token,
     content,
     filename,
-    mimeType,
     folderId
   ) {
-    if (/\r|\n/.test(mimeType)) {
-      throw new Error(
-        "Invalid file MIME type."
-      );
-    }
-
-    const metadata = {
-      name: filename,
-      mimeType,
-    };
-
-    // บันทึกไฟล์ลงโฟลเดอร์ที่เลือก
-    if (folderId) {
-      metadata.parents = [folderId];
-    }
-
-    const boundary =
-      createMultipartBoundary(content);
-
-    const requestBody = new Blob([
-      `--${boundary}\r\n`,
-
-      "Content-Type: application/json; " +
-        "charset=UTF-8\r\n\r\n",
-
-      JSON.stringify(metadata),
-
-      `\r\n--${boundary}\r\n`,
-
-      `Content-Type: ${mimeType}; ` +
-        "charset=UTF-8\r\n\r\n",
-
-      content,
-
-      `\r\n--${boundary}--\r\n`,
-    ]);
-
-    const controller =
-      new AbortController();
-
-    const timeout = setTimeout(
-      () => controller.abort(),
-      UPLOAD_TIMEOUT_MS
-    );
-
     try {
-      const response = await fetch(
-        "https://www.googleapis.com/" +
-          "upload/drive/v3/files" +
-          "?uploadType=multipart" +
-          "&fields=id,name,webViewLink,parents",
-        {
-          method: "POST",
-
-          headers: {
-            Authorization:
-              `Bearer ${token}`,
-
-            "Content-Type":
-              `multipart/related; ` +
-              `boundary=${boundary}`,
-          },
-
-          body: requestBody,
-          signal: controller.signal,
-        }
-      );
-
-      const result = await response
-        .json()
-        .catch(() => null);
-
-      if (!response.ok) {
-        if (response.status === 401) {
-          accessToken = "";
-          accessTokenExpiresAt = 0;
-        }
-
-        throw new Error(
-          result?.error?.message ||
-            `Google Drive upload failed ` +
-              `(HTTP ${response.status}).`
-        );
-      }
-
-      if (!result?.id) {
-        throw new Error(
-          "Google Drive returned an unexpected response."
-        );
-      }
-
-      return result;
+      return await api().request("/drive/upload", {
+        method: "POST",
+        body: { content, filename, folderId },
+      });
     } catch (error) {
-      if (
-        error.name === "AbortError"
-      ) {
-        throw new Error(
-          "Google Drive upload timed out. Please try again."
-        );
+      if (error.status === 401) {
+        // session หมดอายุ/ถูกยกเลิก → ครั้งหน้าจะขอ login ใหม่
+        accessToken = "";
+        accessTokenExpiresAt = 0;
       }
-
       throw error;
-    } finally {
-      clearTimeout(timeout);
     }
   }
+
 
   // ============================================================
   // 14. PUBLIC SAVE FUNCTION
@@ -777,7 +708,6 @@
   async function saveFileToGoogleDrive({
     content,
     filename,
-    mimeType = "text/csv",
     folderId = "",
   }) {
     if (driveOperationInProgress) {
@@ -796,19 +726,14 @@
       );
     }
 
-    validateGoogleSettings();
-
     driveOperationInProgress = true;
 
     try {
-      const token =
-        await requestDriveAccessToken();
+      await loadGoogleSettings();
 
       return await uploadFileToGoogleDrive(
-        token,
         content,
         filename,
-        mimeType,
         folderId
       );
     } finally {
@@ -817,128 +742,433 @@
   }
 
   // ============================================================
-  // 15. SAVE EXPERIMENT RESULTS
+  // 15. SAVE DIALOG (เลือกที่บันทึก + ล็อกหน้าเว็บไว้จนกว่าจะบันทึกหรือยกเลิก)
   // ============================================================
+  // ตัวเลือก: My Drive โดยตรง / โฟลเดอร์ที่มีอยู่ (Google Picker) / สร้างโฟลเดอร์ใหม่
+  // ระหว่างที่ dialog เปิด: หน้าเว็บเลื่อนไม่ได้ กดอะไรข้างหลังไม่ได้
+  // ปิดได้ด้วยปุ่ม ยกเลิก / X / Esc เท่านั้น (ยกเว้นตอนกำลังบันทึก)
 
-  async function saveExperimentResultsToDrive() {
-    if (driveOperationInProgress) {
-      return;
+  const DIALOG_STYLE = `
+    .dd-dialog { width: min(92vw, 440px); }
+    .dd-file { display: block; margin: 10px 0 14px; }
+    .dd-file-label { display: block; margin-bottom: 4px; font-weight: 600; font-size: 0.95rem; }
+    .dd-file-row { display: flex; align-items: center; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+    .dd-file-row:focus-within { border-color: var(--blue); box-shadow: 0 0 0 3px var(--blue-100); }
+    .dd-file-name { flex: 1; min-width: 0; padding: 8px 10px; border: 0; outline: 0; font: inherit; background: transparent; }
+    .dd-file-ext { padding: 8px 10px; color: var(--muted); background: var(--bg); border-left: 1px solid var(--line); }
+    .dd-where { margin: 0 0 8px; font-weight: 600; font-size: 0.95rem; }
+    .dd-options { display: grid; gap: 8px; margin: 0 0 12px; padding: 0; border: 0; }
+    .dd-option { display: grid; grid-template-columns: auto 1fr; gap: 2px 10px; align-items: start;
+      padding: 10px 12px; border: 1px solid var(--line); border-radius: 10px; cursor: pointer; }
+    .dd-option:has(input:checked) { border-color: var(--blue); background: var(--blue-50); }
+    .dd-option input[type="radio"] { margin: 3px 0 0; grid-row: span 2; accent-color: var(--blue); }
+    .dd-option-title { font-weight: 600; }
+    .dd-option-hint { color: var(--muted); font-size: 0.8rem; }
+    .dd-new-name { grid-column: 2; width: 100%; margin-top: 6px; padding: 8px 10px;
+      border: 1px solid var(--line); border-radius: 8px; font: inherit; }
+    .dd-new-name[hidden] { display: none; }
+    .dd-status { min-height: 1.3em; margin: 0 0 12px; font-size: 0.85rem; color: var(--muted); }
+    .dd-status.is-error { color: #b91c1c; }
+    .dd-status.is-success { color: #15803d; }
+    .dd-status a { margin-left: 4px; color: var(--blue); font-weight: 600; }
+    .dd-actions { display: flex; justify-content: flex-end; gap: 8px; }
+    .dd-dialog button:disabled, .dd-dialog input:disabled { opacity: 0.55; cursor: not-allowed; }
+    html.dd-open, body.dd-open { overflow: hidden; }
+  `;
+
+  let dialog = null; // { backdrop, panel, ...elements }
+  let dialogBusy = false;
+  let dialogDone = false;
+  let lastFocused = null;
+
+  function buildDialog() {
+    if (dialog) {
+      return dialog;
     }
 
-    if (!hasExperimentData()) {
-      setStatus(
-        message("empty"),
-        "error"
-      );
+    const style = document.createElement("style");
+    style.textContent = DIALOG_STYLE;
+    document.head.append(style);
 
-      return;
-    }
+    const backdrop = document.createElement("div");
+    backdrop.className = "ts-backdrop dd-backdrop";
+    backdrop.hidden = true;
 
-    setStatus("");
-    setButtonState(
-      "authorizing",
+    const panel = document.createElement("div");
+    panel.className = "ts-dialog dd-dialog";
+    panel.hidden = true;
+    panel.setAttribute("role", "dialog");
+    panel.setAttribute("aria-modal", "true");
+    panel.setAttribute("aria-labelledby", "ddTitle");
+    panel.innerHTML = `
+      <div class="ts-head">
+        <h2 id="ddTitle"></h2>
+        <button type="button" class="secondary-button ts-close dd-x" aria-label="">
+          <svg class="icon" aria-hidden="true"><use href="#i-close"></use></svg>
+        </button>
+      </div>
+      <label class="dd-file">
+        <span class="dd-file-label"></span>
+        <span class="dd-file-row">
+          <input type="text" class="dd-file-name" maxlength="116" spellcheck="false">
+          <span class="dd-file-ext">.csv</span>
+        </span>
+      </label>
+      <p class="dd-where"></p>
+      <fieldset class="dd-options">
+        <label class="dd-option">
+          <input type="radio" name="ddTarget" value="root" checked>
+          <span class="dd-option-title" data-dd="optRoot"></span>
+          <span class="dd-option-hint" data-dd="optRootHint"></span>
+        </label>
+        <label class="dd-option">
+          <input type="radio" name="ddTarget" value="pick">
+          <span class="dd-option-title" data-dd="optPick"></span>
+          <span class="dd-option-hint" data-dd="optPickHint"></span>
+        </label>
+        <label class="dd-option">
+          <input type="radio" name="ddTarget" value="new">
+          <span class="dd-option-title" data-dd="optNew"></span>
+          <span class="dd-option-hint" data-dd="optNewHint"></span>
+          <input type="text" class="dd-new-name" maxlength="100" hidden>
+        </label>
+      </fieldset>
+      <p class="dd-status" role="status" aria-live="polite"></p>
+      <div class="dd-actions">
+        <button type="button" class="secondary-button dd-cancel"></button>
+        <button type="button" class="primary-button dd-save"><span class="btn-label"></span></button>
+      </div>`;
+
+    document.body.append(backdrop, panel);
+
+    dialog = {
+      backdrop,
+      panel,
+      title: panel.querySelector("#ddTitle"),
+      closeX: panel.querySelector(".dd-x"),
+      fileLabel: panel.querySelector(".dd-file-label"),
+      fileName: panel.querySelector(".dd-file-name"),
+      where: panel.querySelector(".dd-where"),
+      radios: [...panel.querySelectorAll('input[name="ddTarget"]')],
+      newName: panel.querySelector(".dd-new-name"),
+      status: panel.querySelector(".dd-status"),
+      cancel: panel.querySelector(".dd-cancel"),
+      save: panel.querySelector(".dd-save"),
+      saveLabel: panel.querySelector(".dd-save .btn-label"),
+    };
+
+    dialog.radios.forEach((radio) =>
+      radio.addEventListener("change", updateNewFolderInput)
+    );
+    dialog.cancel.addEventListener("click", closeDialog);
+    dialog.closeX.addEventListener("click", closeDialog);
+    dialog.save.addEventListener("click", () => {
+      if (dialogDone) {
+        closeDialog();
+      } else {
+        runSave();
+      }
+    });
+    // พิมพ์แก้แล้วข้อความเตือนเก่าหายไป
+    [dialog.fileName, dialog.newName].forEach((input) =>
+      input.addEventListener("input", () => {
+        if (!dialogBusy && !dialogDone) {
+          setDialogStatus("");
+        }
+      })
+    );
+    // ถ้าพิมพ์ .csv เองมาด้วย ตัดออก (มี .csv ต่อท้ายให้อยู่แล้ว)
+    dialog.fileName.addEventListener("blur", () => {
+      dialog.fileName.value = dialog.fileName.value.replace(/\.csv\s*$/i, "").trimEnd();
+    });
+    dialog.fileName.addEventListener("keydown", (event) => {
+      if (event.key === "Enter") {
+        event.preventDefault();
+        runSave();
+      }
+    });
+    dialog.newName.addEventListener("keydown", (event) => {
+      if (event.key === "Enter") {
+        event.preventDefault();
+        runSave();
+      }
+    });
+
+    // กดที่ฉากหลังแล้วไม่ปิด และไม่ทำให้ focus หลุดออกจาก dialog
+    // — ต้องเลือก บันทึก หรือ ยกเลิก เท่านั้น
+    backdrop.addEventListener("mousedown", (event) => event.preventDefault());
+    backdrop.addEventListener("click", (event) => event.stopPropagation());
+
+    // ฟังทั้งหน้า (ไม่ใช่แค่ใน dialog) เพื่อให้ Esc / Tab ใช้ได้เสมอขณะ dialog เปิด
+    document.addEventListener(
+      "keydown",
+      (event) => {
+        if (!dialog || dialog.panel.hidden) {
+          return;
+        }
+        if (event.key === "Escape") {
+          event.preventDefault();
+          event.stopPropagation(); // ไม่ให้ Esc ไปปิดอย่างอื่นบนหน้า (เช่น ตารางขยาย)
+          closeDialog();
+        }
+        if (event.key === "Tab") {
+          trapFocus(event);
+        }
+      },
       true
     );
+    document.addEventListener("focusin", (event) => {
+      if (dialog && !dialog.panel.hidden && !dialog.panel.contains(event.target)) {
+        dialog.save.focus();
+      }
+    });
+
+    return dialog;
+  }
+
+  // ให้ปุ่ม Tab วนอยู่ใน dialog เท่านั้น (ไปกดปุ่มบนหน้าเว็บข้างหลังไม่ได้)
+  function trapFocus(event) {
+    const focusable = [
+      ...dialog.panel.querySelectorAll(
+        "button, input, a[href]"
+      ),
+    ].filter((el) => !el.disabled && !el.hidden && el.offsetParent !== null);
+
+    if (focusable.length === 0) {
+      return;
+    }
+
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+
+    if (!dialog.panel.contains(document.activeElement)) {
+      event.preventDefault();
+      first.focus();
+    } else if (event.shiftKey && document.activeElement === first) {
+      event.preventDefault();
+      last.focus();
+    } else if (!event.shiftKey && document.activeElement === last) {
+      event.preventDefault();
+      first.focus();
+    }
+  }
+
+  function selectedTarget() {
+    return dialog.radios.find((radio) => radio.checked)?.value || "root";
+  }
+
+  function updateNewFolderInput() {
+    const isNew = selectedTarget() === "new";
+    dialog.newName.hidden = !isNew;
+    if (isNew) {
+      if (!dialog.newName.value) {
+        dialog.newName.value = message("newFolderDefault");
+      }
+      dialog.newName.focus();
+      dialog.newName.select();
+    }
+  }
+
+  function translateDialog() {
+    if (!dialog) {
+      return;
+    }
+    dialog.title.textContent = message("dialogTitle");
+    dialog.closeX.setAttribute("aria-label", message("cancel"));
+    dialog.fileLabel.textContent = message("fileLabel");
+    dialog.where.textContent = message("whereLabel");
+    dialog.panel.querySelectorAll("[data-dd]").forEach((el) => {
+      el.textContent = message(el.dataset.dd);
+    });
+    dialog.newName.placeholder = message("newFolderPlaceholder");
+    dialog.cancel.textContent = message("cancel");
+    if (!dialogBusy) {
+      dialog.saveLabel.textContent = message(dialogDone ? "close" : "save");
+    }
+  }
+
+  function setDialogStatus(content = "", type = "") {
+    dialog.status.className = `dd-status${type ? ` is-${type}` : ""}`;
+    dialog.status.replaceChildren();
+    if (content instanceof Node) {
+      dialog.status.append(content);
+    } else {
+      dialog.status.textContent = content;
+    }
+  }
+
+  function setDialogBusy(busy, labelKey = "save") {
+    dialogBusy = busy;
+    dialog.radios.forEach((radio) => (radio.disabled = busy || dialogDone));
+    dialog.newName.disabled = busy || dialogDone;
+    dialog.fileName.disabled = busy || dialogDone;
+    dialog.cancel.disabled = busy;
+    dialog.cancel.hidden = dialogDone; // บันทึกเสร็จแล้วเหลือแค่ปุ่ม ปิด
+    dialog.closeX.disabled = busy;
+    dialog.save.disabled = busy;
+    dialog.saveLabel.textContent = message(labelKey);
+    setButtonState(busy ? labelKey : "idle", true);
+  }
+
+  function lockPage(locked) {
+    document.documentElement.classList.toggle("dd-open", locked);
+    document.body.classList.toggle("dd-open", locked);
+  }
+
+  function openDialog() {
+    if (dialog && !dialog.panel.hidden) {
+      return;
+    }
+    buildDialog();
+    lastFocused = document.activeElement;
+    dialogDone = false;
+    // ชื่อไฟล์เริ่มต้นจาก app.js แก้ได้ในช่อง (นามสกุล .csv ใส่ให้เอง)
+    dialog.fileName.value = getExportFilename().replace(/\.csv$/i, "");
+    dialog.radios[0].checked = true;
+    dialog.newName.value = "";
+    updateNewFolderInput();
+    translateDialog();
+    setDialogStatus("");
+    setDialogBusy(false);
+    setButtonState("idle", true); // ปุ่มบนหน้าเว็บกดซ้ำไม่ได้ระหว่างเปิด dialog
+    setStatus("");
+
+    dialog.backdrop.hidden = false;
+    dialog.panel.hidden = false;
+    lockPage(true);
+    dialog.save.focus();
+  }
+
+  function closeDialog() {
+    if (!dialog || dialog.panel.hidden) {
+      return;
+    }
+    if (dialogBusy) {
+      setDialogStatus(message("busyCancelHint"));
+      return;
+    }
+    dialog.backdrop.hidden = true;
+    dialog.panel.hidden = true;
+    lockPage(false);
+    setButtonState("idle", false);
+    if (lastFocused && typeof lastFocused.focus === "function") {
+      lastFocused.focus();
+    }
+  }
+
+  async function runSave() {
+    if (dialogBusy || dialogDone) {
+      return;
+    }
+
+    const target = selectedTarget();
+    const folderName = dialog.newName.value.trim();
+    const baseName = dialog.fileName.value.trim().replace(/\.csv$/i, "").trim();
+
+    if (!baseName) {
+      setDialogStatus(message("fileNameEmpty"), "error");
+      dialog.fileName.focus();
+      return;
+    }
+    if (/[\\/\u0000-\u001f]/.test(baseName) || baseName.length > 116) {
+      setDialogStatus(message("fileNameInvalid"), "error");
+      dialog.fileName.focus();
+      return;
+    }
+    const filename = `${baseName}.csv`;
+
+    if (target === "new" && !folderName) {
+      setDialogStatus(message("newFolderEmpty"), "error");
+      dialog.newName.focus();
+      return;
+    }
+
+    setDialogStatus("");
+    setDialogBusy(true, "authorizing");
 
     try {
-      validateGoogleSettings();
-
       driveOperationInProgress = true;
 
       const csv = getExperimentCSV();
-
       if (!csv.trim()) {
-        throw new Error(
-          "No experiment CSV data was found."
-        );
+        throw new Error(message("empty"));
       }
 
-      // ขอสิทธิ์ Google Drive
-      const token =
-        await requestDriveAccessToken();
+      await loadGoogleSettings();
 
-      // เปิดหน้าต่างเลือกโฟลเดอร์
-      setButtonState(
-        "choosingFolder",
-        true
-      );
+      // ขอสิทธิ์ Google Drive (ถ้ายังไม่มี session จะเปิด popup ให้ login)
+      const token = await requestDriveAccessToken();
 
-      const folder =
-        await chooseGoogleDriveFolder(
-          token
-        );
+      let folder = { id: "", name: message("myDrive") };
 
-      // ผู้ใช้กด Cancel
-      if (!folder) {
-        setStatus(
-          message("cancelled")
-        );
-
-        return;
+      if (target === "pick") {
+        setDialogBusy(true, "choosingFolder");
+        // ซ่อนกล่อง dialog ระหว่างเปิด Picker แต่ฉากหลังยังล็อกหน้าเว็บอยู่
+        dialog.panel.hidden = true;
+        let picked;
+        try {
+          picked = await chooseGoogleDriveFolder(token);
+        } finally {
+          dialog.panel.hidden = false;
+        }
+        if (!picked) {
+          setDialogStatus(message("cancelled"));
+          return; // กลับมาที่ dialog ให้เลือกใหม่ได้
+        }
+        folder = picked;
       }
 
-      // อัปโหลดเข้าโฟลเดอร์ที่เลือก
-      setButtonState("saving", true);
+      if (target === "new") {
+        setDialogBusy(true, "creatingFolder");
+        folder = await api().request("/drive/folder", {
+          method: "POST",
+          body: { name: folderName },
+        });
+      }
 
-      const uploadedFile =
-        await uploadFileToGoogleDrive(
-          token,
-          csv,
-          getExportFilename(),
-          "text/csv",
-          folder.id
-        );
-
-      setButtonState("saved", true);
-
-      const resultMessage =
-        document.createDocumentFragment();
-
-      resultMessage.append(
-        `${message("success")} ` +
-          `${folder.name}. `
+      setDialogBusy(true, "saving");
+      const uploadedFile = await uploadFileToGoogleDrive(
+        csv,
+        filename,
+        folder.id
       );
 
+      dialogDone = true;
+      api().setUnsavedResults(false); // บันทึกลง Drive แล้ว ไม่ต้องเตือนตอนออกจากหน้า
+      const resultMessage = document.createDocumentFragment();
+      resultMessage.append(`${message("success")} ${folder.name}.`);
       if (uploadedFile.webViewLink) {
-        const link =
-          document.createElement("a");
-
-        link.href =
-          uploadedFile.webViewLink;
-
+        const link = document.createElement("a");
+        link.href = uploadedFile.webViewLink;
         link.target = "_blank";
-        link.rel =
-          "noopener noreferrer";
-
-        link.textContent =
-          message("open");
-
+        link.rel = "noopener noreferrer";
+        link.textContent = message("open");
         resultMessage.append(link);
       }
-
-      setStatus(
-        resultMessage,
-        "success"
-      );
+      setDialogStatus(resultMessage.cloneNode(true), "success");
+      setStatus(resultMessage, "success"); // ข้อความเดิมใต้ปุ่ม ยังเห็นหลังปิด dialog
     } catch (error) {
-      console.error(
-        "Google Drive save failed:",
-        error
-      );
-
-      setStatus(
-        error.message ||
-          message("genericError"),
-        "error"
-      );
+      console.error("Google Drive save failed:", error);
+      setDialogStatus(error.message || message("genericError"), "error");
     } finally {
       driveOperationInProgress = false;
-
-      setButtonState(
-        "idle",
-        false
-      );
+      setDialogBusy(false, dialogDone ? "close" : "save");
+      setButtonState("idle", true);
+      if (dialogDone) {
+        dialog.save.focus();
+      }
     }
+  }
+
+  function saveExperimentResultsToDrive() {
+    if (driveOperationInProgress) {
+      return;
+    }
+    if (!hasExperimentData()) {
+      setStatus(message("empty"), "error");
+      return;
+    }
+    openDialog();
   }
 
   // ============================================================
@@ -977,8 +1207,10 @@
     ) {
       languageObserver =
         new MutationObserver(() => {
+          translateDialog();
           if (
-            !driveOperationInProgress
+            !driveOperationInProgress &&
+            (!dialog || dialog.panel.hidden)
           ) {
             setButtonState(
               "idle",
@@ -1006,7 +1238,7 @@
 
   global.chooseGoogleDriveFolder =
     async function () {
-      validateGoogleSettings();
+      await loadGoogleSettings();
 
       const token =
         await requestDriveAccessToken();
@@ -1021,6 +1253,9 @@
 
   global.saveToGoogleDrive =
     saveExperimentResultsToDrive;
+
+  global.signOutOfGoogleDrive =
+    signOutOfGoogleDrive;
 
   // ============================================================
   // 18. PAGE SETUP
@@ -1037,4 +1272,4 @@
   } else {
     initializeDriveButton();
   }
-})(window);
+})(window);

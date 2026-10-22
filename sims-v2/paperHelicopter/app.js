@@ -4,7 +4,7 @@
  * โครงไฟล์:
  *  1) MODULE — ทุกอย่างที่เฉพาะของโมดูลนี้ (engine, ปัจจัย, คอลัมน์ตาราง, รูปวาดในฉาก)
  *  2) ส่วนที่เหลือ — ใช้ร่วมกันแบบเดียวกับ parachute/app.js (ฉากตกแนวดิ่ง, ตาราง, กราฟ, ภาษา/ธีม, responsive)
- * อาศัย window.HelicopterPhysics จาก physics.js และ window.I18N/applyTranslations จาก i18n.js
+ * ฟิสิกส์คำนวณที่ backend (server/physics/paperHelicopter.js) ผ่าน window.VDL_API จาก ../assets/api.js และ window.I18N/applyTranslations จาก i18n.js
  */
 (function () {
   'use strict';
@@ -15,8 +15,17 @@
     init();
   }
 
-  function init() {
+  async function init() {
   const { I18N, formatTemplate, applyTranslations } = window;
+  const SIM_KEY = 'paperHelicopter';
+  // ค่าคงที่สำหรับวาดฉาก ดึงจาก backend (ฟิสิกส์ทั้งหมดอยู่ที่ server/physics/)
+  let PHYS;
+  try {
+    PHYS = (await window.VDL_API.simConfig('paperHelicopter')).constants;
+  } catch (error) {
+    window.VDL_API.showStartupError(error);
+    return;
+  }
 
   // =====================================================================
   // 1) MODULE — ส่วนเฉพาะของเฮลิคอปเตอร์กระดาษ
@@ -24,7 +33,7 @@
   let actorGeom = null; // ขนาด px ของตัวล่าสุด ใช้หมุนทั้งตัวใน applyPose
 
   const MODULE = {
-    simulate: window.HelicopterPhysics.simulateDrop,
+    simulate: (params) => window.VDL_API.simulate(SIM_KEY, params),
     csvPrefix: 'paper_helicopter_results',
     // type 'range' = slider `${id}Range` + ช่องตัวเลข `${id}Number`
     factors: [
@@ -91,7 +100,7 @@
       body.setAttribute('transform', squeeze(side * (0.45 + 0.55 * Math.abs(c))));
       body.querySelector('.heli-body-face').setAttribute('fill', side > 0 ? '#fffaf0' : '#f1d3a6');
       if (!falling) return 0;
-      const spinup = window.HelicopterPhysics.CONSTANTS.SPINUP_TIME_S;
+      const spinup = PHYS.SPINUP_TIME_S;
       const amplitude = 3 + 5 * Math.exp(-simT / spinup);
       return amplitude * Math.sin(simT * 7 + angle * 0.35);
     },
@@ -133,7 +142,7 @@
   };
 
   let language = window.getSiteLang ? window.getSiteLang() : 'en'; // ภาษาที่เลือกไว้จากหน้าก่อน (ค่าเริ่มต้นอังกฤษ) ดู nav.js
-  const results = []; // เก็บในหน่วยความจำเท่านั้น (ไม่มี localStorage)
+  const results = []; // เก็บในหน่วยความจำของหน้านี้เท่านั้น (รีโหลด/ปิดหน้า/ไปการทดลองอื่น = เริ่มใหม่)
   let animationHandle = null;
   let tableExpanded = false;
   let lastResult = null;
@@ -374,6 +383,7 @@
 
   function appendResultRow(result) {
     results.push({ ...result.params, ...result.summary });
+    window.VDL_API.setUnsavedResults(true); // มีผลใหม่ที่ยังไม่ได้บันทึก
     renderTable();
     renderEffectsChart();
   }
@@ -403,6 +413,7 @@
 
   els.clearTableBtn.addEventListener('click', () => {
     results.length = 0;
+    window.VDL_API.setUnsavedResults(false); // ตารางว่าง ไม่มีอะไรให้เสีย
     renderTable();
     renderEffectsChart();
   });
@@ -565,6 +576,7 @@ els.exportCsvBtn.addEventListener(
     );
 
     downloadLink.click();
+    window.VDL_API.setUnsavedResults(false); // ส่งออกเป็นไฟล์แล้ว
     downloadLink.remove();
 
     URL.revokeObjectURL(fileURL);
@@ -724,9 +736,18 @@ els.exportCsvBtn.addEventListener(
   // ---------------------------------------------------------------------
   // ปุ่มปล่อย + preview รูปร่างตามปัจจัยแบบ real-time
   // ---------------------------------------------------------------------
-  els.launchBtn.addEventListener('click', () => {
+  els.launchBtn.addEventListener('click', async () => {
     clearWarning();
-    const result = MODULE.simulate(readParams());
+    setLaunchEnabled(false);
+    let result;
+    try {
+      result = await MODULE.simulate(readParams());
+    } catch (error) {
+      // server ไม่ตอบ / ไม่มีเน็ต → เปิดปุ่มคืนและแจ้งผู้ใช้
+      setLaunchEnabled(true);
+      showWarning([formatTemplate(I18N[language].warnings.serverError, { detail: error.message })]);
+      return;
+    }
     if (result.warnings.length > 0) showWarning(translateWarnings(result.warnings));
     startAnimation(result);
   });
