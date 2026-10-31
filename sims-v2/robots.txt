@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /api/
+
+Sitemap: https://virtual-doe-lab.vercel.app/sitemap.xml
