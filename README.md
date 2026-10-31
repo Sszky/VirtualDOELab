@@ -6,6 +6,17 @@
 
 ประกอบด้วยการทดลอง 4 ชุด: **Parachute**, **Paper Helicopter**, **Water Bottle Rocket** และ **Catapult**
 
+## Links
+
+| Deliverable | URL |
+|---|---|
+| Web application | https://virtual-doe-lab.vercel.app |
+| Web API (base URL) | `https://virtual-doe-lab.vercel.app/api` ([docs](#web-api)) |
+| Called APIs | Google OAuth 2.0, Google Drive API v3, Google Picker API ([details](#called-external-apis)) |
+| Repository | https://github.com/Sszky/VirtualDOELab |
+| Demo video (1–3 min) | *add link* |
+| Presentation slides | *add link* |
+
 ## ผู้จัดทำ
 
 | ชื่อ | ส่วนที่รับผิดชอบ |
@@ -100,3 +111,133 @@ npm run dev               # เปิด http://localhost:3000
    `GOOGLE_APP_ID`, `SESSION_SECRET` และ `ALLOWED_ORIGINS` (ถ้าหน้าเว็บยังอยู่บน GitHub Pages)
 3. ใน Google Cloud Console → Credentials → OAuth Client: เพิ่มโดเมน Vercel ใน **Authorized JavaScript origins**
 4. ระหว่างที่หน้าเว็บยังอยู่บน GitHub Pages: ใส่ URL ของ Vercel ใน `VERCEL_API_URL` ที่ `sims-v2/assets/api.js`
+
+## Web API
+
+Our API runs the physics of all four experiments and returns the full result as JSON. No API key is needed.
+
+**Base URL:** `https://virtual-doe-lab.vercel.app/api` (Node.js + Express in `server/app.js`, deployed as a Vercel serverless function)
+
+| Method | Path | Purpose | Who can use it |
+|---|---|---|---|
+| GET | `/api` | API index: list of endpoints, example and link to these docs | Anyone |
+| GET | `/api/health` | Check that the API is up | Anyone |
+| GET | `/api/sims/:sim` | Constants a client needs to draw the scene | Anyone |
+| POST | `/api/sims/:sim/simulate` | Run one experiment and get the result | Anyone |
+| GET, POST | `/api/auth/*`, `/api/drive/*` | Google login and Save to Drive for our own website | Our website only (needs a Google session cookie) |
+
+`:sim` is one of `parachute`, `paperHelicopter`, `waterBottleRocket`, `catapult`.
+
+### POST /api/sims/:sim/simulate
+
+Send the factor values as a JSON body. Numbers outside the allowed range are moved to the nearest limit; `params` in the response shows the values actually used. `mode` is optional: `"deterministic"` (default, same result every time) or `"stochastic"` (random variation of about 8% SD, like a real experiment).
+
+| `:sim` | Input fields (unit, allowed range) | Main outputs in `summary` |
+|---|---|---|
+| `waterBottleRocket` | `angleDeg` (°, 1–89), `fins` (2–8), `waterVolumeML` (mL, 50–1000), `pressurePSI` (psi, 10–100) | `distance` (m), `flightTime` (s), `maxAltitude` (m), `burnoutSpeed` (m/s) |
+| `catapult` | `releaseDeg` (°, 120–185), `firingDeg` (°, 90–140), `cupCm` (cm, 20–40), `pinCm` (cm, 8–24), `bungeeCm` (cm, 14–30) | `distance` (m), `flightTime` (s), `maxHeight` (m), `launchSpeed` (m/s) |
+| `parachute` | `shape` (`round` / `square` / `hexagon`), `material` (`plastic` / `nylon` / `paper`), `diameterCm` (cm, 30–90), `stringCm` (cm, 20–80), `heightM` (m, 10–50) | `time` (s), `impactSpeed` (m/s), `cd` |
+| `paperHelicopter` | `WL` wing length (cm, 5–15), `WW` wing width (cm, 2–6), `BL` body length (cm, 3–10), `BW` body width (cm, 1–4), `heightM` (m, 1–4) | `time` (s), `impactSpeed` (m/s), `massG` (g), `cd` |
+
+Every response has `summary` (results), `trajectory` (time samples for animation), `warnings` (e.g. `waterClamped`, `maxSimTimeExceeded`) and `params` (inputs used).
+
+**Example request**
+
+```bash
+curl -X POST https://virtual-doe-lab.vercel.app/api/sims/waterBottleRocket/simulate \
+  -H "Content-Type: application/json" \
+  -d '{"angleDeg":45,"fins":4,"waterVolumeML":500,"pressurePSI":60,"mode":"deterministic"}'
+```
+
+```python
+import requests
+
+r = requests.post(
+    "https://virtual-doe-lab.vercel.app/api/sims/waterBottleRocket/simulate",
+    json={"angleDeg": 45, "fins": 4, "waterVolumeML": 500, "pressurePSI": 60},
+)
+print(r.json()["summary"]["distance"])  # 55.88
+```
+
+**Example response** (recorded from the API; trajectory shortened, the full response has 373 points)
+
+```json
+{
+  "summary": {
+    "distance": 55.881,
+    "flightTime": 3.717,
+    "maxAltitude": 16.695,
+    "burnoutTime": 0.072,
+    "burnoutSpeed": 29.184,
+    "maxSpeed": 29.184
+  },
+  "trajectory": [
+    { "t": 0, "x": 0, "y": 0, "vx": 0, "vy": 0, "phase": 1 },
+    { "t": 0.01, "x": 0.013, "y": 0.012, "vx": 2.557, "vy": 2.459, "phase": 1 }
+  ],
+  "warnings": [],
+  "params": { "angleDeg": 45, "fins": 4, "waterVolumeML": 500, "pressurePSI": 60, "mode": "deterministic" }
+}
+```
+
+### Other public endpoints
+
+- `GET /api/health` → `{"ok": true}`
+- `GET /api/sims/catapult` → `{"constants": {"PIVOT_HEIGHT_M": 0.08, "TOWER_OFFSET_M": 0.02, "ARM_LENGTH_M": 0.45, "BALL_DIAM_M": 0.04, "MIN_GAP_DEG": 5}}`
+
+### Errors
+
+| Status | Body | When |
+|---|---|---|
+| 400 | `{"error": "Invalid experiment parameters."}` | A factor is missing, not a number, or not an allowed choice |
+| 404 | `{"error": "Unknown experiment."}` | `:sim` is not one of the four names |
+| 404 | `{"error": "Not found."}` | The path does not exist |
+| 401 | `{"error": "Not signed in to Google."}` | A Drive endpoint was called without a Google session |
+| 403 | `{"error": "Origin not allowed."}` | A web page on another website sent a POST |
+
+Programs (curl, Postman, Python, Node.js, server code) can call every public endpoint. Web pages hosted on other websites are currently blocked from POST requests by the browser origin check.
+
+### How our website uses this API
+
+The website has no physics code: `sims-v2/assets/api.js` sends every run to `POST {API}/api/sims/<sim>/simulate` (API = `https://virtual-doe-lab.vercel.app`) and the page draws the animation, table and charts from the JSON response.
+
+## Called external APIs
+
+| Function (file) | External API endpoint | Input | Output |
+|---|---|---|---|
+| `exchangeCode(code)` (server/google.js) | `POST https://oauth2.googleapis.com/token` (Google OAuth 2.0) | One-time login code + client ID + client secret | Access token, refresh token, expiry |
+| `refreshAccessToken(refreshToken)` (server/google.js) | `POST https://oauth2.googleapis.com/token` | Refresh token | New access token |
+| `revoke(token)` (server/google.js) | `POST https://oauth2.googleapis.com/revoke` | Token | Access removed (on logout) |
+| `uploadFile(token, {content, filename, folderId})` (server/google.js) | `POST https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart` (Google Drive API v3) | CSV text, file name, folder ID | File `id`, `name`, `webViewLink` |
+| `createFolder(token, {name})` (server/google.js) | `POST https://www.googleapis.com/drive/v3/files` (Google Drive API v3) | Folder name | Folder `id`, `name` |
+| `chooseGoogleDriveFolder(token)` (sims-v2/assets/drive.js) | Google Picker API (`https://apis.google.com/js/api.js`) | Access token + API key | Chosen folder `id`, `name` |
+| `requestAuthorizationCode()` (sims-v2/assets/drive.js) | Google Identity Services (`https://accounts.google.com/gsi/client`) | Client ID, scope `drive.file` | One-time authorization code |
+
+The app only asks for the `drive.file` scope: it can see only files it creates or the folder the user picks. The client secret stays on the server (Vercel environment variable).
+
+## Gen AI usage and learning
+
+We used **Claude (Anthropic)**, working in the Claude app with access to this repository and our local project folder, mainly in October 2026 for the backend and Google Drive work. Claude proposed and wrote code, tested it and explained it; the team made the decisions, set up the accounts, reviewed every change and did all git commits ourselves. *(Add any other AI tools the team used for earlier parts of the project.)*
+
+| Task | What the AI did | What we did |
+|---|---|---|
+| Splitting frontend and backend | Built the Express API, moved the physics to the server, checked that 100 runs matched the old results exactly | Chose Node.js + Express and Vercel, answered its questions, reviewed the diff |
+| Google login and Drive | Moved OAuth to the server, built the Save dialog (My Drive, folder, new folder, rename) | Created the client secret and API key in Google Cloud, set authorized origins |
+| Temporary session rules | Implemented reset on reload, keep on page change, 1 hour idle sign-out | Defined the rules we wanted |
+| Bug fixing | Fixed the broken Export CSV, duplicate code, page scroll during save | Reported bugs with screenshots, tested on our laptop |
+| Git and deployment | Explained branches, pull requests and Vercel step by step | Created branches, committed, opened and merged PRs #10 and #11, deployed on Vercel |
+| Documentation | Drafted the API docs from the real code and real API responses | Reviewed and edited them |
+
+**Prompt template we followed**
+
+1. Describe the goal and constraints, e.g. *"Separate something to the backend; you can fix the code but don't commit yet, just show me first. If anything is unclear, ask me first, don't assume."*
+2. Let the AI ask clarifying questions (stack, hosting, database, scope) and answer them.
+3. The AI makes and tests the change, then shows a log of every file added, changed or deleted.
+4. We test it ourselves, then commit and push.
+
+**Reflection** *(draft: rewrite in the team's own words)*
+
+- Asking first saved time: requiring the AI to ask before assuming caught decisions only we could make, e.g. that the session must reset on reload.
+- The AI cannot do account work: Google Cloud, Vercel and passwords were done by us, with step-by-step guidance.
+- Verify, don't trust: some problems only showed up in the real browser (e.g. Google's `origin_mismatch`), so our own testing was essential.
+- We learned professional git practice: feature branches, clear commit messages, stacked pull requests, and keeping secrets out of the repository.
