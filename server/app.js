@@ -3,6 +3,7 @@
  * Virtual DOE Lab — backend (Express). Runs on Vercel as a serverless function
  * (see api/index.js and vercel.json) or locally with `npm run dev`.
  *
+ *   GET  /api                         API index: list of endpoints + link to the docs
  *   GET  /api/health                  check the server is up
  *   GET  /api/sims/:sim               constants the page needs for drawing
  *   POST /api/sims/:sim/simulate      run one experiment (physics + random noise on the server)
@@ -16,7 +17,7 @@
  *   POST /api/drive/folder            create a new folder in the user's Drive
  */
 const express = require('express');
-const { getSim, prepareParams } = require('./sims');
+const { getSim, prepareParams, SIM_NAMES } = require('./sims');
 const google = require('./google');
 const { readSession, writeSession, clearSession } = require('./session');
 
@@ -68,6 +69,26 @@ const asyncRoute = (fn) => (req, res, next) => Promise.resolve(fn(req, res, next
 // ---------------------------------------------------------------------------
 // Experiments
 // ---------------------------------------------------------------------------
+// API index: what anyone sees when they open the base URL in a browser.
+app.get('/api', (req, res) => {
+  res.json({
+    name: 'Virtual DOE Lab API',
+    description: 'Runs the physics of four Design of Experiments labs and returns the result as JSON.',
+    baseUrl: 'https://virtual-doe-lab.vercel.app/api',
+    docs: 'https://github.com/Sszky/VirtualDOELab#web-api',
+    experiments: SIM_NAMES,
+    endpoints: {
+      'GET /api/health': 'Check that the API is up',
+      'GET /api/sims/:sim': 'Constants a client needs to draw the scene',
+      'POST /api/sims/:sim/simulate': 'Run one experiment (JSON body = factor values) and get the result',
+    },
+    example: {
+      request: 'POST /api/sims/waterBottleRocket/simulate',
+      body: { angleDeg: 45, fins: 4, waterVolumeML: 500, pressurePSI: 60, mode: 'deterministic' },
+    },
+  });
+});
+
 app.get('/api/health', (req, res) => res.json({ ok: true }));
 
 app.get('/api/sims/:sim', (req, res) => {
