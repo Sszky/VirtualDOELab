@@ -939,10 +939,9 @@ body.table-modal-open .workspace {
 }
 
 .effects-legend-swatch {
-  width: 10px;
+  width: 22px;
   height: 10px;
   flex: none;
-  border-radius: 50%;
 }
 
 /* คำอธิบาย error bar ใต้กราฟ */
