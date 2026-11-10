@@ -14,8 +14,7 @@
 | Web API (base URL) | `https://virtual-doe-lab.vercel.app/api` ([docs](#web-api)) |
 | Called APIs | Google OAuth 2.0, Google Drive API v3, Google Picker API ([details](#called-external-apis)) |
 | Repository | https://github.com/Sszky/VirtualDOELab |
-| Demo video (1–3 min) | *add link* |
-| Presentation slides | *add link* |
+
 
 ## ผู้จัดทำ
 
