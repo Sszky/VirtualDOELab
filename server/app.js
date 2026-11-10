@@ -15,11 +15,14 @@
  *   POST /api/auth/logout             end the Google session
  *   POST /api/drive/upload            upload a CSV to the chosen Drive folder
  *   POST /api/drive/folder            create a new folder in the user's Drive
+ *   /api/history/...                  experiment history ("My sessions"), see server/history.js
+ *   GET  /api/cron/keepalive          daily Vercel Cron: one small query so Supabase (free plan) is not paused
  */
 const express = require('express');
 const { getSim, prepareParams, SIM_NAMES } = require('./sims');
 const google = require('./google');
 const { readSession, writeSession, clearSession } = require('./session');
+const history = require('./history');
 
 const app = express();
 app.disable('x-powered-by');
@@ -51,8 +54,8 @@ app.use('/api', (req, res, next) => {
   }
   if (req.method === 'OPTIONS') {
     if (!allowed) return res.sendStatus(403);
-    res.set('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-    res.set('Access-Control-Allow-Headers', 'Content-Type');
+    res.set('Access-Control-Allow-Methods', 'GET, POST, PATCH, DELETE, OPTIONS');
+    res.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
     res.set('Access-Control-Max-Age', '600');
     return res.sendStatus(204);
   }
@@ -81,6 +84,7 @@ app.get('/api', (req, res) => {
       'GET /api/health': 'Check that the API is up',
       'GET /api/sims/:sim': 'Constants a client needs to draw the scene',
       'POST /api/sims/:sim/simulate': 'Run one experiment (JSON body = factor values) and get the result',
+      'GET /api/history/config': 'Whether experiment history is available on this server',
     },
     example: {
       request: 'POST /api/sims/waterBottleRocket/simulate',
@@ -97,13 +101,31 @@ app.get('/api/sims/:sim', (req, res) => {
   res.json({ constants: sim.publicConstants });
 });
 
-app.post('/api/sims/:sim/simulate', (req, res) => {
-  const sim = getSim(req.params.sim);
-  if (!sim) return res.status(404).json({ error: 'Unknown experiment.' });
-  const params = req.body && typeof req.body === 'object' ? prepareParams(sim, req.body) : null;
-  if (!params) return res.status(400).json({ error: 'Invalid experiment parameters.' });
-  res.json(sim.simulate(params));
-});
+app.post(
+  '/api/sims/:sim/simulate',
+  asyncRoute(async (req, res) => {
+    const sim = getSim(req.params.sim);
+    if (!sim) return res.status(404).json({ error: 'Unknown experiment.' });
+    const params = req.body && typeof req.body === 'object' ? prepareParams(sim, req.body) : null;
+    if (!params) return res.status(400).json({ error: 'Invalid experiment parameters.' });
+    const result = sim.simulate(params);
+
+    // ?session=new|<id> → the server saves this run to the caller's history itself.
+    const sessionParam = typeof req.query.session === 'string' ? req.query.session : '';
+    if (sessionParam) {
+      result.history = await history.recordRun(req, res, {
+        sim: req.params.sim,
+        sessionParam,
+        result,
+        allowedOrigins,
+      });
+    }
+    res.json(result);
+  })
+);
+
+app.use('/api/history', history.createRouter({ allowedOrigins }));
+app.get('/api/cron/keepalive', asyncRoute(history.keepAlive)); // Vercel Cron, once a day (vercel.json)
 
 // ---------------------------------------------------------------------------
 // Google session (Drive)
@@ -235,8 +257,9 @@ app.use('/api', (req, res) => res.status(404).json({ error: 'Not found.' }));
 
 // eslint-disable-next-line no-unused-vars
 app.use((error, req, res, next) => {
-  console.error(error);
-  res.status(error.status || 500).json({ error: error.message || 'Server error.' });
+  const status = error.status || error.statusCode || 500;
+  if (status >= 500) console.error(error); // 4xx = the caller's mistake, nothing to log
+  res.status(status).json({ error: error.message || 'Server error.' });
 });
 
 module.exports = app;

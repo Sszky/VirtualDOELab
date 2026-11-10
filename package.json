@@ -11,6 +11,8 @@
     "node": ">=20.12"
   },
   "dependencies": {
-    "express": "^4.21.2"
+    "@clerk/backend": "^3.27.0",
+    "express": "^4.21.2",
+    "pg": "^8.23.1"
   }
 }
