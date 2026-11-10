@@ -24,7 +24,21 @@
   const IDLE_LIMIT_MS = 60 * 60 * 1000; // ไม่มีการใช้งาน 1 ชั่วโมง → ออกจากระบบ (ต้องตรงกับ SESSION_IDLE_S ที่ server)
   const PING_EVERY_MS = 5 * 60 * 1000; // ระหว่างที่ยังใช้งานอยู่ บอก server ทุก ๆ 5 นาทีว่ายังไม่ idle
 
+  // history.js ตั้งตัวนี้ไว้เมื่อผู้ใช้ sign in ด้วย Clerk → ทุก request แนบ token ไปให้ server รู้ว่าเป็นใคร
+  let authTokenProvider = null;
+  function setAuthTokenProvider(provider) {
+    authTokenProvider = typeof provider === 'function' ? provider : null;
+  }
+
   async function request(path, { method = 'GET', body } = {}) {
+    const headers = {};
+    if (body !== undefined) headers['Content-Type'] = 'application/json';
+    if (authTokenProvider) {
+      const token = await Promise.resolve()
+        .then(authTokenProvider)
+        .catch(() => null);
+      if (token) headers.Authorization = `Bearer ${token}`;
+    }
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
     let response;
@@ -32,7 +46,7 @@
       response = await fetch(`${API_BASE}/api${path}`, {
         method,
         credentials: 'include',
-        headers: body === undefined ? undefined : { 'Content-Type': 'application/json' },
+        headers,
         body: body === undefined ? undefined : JSON.stringify(body),
         signal: controller.signal,
       });
@@ -47,8 +61,8 @@
     }
     const data = await response.json().catch(() => null);
     if (!response.ok) {
-      if (response.status === 401) {
-        setSignedIn(false); // session หมดอายุ/ถูกล้างที่ server → ครั้งหน้าต้อง login ใหม่
+      if (response.status === 401 && /^\/(auth|drive)\//.test(path)) {
+        setSignedIn(false); // Google session หมดอายุ/ถูกล้างที่ server → ครั้งหน้าต้อง login ใหม่
       }
       const error = new Error((data && data.error) || `Server error (HTTP ${response.status}).`);
       error.status = response.status;
@@ -98,6 +112,8 @@
    * false = เดินภายในเว็บนี้ (กดเมนู/ลิงก์ไปหน้าอื่นของเว็บ หรือปุ่ม Back/Forward)
    */
   function isNewVisit() {
+    // เพิ่งกลับมาจากหน้า Sign in ของ Google/Clerk (history.js ฝากเครื่องหมายไว้ก่อนออกไป) → ยังถือว่าเดินในเว็บ
+    if (returningFromSignIn) return false;
     // หน้านี้ถูกโหลดใหม่เองจากปุ่ม Back (ดู pageshow ด้านล่าง) → ยังถือว่าเดินในเว็บ
     try {
       if (global.sessionStorage.getItem(BACK_RELOAD_KEY)) {
@@ -119,6 +135,38 @@
   }
 
   const BACK_RELOAD_KEY = 'vdl:back-reload';
+
+  // ---- ออกไป Sign in (Clerk/Google พาออกจากหน้าแล้วพากลับมา) ไม่นับเป็น "เปิดเว็บใหม่" ----
+  const SIGN_IN_KEY = 'vdl:leaving-to-sign-in';
+  const SIGN_IN_MAX_AGE_MS = 15 * 60 * 1000;
+
+  /** history.js เรียกก่อนเปิดหน้า Sign in */
+  function markLeavingToSignIn() {
+    try {
+      global.sessionStorage.setItem(SIGN_IN_KEY, String(Date.now()));
+    } catch {
+      /* ignore */
+    }
+  }
+
+  /** history.js เรียกเมื่อ sign in สำเร็จในหน้าเดิม (ไม่ต้องใช้เครื่องหมายแล้ว) */
+  function clearLeavingToSignIn() {
+    try {
+      global.sessionStorage.removeItem(SIGN_IN_KEY);
+    } catch {
+      /* ignore */
+    }
+  }
+
+  const returningFromSignIn = (() => {
+    try {
+      const at = Number(global.sessionStorage.getItem(SIGN_IN_KEY));
+      global.sessionStorage.removeItem(SIGN_IN_KEY);
+      return at > 0 && Date.now() - at < SIGN_IN_MAX_AGE_MS;
+    } catch {
+      return false;
+    }
+  })();
 
   // กดปุ่ม Back แล้วเบราว์เซอร์อาจคืนหน้าเดิมจากหน่วยความจำ (ผลการทดลองเก่ายังค้าง)
   // → โหลดหน้าใหม่ให้เริ่มจากศูนย์ แต่ไม่นับเป็นการรีโหลด (ยัง login อยู่)
@@ -177,7 +225,9 @@
 
   // ทำครั้งเดียวตอนโหลดหน้า: เปิดเว็บใหม่ → logout, เดินในเว็บ → ถามว่ายัง login อยู่ไหม
   // drive.js รอ promise นี้ก่อนขอ token เพื่อไม่ให้ใช้ session เก่าโดยไม่ตั้งใจ
-  const sessionReady = (isNewVisit()
+  // คำนวณครั้งเดียว: Google (Drive) และ Clerk (history.js) ใช้กติกาเดียวกัน
+  const newVisit = isNewVisit();
+  const sessionReady = (newVisit
     ? signOut()
     : request('/auth/session')
         .then((data) => setSignedIn(Boolean(data && data.signedIn)))
@@ -204,8 +254,10 @@
   );
 
   function checkIdle() {
-    if (signedIn && Date.now() - lastActivity >= IDLE_LIMIT_MS) {
-      signOut();
+    if (Date.now() - lastActivity >= IDLE_LIMIT_MS) {
+      if (signedIn) signOut();
+      // ให้ history.js ออกจาก Clerk ด้วย (กติกาเดียวกับ Google)
+      global.dispatchEvent(new CustomEvent('vdl:idle'));
     }
   }
   global.setInterval(checkIdle, 60 * 1000);
@@ -235,6 +287,7 @@
   global.VDL_API = {
     base: API_BASE,
     setUnsavedResults,
+    setAuthTokenProvider,
     request,
     simConfig,
     simulate,
@@ -242,5 +295,8 @@
     sessionReady,
     setSignedIn,
     signOut,
+    newVisit,
+    markLeavingToSignIn,
+    clearLeavingToSignIn,
   };
 })(window);

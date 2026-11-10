@@ -1,5 +1,6 @@
 {
   "buildCommand": "",
   "outputDirectory": "sims-v2",
-  "rewrites": [{ "source": "/api/(.*)", "destination": "/api" }]
+  "rewrites": [{ "source": "/api/(.*)", "destination": "/api" }],
+  "crons": [{ "path": "/api/cron/keepalive", "schedule": "0 20 * * *" }]
 }

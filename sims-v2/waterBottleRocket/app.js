@@ -468,7 +468,8 @@
   function appendResultRow(result) {
     const { params, summary } = result;
     results.push({ ...params, ...summary });
-    window.VDL_API.setUnsavedResults(true); // มีผลใหม่ที่ยังไม่ได้บันทึก
+    // บันทึกลงประวัติแล้ว (history.js) = ไม่ต้องเตือนตอนออกจากหน้า
+    window.VDL_API.setUnsavedResults(!(result.history && result.history.saved));
     renderTable();
     renderEffectsChart();
   }
@@ -500,6 +501,7 @@
   els.clearTableBtn.addEventListener('click', () => {
     results.length = 0;
     window.VDL_API.setUnsavedResults(false); // ตารางว่าง ไม่มีอะไรให้เสีย
+    if (window.VDL_HISTORY) window.VDL_HISTORY.newSession(); // ผลถัดไปเริ่ม session ใหม่ (session เดิมยังอยู่ในประวัติ)
     renderTable();
     renderEffectsChart();
   });
@@ -898,5 +900,19 @@ els.exportCsvBtn.addEventListener(
   syncPanelHeights(); // ต้องเรียกก่อน redrawIdleScene() เพื่อให้ .scene มีขนาดจริงตั้งแต่เฟรมแรก
   redrawIdleScene();
   renderEffectsChart();
+  // ประวัติการทดลอง (assets/history.js): โหลด session เดิมกลับเข้าตารางและกราฟได้
+  if (window.VDL_HISTORY) {
+    window.VDL_HISTORY.attach({
+      sim: SIM_KEY,
+      rowCount: () => results.length,
+      getRows: () => results.map((row) => ({ ...row })),
+      setRows(rows) {
+        results.length = 0;
+        results.push(...rows);
+        renderTable();
+        renderEffectsChart();
+      },
+    });
+  }
   } // ปิดฟังก์ชัน init()
 })();
