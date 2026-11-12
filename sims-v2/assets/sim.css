@@ -1130,3 +1130,137 @@ body.table-modal-open .workspace {
     max-height: 92vh;
   }
 }
+
+/* ===================== ประวัติการทดลอง (history.js) ===================== */
+.history-bar {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 0 0 8px;
+  padding: 8px 10px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--blue-50);
+}
+.history-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.history-account {
+  display: inline-flex;
+  align-items: center;
+}
+.history-bar [hidden],
+.history-note[hidden] {
+  display: none !important;
+}
+.history-status {
+  margin: 0;
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+.history-continue {
+  align-self: flex-start;
+  padding: 4px 10px;
+  border: 1px dashed var(--blue);
+  border-radius: 999px;
+  background: var(--white);
+  color: var(--blue-600);
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+.history-continue[hidden] {
+  display: none;
+}
+.hs-dialog {
+  width: min(94vw, 520px);
+  max-height: min(84vh, 640px);
+  display: flex;
+  flex-direction: column;
+}
+.hs-note {
+  margin: 4px 0 12px;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+.hs-new {
+  align-self: flex-start;
+}
+.hs-status {
+  min-height: 1.2em;
+  margin: 10px 0 6px;
+  font-size: 0.88rem;
+  color: var(--muted);
+}
+.hs-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  overflow-y: auto;
+  display: grid;
+  gap: 8px;
+}
+.hs-item {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--white);
+}
+.hs-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  flex: 1 1 200px;
+}
+.hs-name {
+  overflow-wrap: anywhere;
+}
+.hs-meta {
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+.hs-badge {
+  align-self: flex-start;
+  margin-top: 2px;
+  padding: 1px 8px;
+  border-radius: 999px;
+  background: var(--blue-100);
+  color: var(--blue-600);
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+.hs-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+.hs-actions .secondary-button,
+.hs-actions .primary-button {
+  padding: 6px 10px;
+  font-size: 0.82rem;
+}
+.hs-danger {
+  color: #b91c1c;
+}
+.hs-confirm {
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+.hs-rename {
+  width: 100%;
+  padding: 7px 10px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  font: inherit;
+}

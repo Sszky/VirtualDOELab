@@ -14,8 +14,7 @@
 | Web API (base URL) | `https://virtual-doe-lab.vercel.app/api` ([docs](#web-api)) |
 | Called APIs | Google OAuth 2.0, Google Drive API v3, Google Picker API ([details](#called-external-apis)) |
 | Repository | https://github.com/Sszky/VirtualDOELab |
-| Demo video (1–3 min) | *add link* |
-| Presentation slides | *add link* |
+
 
 ## ผู้จัดทำ
 
@@ -46,6 +45,10 @@ VirtualDOELab/
 │  ├─ physics/              แบบจำลองฟิสิกส์ของทั้ง 4 การทดลอง (ย้ายมาจาก frontend)
 │  ├─ google.js             แลก/ต่ออายุ token และอัปโหลดไฟล์ลง Google Drive (ใช้ Client Secret)
 │  ├─ session.js            Google session ใน cookie แบบเข้ารหัส (httpOnly)
+│  ├─ history.js            ประวัติการทดลอง (My sessions) + บันทึกผลทุกครั้งที่ยิง
+│  ├─ identity.js           ตรวจ token ของ Clerk → ระบุเจ้าของประวัติ
+│  ├─ db.js                 เชื่อม Postgres (Supabase)
+│  ├─ schema.sql            สร้างตาราง (รันครั้งเดียวใน Supabase)
 │  └─ dev.js                รันเว็บ + API บนเครื่องตัวเอง (npm run dev)
 ├─ api/index.js             จุดเข้าของ Vercel (ส่งต่อไปที่ server/app.js)
 ├─ vercel.json              ตั้งค่า deploy บน Vercel
@@ -56,12 +59,12 @@ VirtualDOELab/
 
 ## การทดลองและปัจจัย
 
-| การทดลอง | ปัจจัยที่ปรับได้ | ค่าคงที่ที่ปรับได้ | ผลตอบ (Response) |
+| การทดลอง | ปัจจัยที่ปรับได้ | ค่าคงที่ที่ปรับได้ | ผลตอบ (สามารถเลือกได้) |
 |---|---|---|---|
-| Parachute | A รูปทรงร่ม, B วัสดุ, C เส้นผ่านศูนย์กลางร่ม (30–90 cm), D ความยาวเชือก (20–80 cm) | ความสูงที่ปล่อย (10–50 m) | เวลาตก (s) |
-| Paper Helicopter | A ความยาวใบพัด (5–15 cm), B ความกว้างใบพัด (2–6 cm), C ความยาวลำตัว (3–10 cm), D ความกว้างลำตัว (1–4 cm) | ความสูงที่ปล่อย (1–4 m) | เวลาลอยตัว (s) |
-| Water Bottle Rocket | A มุมยิง (1–89°), B จำนวนครีบ (2–8), C ปริมาณน้ำ (50–1000 mL), D แรงดัน (10–100 psi) | – | ระยะทาง (m) |
-| Catapult | A มุมง้าง (120–185°), B มุมยิง (90–140°), C ตำแหน่งถ้วย (20–40 cm), D ตำแหน่งหมุด (8–24 cm), E ตำแหน่งหนังยาง (14–30 cm) | – | ระยะทาง (m) |
+| Parachute | A รูปทรงร่ม, B วัสดุ, C เส้นผ่านศูนย์กลางร่ม (30–90 cm), D ความยาวเชือก (20–80 cm) | ความสูงที่ปล่อย (10–50 m) | เวลาตก (s), ความเร็วกระทบพื้น (m/s), สัมประสิทธิ์แรงต้าน (Cd) |
+| Paper Helicopter | A ความยาวใบพัด (5–15 cm), B ความกว้างใบพัด (2–6 cm), C ความยาวลำตัว (3–10 cm), D ความกว้างลำตัว (1–4 cm) | ความสูงที่ปล่อย (1–4 m) | เวลาลอยตัว (s), ความเร็วกระทบพื้น (m/s), มวล (g) |
+| Water Bottle Rocket | A มุมยิง (1–89°), B จำนวนครีบ (2–8), C ปริมาณน้ำ (50–1000 mL), D แรงดัน (10–100 psi) | – | ระยะทาง (m), เวลาลอยตัว (s), ความสูงสูงสุด (m) |
+| Catapult | A มุมง้าง (120–185°), B มุมยิง (90–140°), C ตำแหน่งถ้วย (20–40 cm), D ตำแหน่งหมุด (8–24 cm), E ตำแหน่งหนังยาง (14–30 cm) | – | ระยะทาง (m), เวลาลอยตัว (s), ความสูงสูงสุด (m), ตวามเร็วตอนปล่อย (m/s) |
 
 ## ความสามารถหลัก
 
@@ -112,6 +115,46 @@ npm run dev               # เปิด http://localhost:3000
 3. ใน Google Cloud Console → Credentials → OAuth Client: เพิ่มโดเมน Vercel ใน **Authorized JavaScript origins**
 4. ระหว่างที่หน้าเว็บยังอยู่บน GitHub Pages: ใส่ URL ของ Vercel ใน `VERCEL_API_URL` ที่ `sims-v2/assets/api.js`
 
+## ประวัติการทดลอง (My sessions)
+
+ไม่บังคับ login — **เก็บประวัติเฉพาะคนที่ Sign in ด้วย Google (Clerk)**
+
+| ผู้ใช้ | ผลการทดลอง |
+|---|---|
+| ไม่ได้ login | **ไม่บันทึก** อยู่ในหน้าจนกว่าจะปิด/รีโหลด — แถบบอกว่า "Results are not saved · Sign in to keep them" และเบราว์เซอร์เตือนก่อนออกจากหน้า |
+| Sign in ด้วย Google | server บันทึกให้อัตโนมัติทุกครั้งที่ยิง เปิดได้จากทุกเครื่อง |
+
+- Sign in ตอนที่มีผลในตารางแล้ว → ผลในตารางถูกบันทึกเป็น session ใหม่ด้วย
+  (server คำนวณใหม่จากค่าปัจจัย โหมด stochastic จึงได้ตัวเลขใหม่ ตารางจะแสดงตัวเลขที่บันทึกจริง)
+  - Google sign in เปิดเป็น popup; ถ้าเบราว์เซอร์พาออกจากหน้าไป (redirect) ผลในตารางถูกฝากไว้ใน `sessionStorage`
+    ของแท็บนั้นชั่วคราว แล้วใส่กลับ + บันทึกให้หลัง sign in เสร็จ
+- **Sign out** = ล้างตาราง (ผลอยู่ในบัญชีแล้ว ไม่ค้างบนจอเครื่องที่ใช้ร่วมกัน)
+- Sign in ใช้**กติกาเดียวกับ Google Drive login**: รีโหลด / ปิดแล้วเปิดเว็บใหม่ / ไม่ใช้งาน 1 ชั่วโมง / login นานเกิน 8 ชั่วโมง
+  = ออกจากระบบอัตโนมัติ (เดินไปหน้าอื่นในเว็บ, ปุ่ม Back และการกลับมาจากหน้า Sign in ยัง login อยู่) — ประวัติยังอยู่ครบ sign in ใหม่ก็เปิดได้
+- ปุ่ม **My sessions** (เฉพาะคนที่ sign in): เปิด / เปลี่ยนชื่อ / ลบ session, เริ่ม session ใหม่
+- รีโหลดหน้าแล้วตารางเริ่มใหม่ แต่มีปุ่ม **Continue last session** ให้ทำต่อ
+- กด **Clear** = เริ่ม session ใหม่ (session เดิมยังอยู่ในประวัติ)
+- ผลในประวัติมาจาก server คำนวณเองเท่านั้น แก้ไขจากหน้าเว็บไม่ได้
+- ต้องตั้งค่าทั้ง Supabase และ Clerk ถ้าขาดอย่างใดอย่างหนึ่ง ส่วนนี้จะไม่แสดง เว็บใช้งานได้เหมือนเดิม
+
+### ตั้งค่า (ครั้งเดียว)
+
+1. **Supabase** (database)
+   1. สร้าง project ที่ supabase.com
+   2. **SQL Editor → New query** → วางเนื้อหาไฟล์ `server/schema.sql` → **Run**
+   3. **Connect → Transaction pooler** (port 6543) → คัดลอก URI แล้วใส่รหัสผ่าน database → ใส่เป็น `DATABASE_URL`
+2. **Clerk** (sign in ด้วย Google)
+   1. สร้าง application ที่ clerk.com แล้วเปิดเฉพาะ **Google** ใน **User & authentication → SSO connections**
+   2. **API keys** → คัดลอก `CLERK_PUBLISHABLE_KEY` และ `CLERK_SECRET_KEY`
+3. ใส่ค่าทั้ง 3 ใน `.env` (เครื่องตัวเอง) และ Vercel → **Settings → Environment Variables** แล้ว **Redeploy**
+4. **กัน Supabase หยุดโปรเจกต์** (แพ็กเกจฟรีจะ pause ถ้าแทบไม่มีการใช้งานราว 7 วัน): `vercel.json` ตั้ง Vercel Cron ให้เรียก
+   `GET /api/cron/keepalive` วันละครั้ง (03:00–03:59 เวลาไทย) ซึ่งส่ง query เล็ก ๆ 1 ครั้ง — ใส่ `CRON_SECRET`
+   (สุ่มตัวอักษร/ตัวเลข อย่างน้อย 16 ตัว) ใน Vercel → Environment Variables แล้ว Redeploy; ดูผลได้ที่ Vercel → **Schedules → Cron Jobs**
+
+> **หมายเหตุ Clerk:** ตอนนี้ใช้คีย์โหมด Development (`pk_test_…`) ซึ่งใช้กับ `vercel.app` ได้ แต่จำกัด 100 ผู้ใช้
+> และไม่เหมาะกับการใช้งานจริงระยะยาว โหมด Production ของ Clerk ต้องมี **domain ของตัวเอง**
+> (เช่น domain ของ KKU ในอนาคต) — ดู [Clerk: Deploy to production](https://clerk.com/docs/guides/development/deployment/production)
+
 ## Web API
 
 Our API runs the physics of all four experiments and returns the full result as JSON. No API key is needed.
@@ -125,6 +168,10 @@ Our API runs the physics of all four experiments and returns the full result as 
 | GET | `/api/sims/:sim` | Constants a client needs to draw the scene | Anyone |
 | POST | `/api/sims/:sim/simulate` | Run one experiment and get the result | Anyone |
 | GET, POST | `/api/auth/*`, `/api/drive/*` | Google login and Save to Drive for our own website | Our website only (needs a Google session cookie) |
+| GET | `/api/history/config` | Whether experiment history is on (+ Clerk publishable key) | Anyone |
+| GET, PATCH, DELETE | `/api/history`, `/api/history/:id` | List / open / rename / delete your saved sessions | Signed-in owner only (Clerk token) |
+| GET | `/api/cron/keepalive` | Daily Vercel Cron: one small query so the free Supabase project is not paused | Vercel Cron only (`CRON_SECRET`) |
+| POST | `/api/history/import` | Right after sign-in, save the runs already in the table (recomputed on the server) | Signed-in user |
 
 `:sim` is one of `parachute`, `paperHelicopter`, `waterBottleRocket`, `catapult`.
 
@@ -138,6 +185,8 @@ Send the factor values as a JSON body. Numbers outside the allowed range are mov
 | `catapult` | `releaseDeg` (°, 120–185), `firingDeg` (°, 90–140), `cupCm` (cm, 20–40), `pinCm` (cm, 8–24), `bungeeCm` (cm, 14–30) | `distance` (m), `flightTime` (s), `maxHeight` (m), `launchSpeed` (m/s) |
 | `parachute` | `shape` (`round` / `square` / `hexagon`), `material` (`plastic` / `nylon` / `paper`), `diameterCm` (cm, 30–90), `stringCm` (cm, 20–80), `heightM` (m, 10–50) | `time` (s), `impactSpeed` (m/s), `cd` |
 | `paperHelicopter` | `WL` wing length (cm, 5–15), `WW` wing width (cm, 2–6), `BL` body length (cm, 3–10), `BW` body width (cm, 1–4), `heightM` (m, 1–4) | `time` (s), `impactSpeed` (m/s), `massG` (g), `cd` |
+
+When signed in with Clerk (`Authorization: Bearer <Clerk session token>`), add `?session=new` (or `?session=<id>`) to save the run to your history; the response then includes `history: { saved, sessionId, runNo }`. Without a valid token the run is not saved (`history: { saved: false, reason: "signed-out" }`).
 
 Every response has `summary` (results), `trajectory` (time samples for animation), `warnings` (e.g. `waterClamped`, `maxSimTimeExceeded`) and `params` (inputs used).
 
@@ -234,6 +283,42 @@ We used **Claude (Anthropic)**, working in the Claude app with access to this re
 2. Let the AI ask clarifying questions (stack, hosting, database, scope) and answer them.
 3. The AI makes and tests the change, then shows a log of every file added, changed or deleted.
 4. We test it ourselves, then commit and push.
+
+The full prompt log, with our structured prompt and the AI's answers: [Prompt log (Google Doc)](https://docs.google.com/document/d/1EaSC4KV26FwChs-1XPpNAu4GFxsH8A5OWL7__fPM2Lc/edit?usp=sharing)
+
+Our first prompt used this template, filled in for our project:
+
+```markdown
+## Context
+I'm working on a web app project. Repo: https://github.com/Sszky/VirtualDOELab
+Tech stack: HTML/CSS/JavaScript frontend (no framework), planned Node.js + Express backend
+
+Current state:
+- All logic currently runs in the frontend.
+- Google Drive API login is already implemented.
+- The app works with simulation data ("sim data") per session.
+
+## Task 1: Advice only (no code changes)
+Should I add Google session management to this project?
+My requirement: each user's sim data should be stored only temporarily, not permanently.
+Please give me: your recommendation, 2-3 possible approaches with pros and cons,
+and how each approach fits with my existing Drive API login.
+
+## Task 2: Move logic from frontend to backend (code changes)
+1. List which functions/modules should move to the backend, with a short reason for each.
+2. List what should stay in the frontend.
+3. Make the code changes in the repo.
+
+## Constraints
+- Do NOT commit or push anything to git. Show me the changes first so I can review them.
+- If anything is unclear, ask me before you start. Do not make assumptions.
+
+## Output format
+- Task 1: a short written recommendation
+- Task 2: the list from steps 1-2, then the changed code / diff
+```
+
+The template's four parts (context, tasks, constraints, output format) made the AI ask its questions first and keep every change reviewable before it reached git.
 
 **Reflection** *(draft: rewrite in the team's own words)*
 
