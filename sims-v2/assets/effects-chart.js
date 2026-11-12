@@ -68,7 +68,9 @@
     });
   }
 
-  const PALETTE = ['#2563eb', '#0ea5e9', '#f59e0b', '#16a34a', '#7c3aed', '#dc2626', '#0f766e', '#b45309'];
+  // น้ำเงิน แดง เขียวอ่อน ชมพู เหลือง เขียวเข้ม ส้ม — เกิน 7 เส้นวนสีเดิมแต่เป็นเส้นประ
+  const PALETTE = ['#2563eb', '#dc2626', '#65a30d', '#db2777', '#ca8a04', '#166534', '#ea580c'];
+  const DASHES = [[], [8, 5], [3, 4]];
   const INK = '#0f172a';
   const NAVY = '#0b1c33';
   const MUTED = '#64748b';
@@ -196,6 +198,14 @@
       };
     }
 
+    /** สีและลายเส้นของช่องที่ slot: รอบแรกเส้นทึบ รอบสองประยาว รอบสามขึ้นไปประถี่ */
+    function seriesStyle(slot) {
+      return {
+        color: PALETTE[slot % PALETTE.length],
+        dash: DASHES[Math.min(Math.floor(slot / PALETTE.length), DASHES.length - 1)],
+      };
+    }
+
     function computeSeries(rows, xKey, groupKey, yKey, pe) {
       const xValues = orderedValues(xKey, rows.map((r) => r[xKey]));
       const halfWidth = (n) => (pe.s != null ? (tCritical(pe.df) * pe.s) / Math.sqrt(n) : null);
@@ -208,12 +218,16 @@
           })
           .filter(Boolean);
 
-      if (!groupKey) return { xValues, series: [{ label: null, points: pointsOf(rows) }] };
+      if (!groupKey) return { xValues, series: [{ label: null, slot: 0, points: pointsOf(rows) }] };
       const groupValues = orderedValues(groupKey, rows.map((r) => r[groupKey]));
+      // ล็อกสี: ค่าที่ปรากฏในประวัติก่อนได้ช่องสีก่อน (rows เรียงจากรอบเก่าไปใหม่)
+      // เพิ่มเส้นใหม่แล้วเส้นเดิมจึงไม่เปลี่ยนสี แม้ legend จะเรียงตามค่า
+      const firstSeen = [...new Set(rows.map((r) => String(r[groupKey])))];
       return {
         xValues,
         series: groupValues.map((gv) => ({
           label: factor(groupKey).format(gv),
+          slot: firstSeen.indexOf(gv),
           points: pointsOf(rows.filter((r) => String(r[groupKey]) === gv)),
         })),
       };
@@ -324,7 +338,7 @@
 
       // error bar → เส้น → จุด
       data.series.forEach((se, si) => {
-        const color = PALETTE[si % PALETTE.length];
+        const { color, dash } = seriesStyle(se.slot);
         const pts = se.points.map((p) => ({ ...p, px: baseX(p.x) + dodge(si), py: toY(p.y) }));
 
         ctx.strokeStyle = color;
@@ -349,9 +363,11 @@
         });
 
         ctx.lineWidth = 2.5 * s;
+        ctx.setLineDash(dash.map((d) => d * s));
         ctx.beginPath();
         pts.forEach((p, i) => (i === 0 ? ctx.moveTo(p.px, p.py) : ctx.lineTo(p.px, p.py)));
         ctx.stroke();
+        ctx.setLineDash([]);
 
         pts.forEach((p) => {
           ctx.fillStyle = '#ffffff';
@@ -418,10 +434,11 @@
       if (groupKey) {
         els.legend.hidden = false;
         els.legend.innerHTML = data.series
-          .map(
-            (se, i) =>
-              `<span class="effects-legend-item"><span class="effects-legend-swatch" style="background:${PALETTE[i % PALETTE.length]}"></span>${se.label}</span>`
-          )
+          .map((se) => {
+            const { color, dash } = seriesStyle(se.slot);
+            const swatch = `<svg class="effects-legend-swatch" viewBox="0 0 22 10" aria-hidden="true"><line x1="1" y1="5" x2="21" y2="5" stroke="${color}" stroke-width="2.5" stroke-dasharray="${dash.join(' ')}"/></svg>`;
+            return `<span class="effects-legend-item">${swatch}${se.label}</span>`;
+          })
           .join('');
       } else {
         els.legend.hidden = true;
@@ -522,11 +539,16 @@
           ctx.fillStyle = INK;
           ctx.fillText(label, lx, 64);
           lx -= ctx.measureText(label).width + 8;
-          ctx.fillStyle = PALETTE[i % PALETTE.length];
+          const { color, dash } = seriesStyle(data.series[i].slot);
+          ctx.strokeStyle = color;
+          ctx.lineWidth = 2.5;
+          ctx.setLineDash(dash);
           ctx.beginPath();
-          ctx.arc(lx - 5, 59.5, 5, 0, Math.PI * 2);
-          ctx.fill();
-          lx -= 26;
+          ctx.moveTo(lx - 20, 59.5);
+          ctx.lineTo(lx, 59.5);
+          ctx.stroke();
+          ctx.setLineDash([]);
+          lx -= 36;
         }
         ctx.textAlign = 'left';
       }
